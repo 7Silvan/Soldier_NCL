@@ -1,8 +1,6 @@
 package ncl.military.dao;
 
-import ncl.military.dao.contain.LocationDA;
 import ncl.military.dao.contain.SoldierDA;
-import ncl.military.dao.contain.UnitDA;
 
 import java.util.Map;
 
@@ -12,7 +10,7 @@ import java.util.Map;
  *          Date: 13.04.12
  *          Time: 13:53
  */
-public interface DAO {
+public interface DAO extends SoldierDA{
     // special for dao
     void init(Map<String, String> initParams);
     void init();

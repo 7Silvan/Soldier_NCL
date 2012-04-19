@@ -15,7 +15,4 @@ public interface LocationDA {
     // All about Locations
     List<Location> getAllLocations();
     List<Location> getLocationsById(String idMatch);
-    List<Location> getLocationsByName(String nameMatch);
-    List<Location> getLocationsByCity(String cityMatch);
-    List<Location> getLocationsByRegion(String regionMatch);
 }

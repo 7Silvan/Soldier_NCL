@@ -2,6 +2,8 @@ package ncl.military.controller;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
@@ -13,8 +15,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 public class Log4jInit implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         String homeDir = servletContextEvent.getServletContext().getRealPath("/");
-
-        DOMConfigurator.configure("/log4j.xml");
+        DOMConfigurator.configure(homeDir + "/WEB-INF/log4j.xml");
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

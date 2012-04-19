@@ -14,7 +14,8 @@ import java.util.Map;
 public class Handler implements Handlable {
     private DAO dao;
     private Executable executor;
-    private String viewName;
+    private String view;
+    private String path;
     private String action;
 
     public DAO getDao() {
@@ -25,10 +26,12 @@ public class Handler implements Handlable {
         return executor;
     }
 
-    public Handler(DAO dao, Executable executor, String viewName) {
+    public Handler(DAO dao, Executable executor, String path, String action, String view) {
         this.dao = dao;
         this.executor = executor;
-        this.viewName = viewName;
+        this.path = path;
+        this.view = view;
+        this.action = action;
     }
 
     public Map<String, Object> execute(Map<String, Object> params) {
@@ -36,7 +39,7 @@ public class Handler implements Handlable {
         return executor.execute(params);
     }
 
-    public String returnView() {
-        return viewName;
+    public String getView() {
+        return view;
     }
 }

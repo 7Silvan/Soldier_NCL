@@ -1,6 +1,5 @@
 package ncl.military.dao.contain;
 
-import ncl.military.dao.DAO;
 import ncl.military.entity.Soldier;
 
 import java.sql.*;
@@ -8,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author gural
@@ -16,6 +14,8 @@ import java.util.Map;
  *          Date: 18.04.12
  *          Time: 18:56
  */
+
+// is not using now
 public class SoldierContainer implements SoldierDA{
     
     private Connection conn;
@@ -24,7 +24,7 @@ public class SoldierContainer implements SoldierDA{
             //"select * from unit join soldier on unit = unit_id join location on location = loc_id ";
             "select * from soldier ";
     
-    private static final String SQL_SELECT_BY_ID =
+    private static final String SQL_SELECT_ONE_BY_ID =
             "select * from soldier " +
                     "where soldier_id = ?";
 
@@ -105,6 +105,11 @@ public class SoldierContainer implements SoldierDA{
           }
         }
         return soldiers;
+    }
+
+    public Soldier getSoldierById(String idMatch) {
+        throw new UnsupportedOperationException("not implemented yet.");
+        //return null;//To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List<Soldier> getSubSoldiersOfByID(String idMatch) {

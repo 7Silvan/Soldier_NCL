@@ -7,5 +7,5 @@ package ncl.military.controller.handle;
  *          Time: 17:02
  */
 public interface Viewable {
-    String returnView();
+    String getView();
 }

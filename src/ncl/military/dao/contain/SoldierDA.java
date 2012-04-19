@@ -16,12 +16,7 @@ public interface SoldierDA {
     
     // All about Soldiers
     List<Soldier> getAllSoldiers();
-    List<Soldier> getSoldiersById(String idMatch);
-    List<Soldier> getSoldiersByName(String nameMatch);
-    List<Soldier> getSoldiersByRank(String rankMatch);
-    List<Soldier> getSoldiersByUnit(String unitMatch);
-    List<Soldier> getSoldiersByCommander(String commanderMatch);
-    List<Soldier> getSoldiersByBirthDate(String BirthDateMatch);
+    Soldier getSoldierById(String idMatch);
 
     List<Soldier> getSubSoldiersOfByID(String idMatch);
 }

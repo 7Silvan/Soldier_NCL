@@ -15,7 +15,4 @@ public interface UnitDA {
     // All about Units
     List<Unit> getAllUnits();
     List<Unit> getUnitsById(String idMatch);
-    List<Unit> getUnitsByName(String nameMatch);
-    List<Unit> getUnitsByHead(String headMatch);
-    List<Unit> getUnitsByLocation(String locationMatch);
 }
