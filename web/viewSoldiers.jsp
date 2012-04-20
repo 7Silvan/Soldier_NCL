@@ -14,7 +14,7 @@
 <html lang="en-US">
 <head>
     <meta charset="utf-8"/>
-    <title>List Assignments</title>
+    <title>Soldiers</title>
     <link rel="stylesheet" href="assets/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="assets/css/main.css"/>
     <link rel="stylesheet" href="assets/css/font-awesome.css"/>
@@ -95,10 +95,10 @@
                         </thead>
                         <tbody>
 
-                        <c:forEach var="soldier" items="${listOfSoldiers}">
+                        <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                             <tr>
                                 <td>${soldier.id}</td>
-                                <td>${soldier.name}</td>
+                                <td><a href="/viewSoldiers?action=getSubsOf&queriedSoldierId=${soldier.id}">${soldier.name}</a></td>
                                 <td>${soldier.rank}</td>
                                 <td>${soldier.commander}</td>
                                 <td>${soldier.unit}</td>

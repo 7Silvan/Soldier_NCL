@@ -53,7 +53,7 @@ public class ControllerServlet extends HttpServlet{
         
         for(String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
-            req.getSession().setAttribute(key, result.get(key));
+            //req.getSession().setAttribute(key, result.get(key));
         }
         try {
             req.getRequestDispatcher(handle.getView()).forward(req, res);

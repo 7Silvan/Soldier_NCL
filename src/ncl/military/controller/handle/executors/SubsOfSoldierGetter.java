@@ -2,8 +2,10 @@ package ncl.military.controller.handle.executors;
 
 import ncl.military.controller.handle.Executable;
 import ncl.military.dao.DAO;
+import ncl.military.entity.Soldier;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +24,10 @@ public class SubsOfSoldierGetter implements Executable {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-
+        String idMatch = (String) params.get("queriedSoldierId");
+        List<Soldier> soldierList = dao.getSubSoldiersOfByID(idMatch);
+        result.put("listOfSoldiers", soldierList);
+        
         return result;
     }
 }

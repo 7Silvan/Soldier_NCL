@@ -43,6 +43,6 @@ public class HandlerFactory {
             if ((GET_SUBS_OF).equals((String)params.get("action")))
                 executable = new SubsOfSoldierGetter(dao);
         }
-        return new Handler(dao, new AllSoldierGetter(dao), (String) params.get("userPath"), (String) params.get("action"), view);
+        return new Handler(dao, executable, (String) params.get("userPath"), (String) params.get("action"), view);
     }
 }

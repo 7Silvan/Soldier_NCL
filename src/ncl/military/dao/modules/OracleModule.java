@@ -153,10 +153,9 @@ public class OracleModule implements DAO, SoldierDA {
 
             while (rs.next()) {
                 Soldier sd = new Soldier();
-                /*sd.setName(rs.getString("name"));
-                sd.setRank(rs.getString("rank"));
-                sd.setUnit(rs.getString("unit"));
-                sd.setCommander(rs.getString("commander"));*/
+
+                /*String id = rs.getString("soldier_id");
+                sd.setId(id);
                 String name = rs.getString("name");
                 sd.setName(name);
                 String rank = rs.getString("rank");
@@ -166,7 +165,51 @@ public class OracleModule implements DAO, SoldierDA {
                 String commander = rs.getString("commander");
                 sd.setCommander(commander);
                 Date date = rs.getDate("birthdate");
-                sd.setBirthDate(date);
+                sd.setBirthDate(date);*/
+
+                sd.setId(rs.getString("soldier_id"));
+                sd.setName(rs.getString("name"));
+                sd.setRank(rs.getString("rank"));
+                sd.setUnit(rs.getString("unit"));
+                sd.setCommander(rs.getString("commander"));
+                sd.setBirthDate(rs.getDate("birthdate"));
+
+                soldiers.add(sd);
+            }
+        } catch (SQLException e) {
+            // TODO logging and throwing custom exc
+            e.printStackTrace();
+        }  finally {
+            try {
+                if (st != null)
+                    st.close();
+            } catch (SQLException e) {
+                // TODO logging and throwing custom exc
+                e.printStackTrace();
+            }
+        }
+        return soldiers;
+    }
+
+    public List<Soldier> getTopOfSoldiers() {
+        List<Soldier> soldiers = new ArrayList<Soldier>();
+        Statement st = null;
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
+            st = conn.createStatement();
+
+            ResultSet rs = st.executeQuery(SQL_SELECT_ALL);
+
+            while (rs.next()) {
+                Soldier sd = new Soldier(rs.getString("soldier_id"),rs.getString("name"),rs.getString("rank"));
+
+                sd.setId();
+                sd.setName(rs.getString("name"));
+                sd.setRank(rs.getString("rank"));
+                sd.setUnit(rs.getString("unit"));
+                sd.setCommander(rs.getString("commander"));
+                sd.setBirthDate(rs.getDate("birthdate"));
 
                 soldiers.add(sd);
             }
@@ -198,23 +241,18 @@ public class OracleModule implements DAO, SoldierDA {
             rs.next();
 
                 soldier = new Soldier();
+                soldier.setId(rs.getString("soldier_id"));
                 soldier.setName(rs.getString("name"));
                 soldier.setRank(rs.getString("rank"));
                 soldier.setUnit(rs.getString("unit"));
                 soldier.setCommander(rs.getString("commander"));
-                String dateString = rs.getString("birthdate");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = (Date) sdf.parse(dateString);
-                soldier.setBirthDate(date);
+                soldier.setBirthDate(rs.getDate("birthdate"));
 
         } catch (SQLException e) {
             // the first exception is more important than the last one
             // TODO logging and throwing custom exc
             e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO logging and throwing custom exc
-            e.printStackTrace();
-        }  finally {
+        } finally {
             try {
                 st.close();
             } catch (SQLException e) {
@@ -246,24 +284,20 @@ public class OracleModule implements DAO, SoldierDA {
 
             while (rs.next()) {
                 Soldier sd = new Soldier();
+
+                sd.setId(rs.getString("soldier_id"));
                 sd.setName(rs.getString("name"));
                 sd.setRank(rs.getString("rank"));
                 sd.setUnit(rs.getString("unit"));
                 sd.setCommander(rs.getString("commander"));
-                String dateString = rs.getString("birthdate");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = (Date) sdf.parse(dateString);
-                sd.setBirthDate(date);
+                sd.setBirthDate(rs.getDate("birthdate"));
 
                 soldiers.add(sd);
             }
         } catch (SQLException e) {
             // TODO logging and throwing custom exc
             e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO logging and throwing custom exc
-            e.printStackTrace();
-        }  finally {
+        } finally {
             try {
                 prst.close();
             } catch (SQLException e) {

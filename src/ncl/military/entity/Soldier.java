@@ -28,7 +28,7 @@ public class Soldier {
         return id;
     }
 
-    private void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -72,7 +72,8 @@ public class Soldier {
         this.birthDate = birthDate;
     }
 
-    public Soldier(String id, String commander, String unit, String name, Date birthDate, String rank) {
+
+    public Soldier(String id, String name, String rank, String unit, String commander, Date birthDate) {
         this.unit = unit;
         this.rank = rank;
         this.birthDate = birthDate;
