@@ -49,10 +49,10 @@ public class OracleModule implements DAO, SoldierDA {
                     "order by 1 ";
 
     private static final String SQL_SELECT_HIERARCHY_OF_BY_ID =
-            "select sys_connect_by_path(name, \'/\') from soldier_id " +
+            "select name, level from soldier " +
                     "start with commander = ? " +
                     "connect by prior commander = soldier_id " +
-                    "order by 1 ";
+                    "order by level desc";
 
 
     public void init(Map<String, String> initParams) {
@@ -68,30 +68,6 @@ public class OracleModule implements DAO, SoldierDA {
         init(null);
     }
 
-
-
-    public String getHierarchy(String idMatch) throws DataAccessException {
-        try {
-            return (String) performQuery(SQL_SELECT_HIERARCHY_OF_BY_ID, new SetParser() {
-                
-                String result;
-                
-                public void parse(ResultSet raw) throws SQLException {
-                    raw.next();
-                    result = raw.getString(1);
-                }
-
-                public Object getCoocked() {
-                    return result;
-                }
-            },
-                    idMatch).getCoocked();
-        } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
-            e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
-        }
-    }
 
     public SetParser performQuery(String query, SetParser parser, String... parameters) throws SQLException {
         Connection conn = null;
@@ -148,6 +124,37 @@ public class OracleModule implements DAO, SoldierDA {
         }
 
         return parser;
+    }
+
+    public List<Soldier> getHierarchy(String idMatch) throws DataAccessException {
+        try {
+            return (List<Soldier>) performQuery(SQL_SELECT_SUBS_OF_BY_ID, new SetParser() {
+                List<Soldier> soldiers = new ArrayList<Soldier>();
+
+                public void parse(ResultSet raw) throws SQLException {
+                    while (raw.next()) {
+
+                        Soldier sd = new Soldier(raw.getString("soldier_id"),
+                                raw.getString("name"),
+                                raw.getString("rank"),
+                                raw.getString("unit"),
+                                raw.getString("commander"),
+                                raw.getDate("birthdate"));
+
+                        soldiers.add(sd);
+                    }
+                }
+
+                public Object getCoocked() {
+                    return soldiers;
+                }
+            },
+                    idMatch).getCoocked();
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data getting failed.", e);
+        }
     }
 
     private interface SetParser {
@@ -275,37 +282,4 @@ public class OracleModule implements DAO, SoldierDA {
             throw new DataAccessException("Performing data getting failed.", e);
         }
     }
-
-
-//    public List<Soldier> getTopOfSoldiers() {
-//        List<Soldier> soldiers = new ArrayList<Soldier>();
-//        Statement st = null;
-//        Connection conn = null;
-//        try {
-//            conn = dataSource.getConnection();
-//            st = conn.createStatement();
-//
-//            ResultSet rs = st.executeQuery(SQL_SELECT_TOP);
-//
-//            while (rs.next()) {
-//                Soldier sd = new Soldier(rs.getString("soldier_id"),rs.getString("name"),rs.getString("rank"), rs.getString("unit"),rs.getString("commander"), rs.getDate("birthdate"));
-//
-//                soldiers.add(sd);
-//            }
-//        } catch (SQLException e) {
-//            // TODO logging and throwing custom exc
-//            e.printStackTrace();
-//        }  finally {
-//            try {
-//                if (st != null)
-//                    st.close();
-//            } catch (SQLException e) {
-//                // TODO logging and throwing custom exc
-//                e.printStackTrace();
-//            }
-//        }
-//        return soldiers;
-//    }
-
-
 }

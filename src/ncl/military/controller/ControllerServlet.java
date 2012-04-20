@@ -36,7 +36,7 @@ public class ControllerServlet extends HttpServlet{
 
 
         dao = daoFactory.getDao();
-        dao.init(initParams); // TODO put initParams for dataBase here please (get to know if we can use resources scope from web.xml)
+        dao.init(initParams);
 
         Logger.getLogger("controller").info("ControllerServlet initialized");
     }

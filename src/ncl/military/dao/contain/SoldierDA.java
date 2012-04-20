@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface SoldierDA {
 
-    String getHierarchy(String idMatch) throws DataAccessException;
+    List<Soldier> getHierarchy(String idMatch) throws DataAccessException;
     
     // All about Soldiers
     List<Soldier> getAllSoldiers() throws DataAccessException;
