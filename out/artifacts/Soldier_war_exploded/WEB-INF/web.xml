@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-           version="2.5">
+         version="2.5">
 
     <display-name>soldier</display-name>
 
     <welcome-file-list>
-        <welcome-file>/test/test.jsp</welcome-file>
+        <welcome-file>/viewSoldiers.jsp</welcome-file>
     </welcome-file-list>
-    
+
     <servlet>
         <servlet-name>ControllerServlet</servlet-name>
         <servlet-class>ncl.military.controller.ControllerServlet</servlet-class>
@@ -27,4 +27,8 @@
         <res-auth>Container</res-auth>
         <res-sharing-scope>Shareable</res-sharing-scope>
     </resource-ref>
+
+    <listener>
+        <listener-class>ncl.military.controller.Log4jInit</listener-class>
+    </listener>
 </web-app>
