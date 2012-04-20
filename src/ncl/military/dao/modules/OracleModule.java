@@ -57,9 +57,9 @@ public class OracleModule implements DAO, SoldierDA {
 
     public void init(Map<String, String> initParams) {
         try {
-            dataSource = (OracleDataSource) new InitialContext().lookup("java:/comp/env/jdbc/soldier");
+            dataSource = (OracleDataSource) new InitialContext().lookup(initParams.get("jndiPath"));
         } catch (NamingException e) {
-            // TODO logging here
+            Logger.getLogger("model").error("Cannot find resources over jndi");
             e.printStackTrace();
         }
     }
