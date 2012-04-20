@@ -7,12 +7,13 @@ import ncl.military.entity.Soldier;
 import oracle.jdbc.pool.OracleDataSource;
 import org.apache.log4j.Logger;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,81 +25,6 @@ import java.util.Map;
 public class OracleModule implements DAO, SoldierDA {
 
     private OracleDataSource dataSource;
-
-    private String message = "Not connected.";
-
-    public String toString() {
-        return message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void test() {
-        Connection conn = null;
-        ResultSet rst = null;
-        Statement stmt = null;
-        try {
-
-            Context initContext = new InitialContext();
-            Context envContext = (Context) initContext.lookup("java:/comp/env");
-            OracleDataSource ds = (OracleDataSource) envContext.lookup("jdbc/soldier");
-
-            if (envContext == null) throw new Exception("Error: No Context");
-            if (ds == null) throw new Exception("Error: No DataSource");
-            if (ds != null) conn = ds.getConnection();
-            if (conn != null) {
-                message = "Got Connection " + conn.toString() + ", ";
-                stmt = conn.createStatement();
-                rst = stmt.executeQuery("SELECT 'successful connection' FROM DUAL");
-            }
-            if (rst.next()) message = rst.getString(1);
-
-            rst.close();
-            rst = null;
-            stmt.close();
-            stmt = null;
-            conn.close(); // Return to connection pool
-            conn = null; // Make sure we don't close it twice
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // Always make sure result sets and statements are closed,
-            // and the connection is returned to the pool
-
-            try {
-                if (rst != null) rst.close();
-            } catch (SQLException e) {
-                ;
-            } finally {
-                try {
-                    if (stmt != null) stmt.close();
-                } catch (SQLException e) {
-                    ;
-                } finally {
-                    try {
-                        if (conn != null) conn.close();
-                    } catch (SQLException e) {
-                        ;
-                    }
-                }
-            }
-        }
-    }
-
-    public void init(Map<String, String> initParams) {
-        try {
-            dataSource = (OracleDataSource) new InitialContext().lookup("java:/comp/env/jdbc/soldier");
-        } catch (NamingException e) {
-            // TODO logging here
-            e.printStackTrace();
-        }
-    }
-
-    public void init() {
-        init(null);
-    }
 
     private static final String SQL_SELECT_ALL =
             "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
@@ -127,6 +53,22 @@ public class OracleModule implements DAO, SoldierDA {
                     "start with commander = ? " +
                     "connect by prior commander = soldier_id " +
                     "order by 1 ";
+
+
+    public void init(Map<String, String> initParams) {
+        try {
+            dataSource = (OracleDataSource) new InitialContext().lookup("java:/comp/env/jdbc/soldier");
+        } catch (NamingException e) {
+            // TODO logging here
+            e.printStackTrace();
+        }
+    }
+
+    public void init() {
+        init(null);
+    }
+
+
 
     public String getHierarchy(String idMatch) throws DataAccessException {
         try {

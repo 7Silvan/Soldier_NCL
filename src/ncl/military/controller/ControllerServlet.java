@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +27,16 @@ public class ControllerServlet extends HttpServlet{
 
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
+        Map<String, String> initParams = new HashMap<String, String>();
+        Enumeration names = servletConfig.getServletContext().getInitParameterNames();
+        while(names.hasMoreElements()) {
+            String parameter = (String) names.nextElement();
+            initParams.put(parameter, servletConfig.getServletContext().getInitParameter(parameter));
+        }
+
 
         dao = daoFactory.getDao();
-        dao.init(); // TODO put initParams for dataBase here please (get to know if we can use resources scope from web.xml)
+        dao.init(initParams); // TODO put initParams for dataBase here please (get to know if we can use resources scope from web.xml)
 
         Logger.getLogger("controller").info("ControllerServlet initialized");
     }

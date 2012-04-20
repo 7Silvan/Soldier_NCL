@@ -31,4 +31,9 @@
     <listener>
         <listener-class>ncl.military.controller.Log4jInit</listener-class>
     </listener>
+
+    <context-param>
+        <param-name>jndiPath</param-name>
+        <param-value>java:/comp/env/jdbc/soldier</param-value>
+    </context-param>
 </web-app>

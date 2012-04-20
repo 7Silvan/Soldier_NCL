@@ -52,7 +52,12 @@
     <div class="content page-content" id="page-content">
         <div id="banner-top">
             <div id="banner-path">
-                [path here]
+                <a href="/viewSoldiers">ROOT</a>
+                <c:out value=">>"/>
+                <c:forEach items="${requestScope.hierarchyList}" var="soldier">
+                    <a href="/viewSoldiers?action=getSubsOf&queriedSoldierId=${soldier.id}">${soldier.name}</a>
+                    <c:out value=">>"/>
+                </c:forEach>
             </div>
             <!--  <div id="banner-info" >
              <div class="my-name">Roman Gural</div>
