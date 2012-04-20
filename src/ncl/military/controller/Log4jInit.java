@@ -13,9 +13,11 @@ import org.apache.log4j.xml.DOMConfigurator;
  *          Time: 10:37
  */
 public class Log4jInit implements ServletContextListener {
+
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         String homeDir = servletContextEvent.getServletContext().getRealPath("/");
         DOMConfigurator.configure(homeDir + "/WEB-INF/log4j.xml");
+        Logger.getRootLogger().info("log4j Logger Configured!");
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

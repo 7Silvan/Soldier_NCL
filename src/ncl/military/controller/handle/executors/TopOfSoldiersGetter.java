@@ -10,19 +10,19 @@ import java.util.Map;
 /**
  * @author gural
  * @version 1.0
- *          Date: 13.04.12
- *          Time: 17:04
+ *          Date: 20.04.12
+ *          Time: 11:33
  */
-public class AllSoldierGetter extends Executor {
+public class TopOfSoldiersGetter extends Executor {
 
-    public AllSoldierGetter(DAO dao) {
+    public TopOfSoldiersGetter(DAO dao) {
         super(dao);
     }
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        List<Soldier> soldierList = getDao().getAllSoldiers();
+        List<Soldier> soldierList = getDao().getTopOfSoldiers();
         result.put("listOfSoldiers", soldierList);
 
         return result;

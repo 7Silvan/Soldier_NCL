@@ -4,20 +4,15 @@ import ncl.military.controller.handle.Handlable;
 import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
 import ncl.military.dao.daoFactory;
-import oracle.jdbc.pool.OracleDataSource;
+import org.apache.log4j.Logger;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -33,10 +28,9 @@ public class ControllerServlet extends HttpServlet{
         super.init(servletConfig);
 
         dao = daoFactory.getDao();
-        dao.init();
+        dao.init(); // TODO put initParams for dataBase here please (get to know if we can use resources scope from web.xml)
 
-        //Logging here
-        System.out.println("ControllerServlet initializatied");
+        Logger.getLogger("controller").info("ControllerServlet initialized");
     }
 
     public void perfromAction(HttpServletRequest req, HttpServletResponse res) {
@@ -44,17 +38,27 @@ public class ControllerServlet extends HttpServlet{
         HttpSession session = req.getSession();
 
         Map<String, Object> params = new HashMap<String, Object>();
+
+//        while (req.getParameterNames().hasMoreElements()) {
+//            String key = (String) req.getParameterNames().nextElement();
+//            params.put(key, req.getParameter(key));
+//        }
+
         params.put("userPath", userPath);
         params.put("queriedSoldierId", req.getParameter("queriedSoldierId"));
         params.put("action", req.getParameter("action"));
+
+            //params.put("userPath", userPath);
         
         Handlable handle = HandlerFactory.getHandler(dao, params);
         Map<String, ? extends Object> result = handle.execute(params);
         
+        //req.getParameterMap().putAll(result);  //java.lang.IllegalStateException: No modifications are allowed to a locked ParameterMap
+
         for(String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
-            //req.getSession().setAttribute(key, result.get(key));
         }
+
         try {
             req.getRequestDispatcher(handle.getView()).forward(req, res);
         } catch (Exception ex) {

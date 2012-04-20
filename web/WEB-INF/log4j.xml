@@ -2,6 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
 <log4j:configuration>
     <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
                    value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
@@ -40,21 +41,18 @@
 
     <logger name="controller">
         <level value="debug"></level>
-        <appender-ref ref="stdout"/>
         <appender-ref ref="controllerBox"/>
     </logger>
     <logger name="model">
         <level value="debug"></level>
-        <appender-ref ref="stdout"/>
         <appender-ref ref="modelBox"/>
     </logger>
     <logger name="view">
         <level value="debug"></level>
-        <appender-ref ref="stdout"/>
         <appender-ref ref="viewBox"/>
     </logger>
     <root>
-        <priority value="warn"></priority>
+        <priority value="debug"></priority>
         <appender-ref ref="stdout"/>
     </root>
 </log4j:configuration>

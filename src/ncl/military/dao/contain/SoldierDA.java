@@ -1,5 +1,6 @@
 package ncl.military.dao.contain;
 
+import ncl.military.dao.exceptions.DataAccessException;
 import ncl.military.entity.Soldier;
 
 import java.util.List;
@@ -12,11 +13,12 @@ import java.util.List;
  */
 public interface SoldierDA {
 
-    String getHierarchy(String idMatch);
+    String getHierarchy(String idMatch) throws DataAccessException;
     
     // All about Soldiers
-    List<Soldier> getAllSoldiers();
-    Soldier getSoldierById(String idMatch);
+    List<Soldier> getAllSoldiers() throws DataAccessException;
+    Soldier getSoldierById(String idMatch) throws DataAccessException;
 
-    List<Soldier> getSubSoldiersOfByID(String idMatch);
+    List<Soldier> getSubSoldiersOfByID(String idMatch) throws DataAccessException;
+    List<Soldier> getTopOfSoldiers() throws DataAccessException;
 }

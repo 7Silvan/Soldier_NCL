@@ -1,6 +1,7 @@
 package ncl.military.dao;
 
 import ncl.military.dao.contain.SoldierDA;
+import ncl.military.dao.exceptions.DAOInitException;
 
 import java.util.Map;
 
@@ -12,8 +13,8 @@ import java.util.Map;
  */
 public interface DAO extends SoldierDA{
     // special for dao
-    void init(Map<String, String> initParams);
-    void init();
+    void init(Map<String, String> initParams) throws DAOInitException;
+    void init() throws DAOInitException;
     
     // TODO implement FINDER using filters
 }

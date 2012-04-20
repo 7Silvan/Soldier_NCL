@@ -1,7 +1,5 @@
 package ncl.military.controller.handle;
 
-import ncl.military.dao.DAO;
-
 import java.util.Map;
 
 
@@ -12,22 +10,16 @@ import java.util.Map;
  *          Time: 17:06
  */
 public class Handler implements Handlable {
-    private DAO dao;
     private Executable executor;
     private String view;
     private String path;
     private String action;
 
-    public DAO getDao() {
-        return dao;
-    }
-
     public Executable getExecutor() {
         return executor;
     }
 
-    public Handler(DAO dao, Executable executor, String path, String action, String view) {
-        this.dao = dao;
+    public Handler(Executable executor, String path, String action, String view) {
         this.executor = executor;
         this.path = path;
         this.view = view;
@@ -35,7 +27,6 @@ public class Handler implements Handlable {
     }
 
     public Map<String, Object> execute(Map<String, Object> params) {
-        params.put("dao", (Object) dao);
         return executor.execute(params);
     }
 

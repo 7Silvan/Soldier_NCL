@@ -22,6 +22,8 @@ public class Soldier {
     private String rank;
     private Date birthDate;
 
+
+
     // TODO methods for getting collection of users from dao.
 
     public String getId() {
