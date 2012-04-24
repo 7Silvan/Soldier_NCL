@@ -10,6 +10,10 @@ body {
     background-image: url(../img/banner-top-background.png);
 }
 
+#banner-top a:link {
+    color: white;
+}
+
 #course-logo-text {
     float: left;
     width: 600px;

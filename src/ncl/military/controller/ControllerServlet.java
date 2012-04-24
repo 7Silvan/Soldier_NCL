@@ -3,7 +3,7 @@ package ncl.military.controller;
 import ncl.military.controller.handle.Handlable;
 import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
-import ncl.military.dao.daoFactory;
+import ncl.military.dao.DAOFactory;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
@@ -21,7 +21,7 @@ import java.util.Map;
  * Date: 18.04.12
  * Time: 7:44
  */
-public class ControllerServlet extends HttpServlet{
+public class ControllerServlet extends HttpServlet {
 
     private DAO dao = null;
 
@@ -29,13 +29,13 @@ public class ControllerServlet extends HttpServlet{
         super.init(servletConfig);
         Map<String, String> initParams = new HashMap<String, String>();
         Enumeration names = servletConfig.getServletContext().getInitParameterNames();
-        while(names.hasMoreElements()) {
+        while (names.hasMoreElements()) {
             String parameter = (String) names.nextElement();
             initParams.put(parameter, servletConfig.getServletContext().getInitParameter(parameter));
         }
 
 
-        dao = daoFactory.getDao();
+        dao = DAOFactory.getDao();
         dao.init(initParams);
 
         Logger.getLogger("controller").info("ControllerServlet initialized");
@@ -56,14 +56,14 @@ public class ControllerServlet extends HttpServlet{
         params.put("queriedSoldierId", req.getParameter("queriedSoldierId"));
         params.put("action", req.getParameter("action"));
 
-            //params.put("userPath", userPath);
-        
+        //params.put("userPath", userPath);
+
         Handlable handle = HandlerFactory.getHandler(dao, params);
         Map<String, ? extends Object> result = handle.execute(params);
-        
+
         //req.getParameterMap().putAll(result);  //java.lang.IllegalStateException: No modifications are allowed to a locked ParameterMap
 
-        for(String key : result.keySet()) {
+        for (String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
         }
 
@@ -76,7 +76,8 @@ public class ControllerServlet extends HttpServlet{
 
     /**
      * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      */
@@ -88,7 +89,8 @@ public class ControllerServlet extends HttpServlet{
 
     /**
      * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      */

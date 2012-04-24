@@ -24,6 +24,10 @@ import java.util.Map;
  */
 public class OracleModule implements DAO, SoldierDA {
 
+    private interface SetParser {
+        Object parse(ResultSet raw) throws SQLException;
+    }
+
     private OracleDataSource dataSource;
 
     private static final String SQL_SELECT_ALL =
@@ -49,11 +53,11 @@ public class OracleModule implements DAO, SoldierDA {
                     "order by 1 ";
 
     private static final String SQL_SELECT_HIERARCHY_OF_BY_ID =
-            "select name, level from soldier " +
-                    "start with commander = ? " +
+            "select level, soldier_id, name, rank, commander, unit, birthdate, headofunit " +
+                    "from soldier " +
+                    "start with soldier_id = ? " +
                     "connect by prior commander = soldier_id " +
-                    "order by level desc";
-
+                    "order by level desc ";
 
     public void init(Map<String, String> initParams) {
         try {
@@ -69,7 +73,7 @@ public class OracleModule implements DAO, SoldierDA {
     }
 
 
-    public SetParser performQuery(String query, SetParser parser, String... parameters) throws SQLException {
+    public Object performQuery(String query, SetParser parser, String... parameters) throws SQLException, DataAccessException {
         Connection conn = null;
         PreparedStatement prst = null;
         ResultSet rs = null;
@@ -83,7 +87,7 @@ public class OracleModule implements DAO, SoldierDA {
 
             rs = prst.executeQuery();
 
-            parser.parse(rs);
+            return parser.parse(rs);
 
         } catch (SQLException e) {
             Logger.getLogger("model").error("Some SQL error occured.", e);
@@ -118,9 +122,9 @@ public class OracleModule implements DAO, SoldierDA {
                         Logger.getLogger("model").error("PreparedStatement was null.");
                 }
             } else
-                Logger.getLogger("Result set was null.");
+                Logger.getLogger("ResultSet was null.");
 
-            if (exception != null) throw exception;
+            if (exception != null) throw new DataAccessException(exception);
         }
 
         return parser;
@@ -128,28 +132,22 @@ public class OracleModule implements DAO, SoldierDA {
 
     public List<Soldier> getHierarchy(String idMatch) throws DataAccessException {
         try {
-            return (List<Soldier>) performQuery(SQL_SELECT_SUBS_OF_BY_ID, new SetParser() {
-                List<Soldier> soldiers = new ArrayList<Soldier>();
-
-                public void parse(ResultSet raw) throws SQLException {
+            return (List<Soldier>) performQuery(SQL_SELECT_HIERARCHY_OF_BY_ID, new SetParser() {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-
                         Soldier sd = new Soldier(raw.getString("soldier_id"),
                                 raw.getString("name"),
                                 raw.getString("rank"),
                                 raw.getString("unit"),
                                 raw.getString("commander"),
                                 raw.getDate("birthdate"));
-
                         soldiers.add(sd);
                     }
-                }
-
-                public Object getCoocked() {
                     return soldiers;
                 }
             },
-                    idMatch).getCoocked();
+                    idMatch);
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
@@ -157,94 +155,71 @@ public class OracleModule implements DAO, SoldierDA {
         }
     }
 
-    private interface SetParser {
-        void parse(ResultSet raw) throws SQLException;
-        Object getCoocked();
-    }
-
-    public List<Soldier> getAllSoldiers()  throws DataAccessException {
-                try {
-                    return (List<Soldier>) performQuery(SQL_SELECT_ALL, new SetParser() {
-                        List<Soldier> soldiers = new ArrayList<Soldier>();
-
-                        public void parse(ResultSet raw) throws SQLException {
-                            while (raw.next()) {
-                                Soldier sd = new Soldier();
-
-                                sd.setId(raw.getString("soldier_id"));
-                                sd.setName(raw.getString("soldier.name"));
-                                sd.setRank(raw.getString("rank"));
-                                sd.setUnit(raw.getString("unit.name"));
-                                sd.setCommander(raw.getString("commander"));
-                                sd.setBirthDate(raw.getDate("birthdate"));
-
-                                soldiers.add(sd);
-                            }
-                        }
-
-                        public Object getCoocked() {
-                            return soldiers;
-                        }
-                    }).getCoocked();
-                } catch (SQLException e) {
-                    Logger.getLogger("model").error("Parsing result set error.", e);
-                    e.printStackTrace();
-                    throw new DataAccessException("Performing data getting failed.", e);
+    public List<Soldier> getAllSoldiers() throws DataAccessException {
+        try {
+            return (List<Soldier>) performQuery(SQL_SELECT_ALL, new SetParser() {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Soldier> soldiers = new ArrayList<Soldier>();
+                    while (raw.next()) {
+                        Soldier sd = new Soldier();
+                        sd.setId(raw.getString("soldier_id"));
+                        sd.setName(raw.getString("soldier.name"));
+                        sd.setRank(raw.getString("rank"));
+                        sd.setUnit(raw.getString("unit.name"));
+                        sd.setCommander(raw.getString("commander"));
+                        sd.setBirthDate(raw.getDate("birthdate"));
+                        soldiers.add(sd);
+                    }
+                    return soldiers;
                 }
+            });
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data getting failed.", e);
+        }
     }
 
-    public List<Soldier> getTopOfSoldiers()  throws DataAccessException {
+    public List<Soldier> getTopOfSoldiers() throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_SELECT_TOP, new SetParser() {
-                List<Soldier> soldiers = new ArrayList<Soldier>();
-
-                public void parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-
                         Soldier sd = new Soldier(raw.getString("soldier_id"),
                                 raw.getString("name"),
                                 raw.getString("rank"),
                                 raw.getString("unit"),
                                 raw.getString("commander"),
                                 raw.getDate("birthdate"));
-
                         soldiers.add(sd);
                     }
-                }
-
-                public Object getCoocked() {
                     return soldiers;
                 }
-            }).getCoocked();
+            });
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data getting failed.", e);
         }
     }
-
 
     public Soldier getSoldierById(String idMatch) throws DataAccessException {
         try {
             return (Soldier) performQuery(SQL_SELECT_TOP, new SetParser() {
-                Soldier soldier;
-
-                public void parse(ResultSet raw) throws SQLException {
-                    raw.next();
-
+                public Object parse(ResultSet raw) throws SQLException {
+                    Soldier soldier = null;
+                    if (raw.next())
                         soldier = new Soldier(raw.getString("soldier_id"),
                                 raw.getString("name"),
                                 raw.getString("rank"),
                                 raw.getString("unit"),
                                 raw.getString("commander"),
                                 raw.getDate("birthdate"));
-                }
-
-                public Object getCoocked() {
                     return soldier;
                 }
             },
-                    idMatch).getCoocked();
+                    idMatch);
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
@@ -255,27 +230,21 @@ public class OracleModule implements DAO, SoldierDA {
     public List<Soldier> getSubSoldiersOfByID(String idMatch) throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_SELECT_SUBS_OF_BY_ID, new SetParser() {
-                List<Soldier> soldiers = new ArrayList<Soldier>();
-
-                public void parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-
                         Soldier sd = new Soldier(raw.getString("soldier_id"),
                                 raw.getString("name"),
                                 raw.getString("rank"),
                                 raw.getString("unit"),
                                 raw.getString("commander"),
                                 raw.getDate("birthdate"));
-
                         soldiers.add(sd);
                     }
-                }
-
-                public Object getCoocked() {
                     return soldiers;
                 }
             },
-                    idMatch).getCoocked();
+                    idMatch);
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();

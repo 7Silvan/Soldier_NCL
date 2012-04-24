@@ -36,4 +36,26 @@
         <param-name>jndiPath</param-name>
         <param-value>java:/comp/env/jdbc/soldier</param-value>
     </context-param>
+
+    <jsp-config>
+        <jsp-property-group>
+            <description>JSP config for pages</description>
+            <url-pattern>/index.jsp</url-pattern>
+            <url-pattern>/WEB-INF/jspf/error/*</url-pattern>
+            <include-prelude>/WEB-INF/jspf/header.jspf</include-prelude>
+            <include-coda>/WEB-INF/jspf/footer.jspf</include-coda>
+        </jsp-property-group>
+    </jsp-config>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/jspf/error/403.jspf</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/jspf/error/404.jspf</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/jspf/error/500.jspf</location>
+    </error-page>
 </web-app>
