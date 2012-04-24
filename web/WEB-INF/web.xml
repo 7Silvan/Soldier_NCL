@@ -42,7 +42,7 @@
     <jsp-config>
         <jsp-property-group>
             <description>JSP config for pages</description>
-            <url-pattern>/*</url-pattern>
+            <url-pattern>*.jsp</url-pattern>
             <url-pattern>/WEB-INF/jspf/error/*</url-pattern>
             <include-prelude>/jspf/header.jspf</include-prelude>
             <include-coda>/jspf/footer.jspf</include-coda>
@@ -50,14 +50,14 @@
     </jsp-config>
     <error-page>
         <error-code>403</error-code>
-        <location>/WEB-INF/jspf/error/403.jspf</location>
+        <location>/jspf/error/403.jspf</location>
     </error-page>
     <error-page>
         <error-code>404</error-code>
-        <location>/WEB-INF/jspf/error/404.jspf</location>
+        <location>/jspf/error/404.jspf</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/WEB-INF/jspf/error/500.jspf</location>
+        <location>/jspf/error/500.jspf</location>
     </error-page>
 </web-app>
