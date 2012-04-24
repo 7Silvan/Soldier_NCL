@@ -18,6 +18,8 @@
     <servlet-mapping>
         <servlet-name>ControllerServlet</servlet-name>
         <url-pattern>/viewSoldiers</url-pattern>
+        <url-pattern>/viewUnits</url-pattern>
+        <url-pattern>/viewLocations</url-pattern>
     </servlet-mapping>
 
     <resource-ref>
@@ -40,10 +42,10 @@
     <jsp-config>
         <jsp-property-group>
             <description>JSP config for pages</description>
-            <url-pattern>/index.jsp</url-pattern>
+            <url-pattern>/*</url-pattern>
             <url-pattern>/WEB-INF/jspf/error/*</url-pattern>
-            <include-prelude>/WEB-INF/jspf/header.jspf</include-prelude>
-            <include-coda>/WEB-INF/jspf/footer.jspf</include-coda>
+            <include-prelude>/jspf/header.jspf</include-prelude>
+            <include-coda>/jspf/footer.jspf</include-coda>
         </jsp-property-group>
     </jsp-config>
     <error-page>
