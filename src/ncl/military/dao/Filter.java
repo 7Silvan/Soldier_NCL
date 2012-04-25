@@ -7,14 +7,9 @@ package ncl.military.dao;
  *          Time: 16:39
  */
 public class Filter {
-    private String entityName;
     private String attribute;
     private String valueToCompare;
     private FilterType typeOfComparison;
-
-    public String getEntityName() {
-        return entityName;
-    }
 
     public String getAttribute() {
         return attribute;
@@ -29,7 +24,6 @@ public class Filter {
     }
 
     public Filter(String entityName, String attribute, String valueToCompare, FilterType typeOfComparison) {
-        this.entityName = entityName;
         this.attribute = attribute;
         this.valueToCompare = valueToCompare;
         this.typeOfComparison = typeOfComparison;

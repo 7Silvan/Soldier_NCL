@@ -7,12 +7,6 @@ package ncl.military.entity;
  *          Time: 13:41
  */
 public class Unit {
-
-    /*
-     * Fields (id, head, location) are id to identificate
-     * entities within the dao.
-     */
-
     private String id;
     private String head;
     private String location;

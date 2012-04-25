@@ -1,25 +1,29 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
+import ncl.military.entity.Soldier;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author gural
  * @version 1.0
- *          Date: 24.04.12
- *          Time: 13:13
+ *          Date: 13.04.12
+ *          Time: 17:04
  */
-public class AllSoldiersOfOnitGetter extends Executor {
-    public AllSoldiersOfOnitGetter(DAO dao) {
+public class AllSoldiersGetter extends Executor {
+
+    public AllSoldiersGetter(DAO dao) {
         super(dao);
     }
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        // TODO implement Unit's Soldiers Getter
+        List<Soldier> soldierList = getDao().getAllSoldiers();
+        result.put("listOfSoldiers", soldierList);
 
         return result;
     }

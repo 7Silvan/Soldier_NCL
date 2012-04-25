@@ -23,7 +23,6 @@ public interface DAO {
 
     // TODO implement FINDER using filters
 
-    // it's just for soldiers
     List<Soldier> getHierarchy(String idMatch) throws DataAccessException;
 
     // All about Soldiers
@@ -38,15 +37,15 @@ public interface DAO {
     // All about Units
     List<Unit> getAllUnits() throws DataAccessException;
 
-    Unit getUnitById(String idMatch) throws DataAccessException;
+    Unit getUnitById(String unitIdMatch) throws DataAccessException;
 
     List<Soldier> getSoldiersOfUnit(String unitIdMatch) throws DataAccessException;
 
     // All about Locations
     List<Location> getAllLocations() throws DataAccessException;
 
-    Location getLocationById(String idMatch) throws DataAccessException;
+    Location getLocationById(String locationIdMatch) throws DataAccessException;
 
-    List<Unit> getAllUnitsOfLocation(String locationIdMatch) throws DataAccessException;
+    List<Unit> getUnitsOfLocation(String locationIdMatch) throws DataAccessException;
 
 }

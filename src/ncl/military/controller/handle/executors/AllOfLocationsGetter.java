@@ -1,8 +1,10 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
+import ncl.military.entity.Location;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +21,8 @@ public class AllOfLocationsGetter extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        // TODO implement Locations Getter
+        List<Location> locationList = getDao().getAllLocations();
+        result.put("listOfLocations", locationList);
 
         return result;
     }

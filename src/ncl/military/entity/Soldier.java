@@ -4,27 +4,19 @@ import java.sql.Date;
 
 /**
  * @author gural
- * @version  1.0
- * Date: 13.04.12
- * Time: 13:23
+ * @version 1.0
+ *          Date: 13.04.12
+ *          Time: 13:23
  */
 
 public class Soldier {
-    /*
-     * Fields (id, commander, unit) are id to identificate
-     * entities within the dao.
-     */
     private String id;
     private String commander;
     private String unit;
-    
+
     private String name;
     private String rank;
     private Date birthDate;
-
-
-
-    // TODO methods for getting collection of users from dao.
 
     public String getId() {
         return id;
@@ -84,5 +76,6 @@ public class Soldier {
         this.id = id;
     }
 
-    public Soldier() {}
+    public Soldier() {
+    }
 }
