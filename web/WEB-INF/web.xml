@@ -20,6 +20,7 @@
         <url-pattern>/viewSoldiers</url-pattern>
         <url-pattern>/viewUnits</url-pattern>
         <url-pattern>/viewLocations</url-pattern>
+        <url-pattern>/view</url-pattern>
     </servlet-mapping>
 
     <resource-ref>

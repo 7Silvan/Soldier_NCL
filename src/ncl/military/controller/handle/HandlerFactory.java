@@ -3,6 +3,7 @@ package ncl.military.controller.handle;
 import ncl.military.controller.handle.executors.*;
 import ncl.military.dao.DAO;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Map;
  */
 public class HandlerFactory {
     private static Map<String, Handlable> handlers;
-    private static Map<String, Executable> executors;
+    private static Map<String, Executable> executors = new HashMap<String, Executable>();
     private static Map<String, String> config;
 
 

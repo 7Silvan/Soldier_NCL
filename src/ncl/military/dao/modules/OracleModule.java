@@ -71,7 +71,7 @@ public class OracleModule implements DAO {
             // soldier_commander
             // unit_name
             // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name, from unit join soldier on unit = unit_id " +
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location " +
                     "where commander is null";
 
     private static final String SQL_GET_SUBS_OF_SOLDIER_BY_ID =
@@ -240,13 +240,14 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-                        Soldier sd = new Soldier();
-                        sd.setId(raw.getString("soldier_id"));
-                        sd.setName(raw.getString("soldier.name"));
-                        sd.setRank(raw.getString("rank"));
-                        sd.setUnit(raw.getString("unit.name"));
-                        sd.setCommander(raw.getString("commander"));
-                        sd.setBirthDate(raw.getDate("birthdate"));
+                        Soldier sd = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                        );
                         soldiers.add(sd);
                     }
                     return soldiers;
@@ -265,10 +266,10 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
-                        Unit unit = new Unit(raw.getString("unit_id"),
-                                raw.getString("soldier_name"),
-                                raw.getString("location_name"),
-                                raw.getString("unit_name"));
+                        Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
+                                raw.getString(Unit.ALIAS.HEAD.getLabel()),
+                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
+                                raw.getString(Unit.ALIAS.NAME.getLabel()));
 
                         units.add(unit);
                     }
@@ -289,10 +290,10 @@ public class OracleModule implements DAO {
                     List<Location> locations = new ArrayList<Location>();
                     while (raw.next()) {
                         Location location = new Location(
-                                raw.getString("locaiton_id"),
-                                raw.getString("name"),
-                                raw.getString("region"),
-                                raw.getString("city")
+                                raw.getString(Location.ALIAS.ID.getLabel()),
+                                raw.getString(Location.ALIAS.NAME.getLabel()),
+                                raw.getString(Location.ALIAS.REGION.getLabel()),
+                                raw.getString(Location.ALIAS.CITY.getLabel())
                         );
 
                         locations.add(location);
@@ -313,12 +314,14 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-                        Soldier sd = new Soldier(raw.getString("soldier_id"),
-                                raw.getString("name"),
-                                raw.getString("rank"),
-                                raw.getString("unit"),
-                                raw.getString("commander"),
-                                raw.getDate("birthdate"));
+                        Soldier sd = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                        );
                         soldiers.add(sd);
                     }
                     return soldiers;
@@ -339,12 +342,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier();
-                        sd.setId(raw.getString("soldier_id"));
-                        sd.setName(raw.getString("soldier.name"));
-                        sd.setRank(raw.getString("rank"));
-                        sd.setUnit(raw.getString("unit.name"));
-                        sd.setCommander(raw.getString("commander"));
-                        sd.setBirthDate(raw.getDate("birthdate"));
+                        sd.setId(raw.getString(Soldier.ALIAS.ID.getLabel()));
+                        sd.setName(raw.getString(Soldier.ALIAS.NAME.getLabel()));
+                        sd.setRank(raw.getString(Soldier.ALIAS.RANK.getLabel()));
+                        sd.setUnit(raw.getString(Soldier.ALIAS.UNIT.getLabel()));
+                        sd.setCommander(raw.getString(Soldier.ALIAS.COMMANDER.getLabel()));
+                        sd.setBirthDate(raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel()));
                         soldiers.add(sd);
                     }
                     return soldiers;
@@ -363,12 +366,14 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-                        Soldier sd = new Soldier(raw.getString("soldier_id"),
-                                raw.getString("name"),
-                                raw.getString("rank"),
-                                raw.getString("unit"),
-                                raw.getString("commander"),
-                                raw.getDate("birthdate"));
+                        Soldier sd = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                        );
                         soldiers.add(sd);
                     }
                     return soldiers;
@@ -387,10 +392,10 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
-                        Unit unit = new Unit(raw.getString("unit_id"),
-                                raw.getString("soldier_name"),
-                                raw.getString("location_name"),
-                                raw.getString("unit_name"));
+                        Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
+                                raw.getString(Unit.ALIAS.HEAD.getLabel()),
+                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
+                                raw.getString(Unit.ALIAS.NAME.getLabel()));
 
                         units.add(unit);
                     }
@@ -410,10 +415,10 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     Unit unit = null;
                     if (raw.next()) {
-                        unit = new Unit(raw.getString("unit_id"),
-                                raw.getString("soldier_name"),
-                                raw.getString("location_name"),
-                                raw.getString("unit_name"));
+                        unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
+                                raw.getString(Unit.ALIAS.HEAD.getLabel()),
+                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
+                                raw.getString(Unit.ALIAS.NAME.getLabel()));
                     }
                     return unit;
                 }
@@ -431,12 +436,14 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-                        Soldier sd = new Soldier(raw.getString("soldier_id"),
-                                raw.getString("name"),
-                                raw.getString("rank"),
-                                raw.getString("unit"),
-                                raw.getString("commander"),
-                                raw.getDate("birthdate"));
+                        Soldier sd = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                        );
                         soldiers.add(sd);
                     }
                     return soldiers;
@@ -457,10 +464,10 @@ public class OracleModule implements DAO {
                     List<Location> locations = new ArrayList<Location>();
                     while (raw.next()) {
                         Location location = new Location(
-                                raw.getString("locaiton_id"),
-                                raw.getString("name"),
-                                raw.getString("region"),
-                                raw.getString("city")
+                                raw.getString(Location.ALIAS.ID.getLabel()),
+                                raw.getString(Location.ALIAS.NAME.getLabel()),
+                                raw.getString(Location.ALIAS.REGION.getLabel()),
+                                raw.getString(Location.ALIAS.CITY.getLabel())
                         );
 
                         locations.add(location);
@@ -482,10 +489,10 @@ public class OracleModule implements DAO {
                     Location location = null;
                     if (raw.next()) {
                         location = new Location(
-                                raw.getString("locaiton_id"),
-                                raw.getString("name"),
-                                raw.getString("region"),
-                                raw.getString("city")
+                                raw.getString(Location.ALIAS.ID.getLabel()),
+                                raw.getString(Location.ALIAS.NAME.getLabel()),
+                                raw.getString(Location.ALIAS.REGION.getLabel()),
+                                raw.getString(Location.ALIAS.CITY.getLabel())
                         );
                     }
                     return location;
@@ -505,10 +512,10 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
-                        Unit unit = new Unit(raw.getString("unit_id"),
-                                raw.getString("soldier_name"),
-                                raw.getString("location_name"),
-                                raw.getString("unit_name"));
+                        Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
+                                raw.getString(Unit.ALIAS.HEAD.getLabel()),
+                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
+                                raw.getString(Unit.ALIAS.NAME.getLabel()));
 
                         units.add(unit);
                     }
@@ -656,12 +663,14 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-                        Soldier sd = new Soldier(raw.getString("soldier_id"),
-                                raw.getString("name"),
-                                raw.getString("rank"),
-                                raw.getString("unit"),
-                                raw.getString("commander"),
-                                raw.getDate("birthdate"));
+                        Soldier sd = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                        );
                         soldiers.add(sd);
                     }
                     return soldiers;
