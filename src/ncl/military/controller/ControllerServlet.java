@@ -52,8 +52,12 @@ public class ControllerServlet extends HttpServlet {
 //            params.put(key, req.getParameter(key));
 //        }
 
+        // TODO delete hard-code
         params.put("userPath", userPath);
         params.put("queriedSoldierId", req.getParameter("queriedSoldierId"));
+        params.put("queriedUnitId", req.getParameter("queriedUnitId"));
+        params.put("queriedLocationId", req.getParameter("queriedLocationId"));
+        params.put("queriedSoldierName", req.getParameter("queriedSoldierName"));
         params.put("action", req.getParameter("action"));
 
         //params.put("userPath", userPath);

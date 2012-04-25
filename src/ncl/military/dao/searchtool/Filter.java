@@ -11,6 +11,12 @@ public class Filter {
     private String valueToCompare;
     private FilterType typeOfComparison;
 
+    public Filter(String attribute, FilterType type, String value) {
+        this.attribute = attribute;
+        this.valueToCompare = value;
+        this.typeOfComparison = type;
+    }
+
     public String getAttribute() {
         return attribute;
     }
@@ -21,11 +27,5 @@ public class Filter {
 
     public FilterType getTypeOfComparison() {
         return typeOfComparison;
-    }
-
-    public Filter(String entityName, String attribute, String valueToCompare, FilterType typeOfComparison) {
-        this.attribute = attribute;
-        this.valueToCompare = valueToCompare;
-        this.typeOfComparison = typeOfComparison;
     }
 }

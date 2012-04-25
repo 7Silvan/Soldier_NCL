@@ -27,7 +27,10 @@ public class Handler implements Handlable {
     }
 
     public Map<String, Object> execute(Map<String, Object> params) {
-        return executor.execute(params);
+        Map<String, Object> result = executor.execute(params);
+        result.put("viewType", params.get("userPath"));
+        result.put("actionPerformed", action);
+        return result;
     }
 
     public String getView() {

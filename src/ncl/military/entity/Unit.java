@@ -17,8 +17,9 @@ public class Unit {
     public enum ALIAS {
         ID("unit_id"),
         NAME("unit_name"),
-        HEAD("location_name"),
-        LOCATION("location_name");
+        HEAD("soldier_name"),
+        LOCATION("location_name"),
+        HEADID("soldier_id");
 
         // with no inheritance for a while
 
@@ -47,8 +48,17 @@ public class Unit {
     private String id;
     private String head;
     private String location;
-
     private String name;
+
+    private String headId;
+
+    public String getHeadId() {
+        return headId;
+    }
+
+    public void setHeadId(String headId) {
+        this.headId = headId;
+    }
 
     public String getId() {
         return id;
@@ -82,10 +92,11 @@ public class Unit {
         this.name = name;
     }
 
-    public Unit(String id, String head, String location, String name) {
+    public Unit(String id, String head, String location, String name, String headId) {
         this.id = id;
         this.head = head;
         this.location = location;
         this.name = name;
+        this.headId = headId;
     }
 }

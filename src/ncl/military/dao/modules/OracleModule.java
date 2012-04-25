@@ -43,8 +43,7 @@ public class OracleModule implements DAO {
             // soldier_commander
             // unit_name
             // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name, from unit join soldier on unit = unit_id ";
-    //"from unit join soldier on unit = unit_id join location on location = loc_id";
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id ";
 
     private static final String SQL_GET_SOLDIER_BY_ID =
 //            "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
@@ -57,7 +56,7 @@ public class OracleModule implements DAO {
             // soldier_commander
             // unit_name
             // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name, from unit join soldier on unit = unit_id " +
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
                     "where soldier_id = ? ";
 
     private static final String SQL_GET_TOP_OF_SOLDIERS =
@@ -87,8 +86,8 @@ public class OracleModule implements DAO {
             // soldier_commander
             // unit_name
             // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name, from unit join soldier on unit = unit_id " +
-                    "start with commander = ? connect by prior soldier_id = commander order by 1";
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+                    "start with commander = ? connect by prior soldier_id = commander and level = 1  order by 1 ";
 
     private static final String SQL_GET_SOLDIERS_OF_UNIT =
 //            "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
@@ -101,8 +100,8 @@ public class OracleModule implements DAO {
             // soldier_commander
             // unit_name
             // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name, from unit join soldier on unit = unit_id " +
-                    "where soldier_id = ? ";
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+                    "where unit_id = ? ";
 
     private static final String SQL_GET_HIERARCHY_OF_SOLDIERS_BY_ID =
 //            "select level, soldier_id, name, rank, commander, unit, birthdate, headofunit " +
@@ -117,7 +116,7 @@ public class OracleModule implements DAO {
             // soldier_commander
             // unit_name
             // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name, from unit join soldier on unit = unit_id " +
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
                     "start with soldier_id = ? " +
                     "connect by prior commander = soldier_id " +
                     "order by level desc ";
@@ -128,7 +127,7 @@ public class OracleModule implements DAO {
             // unit_name
             // soldier_name
             // location_name
-            "select unit_id as unit_id,unit.name as unit_name,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id left join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1";
+            "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id left join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1";
 
     private static final String SQL_GET_UNIT_BY_ID =
             // values to take
@@ -136,7 +135,7 @@ public class OracleModule implements DAO {
             // unit_name
             // soldier_name
             // location_name
-            "select unit_id as unit_id,unit.name as unit_name,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where unit_id = ? ";
+            "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where unit_id = ? ";
 
     private static final String SQL_GET_UNITS_OF_LOCATION =
             // values to take
@@ -144,7 +143,7 @@ public class OracleModule implements DAO {
             // unit_name
             // soldier_name
             // location_name
-            "select unit_id as unit_id,unit.name as unit_name,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where location.loc_id = ? ";
+            "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where location.loc_id = ? ";
 
     private static final String SQL_GET_ALL_LOCATIONS =
             // values to take
@@ -152,7 +151,7 @@ public class OracleModule implements DAO {
             // location_name
             // location_region
             // location_city
-            "select loc_id as location_id, name as location_name, region as location_region, city as location_region from location";
+            "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location";
 
     private static final String SQL_GET_LOCATION_BY_ID =
             // values to take
@@ -160,7 +159,7 @@ public class OracleModule implements DAO {
             // location_name
             // location_region
             // location_city
-            "select loc_id as location_id, name as location_name, region as location_region, city as location_region from location where location_id = ?";
+            "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location where location_id = ?";
 
     public void init(Map<String, String> initParams) {
         try {
@@ -269,7 +268,8 @@ public class OracleModule implements DAO {
                         Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
                                 raw.getString(Unit.ALIAS.HEAD.getLabel()),
                                 raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()));
+                                raw.getString(Unit.ALIAS.NAME.getLabel()),
+                                raw.getString(Unit.ALIAS.HEADID.getLabel()));
 
                         units.add(unit);
                     }
@@ -396,7 +396,8 @@ public class OracleModule implements DAO {
                         Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
                                 raw.getString(Unit.ALIAS.HEAD.getLabel()),
                                 raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()));
+                                raw.getString(Unit.ALIAS.NAME.getLabel()),
+                                raw.getString(Unit.ALIAS.HEADID.getLabel()));
 
                         units.add(unit);
                     }
@@ -419,7 +420,8 @@ public class OracleModule implements DAO {
                         unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
                                 raw.getString(Unit.ALIAS.HEAD.getLabel()),
                                 raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()));
+                                raw.getString(Unit.ALIAS.NAME.getLabel()),
+                                raw.getString(Unit.ALIAS.HEADID.getLabel()));
                     }
                     return unit;
                 }
@@ -460,7 +462,7 @@ public class OracleModule implements DAO {
 
     public List<Location> getAllLocations() throws DataAccessException {
         try {
-            return (List<Location>) performQuery(SQL_GET_ALL_UNITS, new SetParser() {
+            return (List<Location>) performQuery(SQL_GET_ALL_LOCATIONS, new SetParser() {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Location> locations = new ArrayList<Location>();
                     while (raw.next()) {
@@ -485,7 +487,7 @@ public class OracleModule implements DAO {
 
     public Location getLocationById(String locationIdMatch) throws DataAccessException {
         try {
-            return (Location) performQuery(SQL_GET_ALL_UNITS, new SetParser() {
+            return (Location) performQuery(SQL_GET_LOCATION_BY_ID, new SetParser() {
                 public Object parse(ResultSet raw) throws SQLException {
                     Location location = null;
                     if (raw.next()) {
@@ -516,7 +518,8 @@ public class OracleModule implements DAO {
                         Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
                                 raw.getString(Unit.ALIAS.HEAD.getLabel()),
                                 raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()));
+                                raw.getString(Unit.ALIAS.NAME.getLabel()),
+                                raw.getString(Unit.ALIAS.HEADID.getLabel()));
 
                         units.add(unit);
                     }
@@ -542,7 +545,7 @@ public class OracleModule implements DAO {
     public List<Soldier> searchForSoldiers(List<Filter> filters) throws DataAccessException {
         List<Soldier> soldiers = new ArrayList<Soldier>();
         if (filters.size() != 0) {
-            StringBuilder searchQuery = new StringBuilder(SQL_GET_ALL_SOLDIERS);
+            StringBuilder searchQuery = new StringBuilder("select * from ( " + SQL_GET_ALL_SOLDIERS + " ) inner_table ");
             searchQuery.append(" where ");
             boolean first = true;
 
@@ -637,16 +640,18 @@ public class OracleModule implements DAO {
 
     public Soldier getSoldierById(String idMatch) throws DataAccessException {
         try {
-            return (Soldier) performQuery(SQL_GET_TOP_OF_SOLDIERS, new SetParser() {
+            return (Soldier) performQuery(SQL_GET_SOLDIER_BY_ID, new SetParser() {
                 public Object parse(ResultSet raw) throws SQLException {
                     Soldier soldier = null;
                     if (raw.next())
-                        soldier = new Soldier(raw.getString("soldier_id"),
-                                raw.getString("name"),
-                                raw.getString("rank"),
-                                raw.getString("unit"),
-                                raw.getString("commander"),
-                                raw.getDate("birthdate"));
+                        soldier = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                        );
                     return soldier;
                 }
             },

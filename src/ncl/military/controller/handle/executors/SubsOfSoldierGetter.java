@@ -27,6 +27,8 @@ public class SubsOfSoldierGetter extends Executor {
         result.put("listOfSoldiers", soldierList);
         List<Soldier> hierarchyList = getDao().getHierarchy(idMatch);
         result.put("hierarchyList", hierarchyList);
+        Soldier currentSoldier = getDao().getSoldierById(idMatch);
+        result.put("currentSoldier", currentSoldier);
 
         return result;
     }

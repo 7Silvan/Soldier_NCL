@@ -49,7 +49,7 @@
             <include-coda>/jspf/footer.jspf</include-coda>
         </jsp-property-group>
     </jsp-config>
-    <error-page>
+    <!-- <error-page>
         <error-code>403</error-code>
         <location>/jspf/error/403.jspf</location>
     </error-page>
@@ -60,5 +60,5 @@
     <error-page>
         <error-code>500</error-code>
         <location>/jspf/error/500.jspf</location>
-    </error-page>
+    </error-page>   -->
 </web-app>

@@ -49,7 +49,8 @@ public class HandlerFactory {
 
         Executable executable = null;
         String view = null;
-        //if (executors.containsKey(servletPath))  // it's for cash
+        //String view = (String) params.get("userPath");
+        //if (view == null) view = VIEW_MAIN;
 
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
@@ -75,6 +76,13 @@ public class HandlerFactory {
                     executors.put(SoldierSearcher.class.getName(), executable);
                 }
             }
+            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action"))) {
+                executable = executors.get(AllSoldiersOfUnitGetter.class.getName());
+                if (executable == null) {
+                    executable = new AllSoldiersOfUnitGetter(dao);
+                    executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
+                }
+            }
         }
         if ((PATH_UNIT).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
@@ -93,11 +101,11 @@ public class HandlerFactory {
                     executors.put(UnitSearcher.class.getName(), executable);
                 }
             }
-            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action"))) {
-                executable = executors.get(AllSoldiersOfUnitGetter.class.getName());
+            if ((GET_UNITS_OF_LOCATION).equals((String) params.get("action"))) {
+                executable = executors.get(AllUnitsOfLocationGetter.class.getName());
                 if (executable == null) {
-                    executable = new AllSoldiersOfUnitGetter(dao);
-                    executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
+                    executable = new AllUnitsOfLocationGetter(dao);
+                    executors.put(AllUnitsOfLocationGetter.class.getName(), executable);
                 }
             }
         }
@@ -118,14 +126,9 @@ public class HandlerFactory {
                     executors.put(LocationSearcher.class.getName(), executable);
                 }
             }
-            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action"))) {
-                executable = executors.get(AllSoldiersOfUnitGetter.class.getName());
-                if (executable == null) {
-                    executable = new AllSoldiersOfUnitGetter(dao);
-                    executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
-                }
-            }
         }
+        if (executable == null)
+            throw new IllegalStateException("Did not find matched executor");
         return new Handler(executable, (String) params.get("userPath"), (String) params.get("action"), view);
     }
 }

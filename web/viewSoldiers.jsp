@@ -1,11 +1,10 @@
 <%--
-  Created by IntelliJ IDEA.
   User: gural
   Date: 19.04.12
   Time: 15:09
-  To change this template use File | Settings | File Templates.
 --%>
 
+<h1>viewSoldiers.jsp, must not using</h1>
 
 <h2>[Some info about viewing subject]</h2>
 <br>
