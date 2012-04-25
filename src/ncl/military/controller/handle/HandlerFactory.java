@@ -53,32 +53,77 @@ public class HandlerFactory {
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_TOP);
-            if ((GET_TOP).equals((String) params.get("action")))
-                executable = new TopOfSoldiersGetter(dao);
-            if ((GET_SUBS_OF_SOLDIER).equals((String) params.get("action")))
-                executable = new SubsOfSoldierGetter(dao);
-            if ((GET_SEARCH_RESULTS).equals((String) params.get("action")))
-                executable = new SoldierSearcher(dao);
+            if ((GET_TOP).equals((String) params.get("action"))) {
+                executable = executors.get(TopOfSoldiersGetter.class.getName());
+                if (executable == null) {
+                    executable = new TopOfSoldiersGetter(dao);
+                    executors.put(TopOfSoldiersGetter.class.getName(), executable);
+                }
+            }
+            if ((GET_SUBS_OF_SOLDIER).equals((String) params.get("action"))) {
+                executable = executors.get(SubsOfSoldierGetter.class.getName());
+                if (executable == null) {
+                    executable = new SubsOfSoldierGetter(dao);
+                    executors.put(SubsOfSoldierGetter.class.getName(), executable);
+                }
+            }
+            if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
+                executable = executors.get(SoldierSearcher.class.getName());
+                if (executable == null) {
+                    executable = new SoldierSearcher(dao);
+                    executors.put(SoldierSearcher.class.getName(), executable);
+                }
+            }
         }
         if ((PATH_UNIT).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
-            if ((GET_ALL).equals((String) params.get("action")))
-                executable = new AllOfUnitsGetter(dao);
-            if ((GET_SEARCH_RESULTS).equals((String) params.get("action")))
-                executable = new UnitSearcher(dao);
-            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action")))
-                executable = new AllSoldiersOfOnitGetter(dao);
+            if ((GET_ALL).equals((String) params.get("action"))) {
+                executable = executors.get(AllOfUnitsGetter.class.getName());
+                if (executable == null) {
+                    executable = new AllOfUnitsGetter(dao);
+                    executors.put(AllOfUnitsGetter.class.getName(), executable);
+                }
+            }
+            if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
+                executable = executors.get(UnitSearcher.class.getName());
+                if (executable == null) {
+                    executable = new UnitSearcher(dao);
+                    executors.put(UnitSearcher.class.getName(), executable);
+                }
+            }
+            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action"))) {
+                executable = executors.get(AllSoldiersOfUnitGetter.class.getName());
+                if (executable == null) {
+                    executable = new AllSoldiersOfUnitGetter(dao);
+                    executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
+                }
+            }
         }
         if ((PATH_LOCATION).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
-            if ((GET_ALL).equals((String) params.get("action")))
-                executable = new AllOfLocationsGetter(dao);
-            if ((GET_SEARCH_RESULTS).equals((String) params.get("action")))
-                executable = new LocationSearcher(dao);
-            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action")))
-                executable = new AllSoldiersOfOnitGetter(dao);
+            if ((GET_ALL).equals((String) params.get("action"))) {
+                executable = executors.get(AllOfLocationsGetter.class.getName());
+                if (executable == null) {
+                    executable = new AllOfLocationsGetter(dao);
+                    executors.put(AllOfLocationsGetter.class.getName(), executable);
+                }
+            }
+            if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
+                executable = executors.get(LocationSearcher.class.getName());
+                if (executable == null) {
+                    executable = new LocationSearcher(dao);
+                    executors.put(LocationSearcher.class.getName(), executable);
+                }
+            }
+            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action"))) {
+                executable = executors.get(AllSoldiersOfUnitGetter.class.getName());
+                if (executable == null) {
+                    executable = new AllSoldiersOfUnitGetter(dao);
+                    executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
+                }
+            }
         }
         return new Handler(executable, (String) params.get("userPath"), (String) params.get("action"), view);
     }

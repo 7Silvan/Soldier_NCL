@@ -10,6 +10,48 @@ import java.sql.Date;
  */
 
 public class Soldier {
+
+    // values to take
+    // soldier_id
+    // soldier_name
+    // soldier_rank
+    // soldier_commander
+    // unit_name
+    // soldier_birthdate
+
+    // had an idea to use required aliases for all implementations of dao
+    public enum ALIAS {
+        ID("soldier_id"),
+        NAME("soldier_name"),
+        RANK("soldier_rank"),
+        COMMANDER("soldier_commander"),
+        UNIT("unit_name"),
+        BIRTHDATE("soldier_birthdate");
+
+        // with no inheritance for a while
+
+        private String label;
+
+        ALIAS(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+        public static ALIAS getAlias(String label) {
+            if (label != null) {
+                for (ALIAS a : ALIAS.values()) {
+                    if (label.equals(a.label))
+                        return a;
+                }
+                throw new IllegalArgumentException("Given label of " + label + " was not found.");
+            } else
+                throw new IllegalArgumentException("Given label must not be null.");
+        }
+    }
+
     private String id;
     private String commander;
     private String unit;

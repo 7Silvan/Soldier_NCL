@@ -7,6 +7,43 @@ package ncl.military.entity;
  *          Time: 13:41
  */
 public class Unit {
+
+    // values to take
+    // unit_id
+    // unit_name
+    // soldier_name
+    // location_name
+
+    public enum ALIAS {
+        ID("unit_id"),
+        NAME("unit_name"),
+        HEAD("location_name"),
+        LOCATION("location_name");
+
+        // with no inheritance for a while
+
+        private String label;
+
+        ALIAS(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+        public static ALIAS getAlias(String label) {
+            if (label != null) {
+                for (ALIAS a : ALIAS.values()) {
+                    if (label.equals(a.label))
+                        return a;
+                }
+                throw new IllegalArgumentException("Given label of " + label + " was not found.");
+            } else
+                throw new IllegalArgumentException("Given label must not be null.");
+        }
+    }
+
     private String id;
     private String head;
     private String location;

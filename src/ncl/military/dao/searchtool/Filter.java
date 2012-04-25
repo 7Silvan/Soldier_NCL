@@ -1,4 +1,4 @@
-package ncl.military.dao;
+package ncl.military.dao.searchtool;
 
 /**
  * @author gural

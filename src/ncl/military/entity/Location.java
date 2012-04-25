@@ -1,7 +1,5 @@
 package ncl.military.entity;
 
-import ncl.military.dao.DAO;
-
 /**
  * @author gural
  * @version 1.0
@@ -9,6 +7,42 @@ import ncl.military.dao.DAO;
  *          Time: 13:48
  */
 public class Location {
+
+    // values to take
+    // location_id
+    // name
+    // region
+    // city
+
+    public enum ALIAS {
+        ID("location_id"),
+        NAME("location_name"),
+        REGION("location_region"),
+        CITY("location_city");
+
+        // with no inheritance for a while
+
+        private String label;
+
+        ALIAS(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return this.label;
+        }
+
+        public static ALIAS getAlias(String label) {
+            if (label != null) {
+                for (ALIAS a : ALIAS.values()) {
+                    if (label.equals(a.label))
+                        return a;
+                }
+                throw new IllegalArgumentException("Given label of " + label + " was not found.");
+            } else
+                throw new IllegalArgumentException("Given label must not be null.");
+        }
+    }
 
     private String id;
 

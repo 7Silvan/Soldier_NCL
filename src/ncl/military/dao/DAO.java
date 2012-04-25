@@ -2,6 +2,7 @@ package ncl.military.dao;
 
 import ncl.military.dao.exceptions.DAOInitException;
 import ncl.military.dao.exceptions.DataAccessException;
+import ncl.military.dao.searchtool.Filter;
 import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
@@ -48,4 +49,11 @@ public interface DAO {
 
     List<Unit> getUnitsOfLocation(String locationIdMatch) throws DataAccessException;
 
+    // Searchers
+
+    List<Soldier> searchForSoldiers(List<Filter> filters) throws DataAccessException;
+
+    List<Unit> searchForUnits(List<Filter> filters) throws DataAccessException;
+
+    List<Location> searchForLocations(List<Filter> filters) throws DataAccessException;
 }

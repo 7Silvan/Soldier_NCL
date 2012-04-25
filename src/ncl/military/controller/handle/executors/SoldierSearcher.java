@@ -1,8 +1,11 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
+import ncl.military.dao.searchtool.Filter;
+import ncl.military.entity.Soldier;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +23,13 @@ public class SoldierSearcher extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        // TODO implement searching
+        List<Filter> filters = (List<Filter>) params.get("filterList");
+        if (filters != null) {
+
+        } else {
+            List<Soldier> soldierList = getDao().getAllSoldiers();
+            result.put("listOfSoldiers", soldierList);
+        }
 
         return result;
     }

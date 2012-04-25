@@ -2,6 +2,8 @@ package ncl.military.dao.modules;
 
 import ncl.military.dao.DAO;
 import ncl.military.dao.exceptions.DataAccessException;
+import ncl.military.dao.searchtool.Filter;
+import ncl.military.dao.searchtool.FilterType;
 import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
@@ -147,18 +149,18 @@ public class OracleModule implements DAO {
     private static final String SQL_GET_ALL_LOCATIONS =
             // values to take
             // location_id
-            // name
-            // region
-            // city
-            "select loc_id as location_id, name, region, city from location";
+            // location_name
+            // location_region
+            // location_city
+            "select loc_id as location_id, name as location_name, region as location_region, city as location_region from location";
 
     private static final String SQL_GET_LOCATION_BY_ID =
             // values to take
             // location_id
-            // name
-            // region
-            // city
-            "select loc_id as location_id, name, region, city from location where location_id = ?";
+            // location_name
+            // location_region
+            // location_city
+            "select loc_id as location_id, name as location_name, region as location_region, city as location_region from location where location_id = ?";
 
     public void init(Map<String, String> initParams) {
         try {
@@ -229,6 +231,80 @@ public class OracleModule implements DAO {
         }
 
         return parser;
+    }
+
+    // probably new generalization of querying 
+    public List<Soldier> getSoldiersListCustomQuery(String query) throws DataAccessException {
+        try {
+            return (List<Soldier>) performQuery(query, new SetParser() {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Soldier> soldiers = new ArrayList<Soldier>();
+                    while (raw.next()) {
+                        Soldier sd = new Soldier();
+                        sd.setId(raw.getString("soldier_id"));
+                        sd.setName(raw.getString("soldier.name"));
+                        sd.setRank(raw.getString("rank"));
+                        sd.setUnit(raw.getString("unit.name"));
+                        sd.setCommander(raw.getString("commander"));
+                        sd.setBirthDate(raw.getDate("birthdate"));
+                        soldiers.add(sd);
+                    }
+                    return soldiers;
+                }
+            });
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data getting failed.", e);
+        }
+    }
+
+    public List<Unit> getUnitsListCustomQuery(String query) throws DataAccessException {
+        try {
+            return (List<Unit>) performQuery(query, new SetParser() {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Unit> units = new ArrayList<Unit>();
+                    while (raw.next()) {
+                        Unit unit = new Unit(raw.getString("unit_id"),
+                                raw.getString("soldier_name"),
+                                raw.getString("location_name"),
+                                raw.getString("unit_name"));
+
+                        units.add(unit);
+                    }
+                    return units;
+                }
+            });
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data getting failed.", e);
+        }
+    }
+
+    public List<Location> getLocationsListCustomQuery(String query) throws DataAccessException {
+        try {
+            return (List<Location>) performQuery(SQL_GET_ALL_UNITS, new SetParser() {
+                public Object parse(ResultSet raw) throws SQLException {
+                    List<Location> locations = new ArrayList<Location>();
+                    while (raw.next()) {
+                        Location location = new Location(
+                                raw.getString("locaiton_id"),
+                                raw.getString("name"),
+                                raw.getString("region"),
+                                raw.getString("city")
+                        );
+
+                        locations.add(location);
+                    }
+                    return locations;
+                }
+            });
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data getting failed.", e);
+        }
     }
 
     public List<Soldier> getHierarchy(String idMatch) throws DataAccessException {
@@ -445,6 +521,110 @@ public class OracleModule implements DAO {
             e.printStackTrace();
             throw new DataAccessException("Performing data getting failed.", e);
         }
+    }
+
+    private String searchStatementsAppender(String attribute, FilterType type, String value) {
+        if (type == FilterType.LIKE) {
+            return attribute + FilterType.LIKE.toString() + "'" + value + "%'";
+        } else {
+            return attribute + type.toString() + value;
+        }
+    }
+
+    public List<Soldier> searchForSoldiers(List<Filter> filters) throws DataAccessException {
+        List<Soldier> soldiers = new ArrayList<Soldier>();
+        if (filters.size() != 0) {
+            StringBuilder searchQuery = new StringBuilder(SQL_GET_ALL_SOLDIERS);
+            searchQuery.append(" where ");
+            boolean first = true;
+
+            for (Filter f : filters) {
+                if (!first) {
+                    searchQuery.append(" and ");
+                } else
+                    first = false;
+
+                try {
+                    searchQuery.append(
+                            searchStatementsAppender(
+                                    Soldier.ALIAS.getAlias(
+                                            f.getAttribute()).getLabel(),
+                                    f.getTypeOfComparison(),
+                                    f.getValueToCompare())
+                    );
+
+                    soldiers = getSoldiersListCustomQuery(searchQuery.toString());
+
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger("model").error("Wrong attribute name");
+                }
+            }
+        }
+        return soldiers;
+    }
+
+    public List<Unit> searchForUnits(List<Filter> filters) throws DataAccessException {
+        List<Unit> units = new ArrayList<Unit>();
+        if (filters.size() != 0) {
+            StringBuilder searchQuery = new StringBuilder(SQL_GET_ALL_UNITS);
+            searchQuery.append(" where ");
+            boolean first = true;
+
+            for (Filter f : filters) {
+                if (!first) {
+                    searchQuery.append(" and ");
+                } else
+                    first = false;
+
+                try {
+                    searchQuery.append(
+                            searchStatementsAppender(
+                                    Soldier.ALIAS.getAlias(
+                                            f.getAttribute()).getLabel(),
+                                    f.getTypeOfComparison(),
+                                    f.getValueToCompare())
+                    );
+
+                    units = getUnitsListCustomQuery(searchQuery.toString());
+
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger("model").error("Wrong attribute name");
+                }
+            }
+        }
+        return units;
+    }
+
+    public List<Location> searchForLocations(List<Filter> filters) throws DataAccessException {
+        List<Location> locations = new ArrayList<Location>();
+        if (filters.size() != 0) {
+            StringBuilder searchQuery = new StringBuilder(SQL_GET_ALL_LOCATIONS);
+            searchQuery.append(" where ");
+            boolean first = true;
+
+            for (Filter f : filters) {
+                if (!first) {
+                    searchQuery.append(" and ");
+                } else
+                    first = false;
+
+                try {
+                    searchQuery.append(
+                            searchStatementsAppender(
+                                    Soldier.ALIAS.getAlias(
+                                            f.getAttribute()).getLabel(),
+                                    f.getTypeOfComparison(),
+                                    f.getValueToCompare())
+                    );
+
+                    locations = getLocationsListCustomQuery(searchQuery.toString());
+
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger("model").error("Wrong attribute name");
+                }
+            }
+        }
+        return locations;
     }
 
     public Soldier getSoldierById(String idMatch) throws DataAccessException {
