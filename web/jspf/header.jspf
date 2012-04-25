@@ -31,7 +31,7 @@
         <div class="container-fluid"><a target="_new" href="#" class="brand"> Soldiers <span
                 style="background-color:#387690;padding-top:100px" class="label warning">Alpha</span> </a>
             <ul class="nav secondary-nav">
-                <li><a href="<c:url value='/'>">Home</a></li>
+                <li><a href="<c:url value='/' />">Home</a></li>
                 <li><a href="#">[reference 2]</a></li>
                 <li><a href="#">[reference 3]</a></li>
             </ul>
@@ -42,46 +42,60 @@
 <div class="container-fluid">
     <div class="sidebar page-sidebar" id="page-sidebar">
         <ul style="list-style-type:none;margin-left:0;">
-            <li><a href="<c:url value='/'>">
+            <li><a href="<c:url value='/' />">
                 <p class="navbar_item navbar_home">Home </p>
             </a></li>
-            <li><a href="<c:url value='/viewSoldiers'>">
+            <li><a href="<c:url value='/viewSoldiers' />">
                 <p class="navbar_item navbar_wiki">View Top of Soldiers</p>
             </a></li>
-            <li><a href="<c:url value='/viewUnits'>">
+            <li><a href="<c:url value='/viewUnits' />">
                 <p class="navbar_item navbar_wiki">View Units</p>
             </a></li>
-            <li><a href="<c:url value='/viewLocations'>">
+            <li><a href="<c:url value='/viewLocations' />">
                 <p class="navbar_item navbar_wiki">View Locations</p>
             </a></li>
 
-                <%--    <c:url var="url" value="/view">
-                   <c:param name="action" value="addSoldier"/>
-               </c:url>
-               <li><a href="${url}>">
-                   <p class="navbar_item navbar_wiki">Add Soldier</p>
-               </a></li> --%>
+            <%--    <c:url var="url" value="/view">
+               <c:param name="action" value="addSoldier"/>
+           </c:url>
+           <li><a href="${url}">
+               <p class="navbar_item navbar_wiki">Add Soldier</p>
+           </a></li> --%>
 
             <c:url var="url" value="/viewSoldiers">
                 <c:param name="action" value="getSearchResults"/>
             </c:url>
-            <li><a href="${url}>">
+            <li><a href="${url}">
                 <p class="navbar_item navbar_wiki">Find Soldier</p>
             </a></li>
 
             <c:url var="url" value="/viewUnits">
                 <c:param name="action" value="getSearchResults"/>
             </c:url>
-            <li><a href="${url}>">
+            <li><a href="${url}">
                 <p class="navbar_item navbar_wiki">Find Unit</p>
             </a></li>
 
             <c:url var="url" value="/viewLocations">
                 <c:param name="action" value="getSearchResults"/>
             </c:url>
-            <li><a href="${url}>">
+            <li><a href="${url}">
                 <p class="navbar_item navbar_wiki">Find Location</p>
             </a></li>
         </ul>
     </div>
-</div>
+    <div class="content page-content" id="page-content">
+        <div id="banner-top">
+            <div id="banner-path">
+                <a href="/viewSoldiers">ROOT</a>
+                <c:out value=">>"/>
+                <c:forEach items="${requestScope.hierarchyList}" var="soldier">
+                    <a href="/viewSoldiers?action=getSubsOf&queriedSoldierId=${soldier.id}">${soldier.name}</a>
+                    <c:out value=">>"/>
+                </c:forEach>
+            </div>
+            <!--  <div id="banner-info" >
+             <div class="my-name">Roman Gural</div>
+             <div >Spring 2012</div>
+           </div> -->
+        </div>

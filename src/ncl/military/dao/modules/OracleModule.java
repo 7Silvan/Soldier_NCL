@@ -366,6 +366,7 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
+
                         Soldier sd = new Soldier(
                                 raw.getString(Soldier.ALIAS.ID.getLabel()),
                                 raw.getString(Soldier.ALIAS.NAME.getLabel()),
