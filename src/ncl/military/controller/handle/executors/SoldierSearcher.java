@@ -3,7 +3,9 @@ package ncl.military.controller.handle.executors;
 import ncl.military.dao.DAO;
 import ncl.military.dao.searchtool.Filter;
 import ncl.military.dao.searchtool.FilterType;
+import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
+import ncl.military.entity.Unit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,13 +31,20 @@ public class SoldierSearcher extends Executor {
         List<Filter> filters = new ArrayList<Filter>();//(List<Filter>) params.get("filterList");
         if (params.get("queriedSoldierName") != null)
             filters.add(new Filter(Soldier.ALIAS.NAME.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierName")));
-//            List<Soldier> soldierList = getDao().getAllSoldiers();
-//            result.put("listOfSoldiers", soldierList);
+        if (params.get("queriedSoldierUnit") != null)
+            filters.add(new Filter(Unit.ALIAS.NAME.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierUnit")));
+        if (params.get("queriedSoldierLocation") != null)
+            filters.add(new Filter(Location.ALIAS.NAME.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierLocation")));
+        if (params.get("queriedSoldierCommanderName") != null)
+            filters.add(new Filter("commander_name", FilterType.LIKE, (String) params.get("queriedSoldierCommanderName")));
+        if (params.get("queriedSoldierRank") != null)
+            filters.add(new Filter(Soldier.ALIAS.RANK.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierRank")));
+
         if (filters.size() != 0)
             soldierList = getDao().searchForSoldiers(filters);
 
         result.put("listOfSoldiers", soldierList);
-        result.put("queriedSoldierName", (String) params.get("queriedSoldierName"));
+        //result.put("queriedSoldierName", (String) params.get("queriedSoldierName"));
 
         return result;
     }

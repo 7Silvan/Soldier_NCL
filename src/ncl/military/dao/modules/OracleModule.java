@@ -33,6 +33,20 @@ public class OracleModule implements DAO {
 
     private OracleDataSource dataSource;
 
+    private static final String SQL_GET_ALL_SOLDIERS_FULL_INFO =
+            //        "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
+            //                "from soldier";
+            // values to take
+            // soldier_id
+            // soldier_name
+            // soldier_rank
+            // soldier_commander
+            // unit_name
+            // soldier_birthdate
+            // location_name
+            // commander_name
+            "select soldier_id, soldier_name, soldier_rank, soldier_commander, unit_name, soldier_birthdate, location_name, commander.name as commander_name from (select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate, location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location) soldier, (select soldier_id as id, name from soldier) commander where soldier.soldier_commander = commander.id ";
+
     private static final String SQL_GET_ALL_SOLDIERS =
             //        "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
             //                "from soldier";
@@ -545,7 +559,7 @@ public class OracleModule implements DAO {
     public List<Soldier> searchForSoldiers(List<Filter> filters) throws DataAccessException {
         List<Soldier> soldiers = new ArrayList<Soldier>();
         if (filters.size() != 0) {
-            StringBuilder searchQuery = new StringBuilder("select * from ( " + SQL_GET_ALL_SOLDIERS + " ) inner_table ");
+            StringBuilder searchQuery = new StringBuilder("select * from ( " + SQL_GET_ALL_SOLDIERS_FULL_INFO + " ) inner_table ");
             searchQuery.append(" where ");
             boolean first = true;
 
@@ -557,11 +571,11 @@ public class OracleModule implements DAO {
 
                 try {
                     searchQuery.append(
-                            searchStatementsAppender(
+                            searchStatementsAppender("UPPER(" +
                                     Soldier.ALIAS.getAlias(
-                                            f.getAttribute()).getLabel(),
+                                            f.getAttribute()).getLabel() + ")",
                                     f.getTypeOfComparison(),
-                                    f.getValueToCompare())
+                                    "UPPER(" + f.getValueToCompare() + ")")
                     );
 
                     soldiers = getSoldiersListCustomQuery(searchQuery.toString());
