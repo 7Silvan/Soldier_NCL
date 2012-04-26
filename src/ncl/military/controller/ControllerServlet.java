@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -45,22 +46,17 @@ public class ControllerServlet extends HttpServlet {
         String userPath = req.getServletPath();
         HttpSession session = req.getSession();
 
+        // Copying parameters from request scope to params-Map which will be feeded
         Map<String, Object> params = new HashMap<String, Object>();
-
-//        while (req.getParameterNames().hasMoreElements()) {
-//            String key = (String) req.getParameterNames().nextElement();
-//            params.put(key, req.getParameter(key));
-//        }
-
-        // TODO delete hard-code
+        Iterator entryIt = req.getParameterMap().entrySet().iterator();
+        while (entryIt.hasNext()) {
+            Map.Entry entry = (Map.Entry) entryIt.next();
+            if (entry.getValue() instanceof Object[] && ((Object[]) entry.getValue()).length > 1)
+                params.put((String) entry.getKey(), entry.getValue());
+            else
+                params.put((String) entry.getKey(), ((Object[]) entry.getValue())[0]);
+        }
         params.put("userPath", userPath);
-        params.put("queriedSoldierId", req.getParameter("queriedSoldierId"));
-        params.put("queriedUnitId", req.getParameter("queriedUnitId"));
-        params.put("queriedLocationId", req.getParameter("queriedLocationId"));
-        params.put("queriedSoldierName", req.getParameter("queriedSoldierName"));
-        params.put("action", req.getParameter("action"));
-
-        //params.put("userPath", userPath);
 
         Handlable handle = HandlerFactory.getHandler(dao, params);
         Map<String, ? extends Object> result = handle.execute(params);

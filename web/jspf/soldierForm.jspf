@@ -1,0 +1,35 @@
+<table>
+    <tr>
+        <td><label for="queried_soldier_name">Soldier name: </label></td>
+        <td><label>
+            <input id="queried_soldier_name" name="queried_soldier_name" type="text"/>
+        </label></td>
+    </tr>
+    <tr>
+        <td><label for="queried_unit_name">Unit: </label></td>
+        <td><label>
+            <input id="queried_unit_name" name="queried_unit_name" type="text"/>
+        </label></td>
+    </tr>
+    <tr>
+        <td><label for="queried_location_name">Location: </label></td>
+        <td><label>
+            <input id="queried_location_name" name="queried_location_name" type="text"/>
+        </label></td>
+    </tr>
+    <tr>
+        <td><label for="queried_commander_name">Commander name: </label></td>
+        <td><label>
+            <input id="queried_commander_name" name="queried_commander_name" type="text"/>
+        </label></td>
+    </tr>
+    <tr>
+        <td><label for="queried_soldier_rank">Rank: </label></td>
+        <td><label>
+            <input id="queried_soldier_rank" name="queried_soldier_rank" type="text"/>
+        </label></td>
+    </tr>
+    <tr>
+        <td colspan="2"><input type="submit" class="btn primary pull-right" value="Find"/></td>
+    </tr>
+</table>

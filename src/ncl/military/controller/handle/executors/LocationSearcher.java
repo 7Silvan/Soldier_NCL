@@ -1,7 +1,7 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
-import ncl.military.dao.searchtool.Filter;
+import ncl.military.dao.tools.Filter;
 import ncl.military.entity.Location;
 
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import java.util.Map;
  *          Date: 24.04.12
  *          Time: 13:15
  */
+//TODO remove this class
 public class LocationSearcher extends Executor {
     public LocationSearcher(DAO dao) {
         super(dao);

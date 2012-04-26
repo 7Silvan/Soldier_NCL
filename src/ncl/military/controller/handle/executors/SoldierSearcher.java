@@ -1,8 +1,8 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
-import ncl.military.dao.searchtool.Filter;
-import ncl.military.dao.searchtool.FilterType;
+import ncl.military.dao.tools.Filter;
+import ncl.military.dao.tools.FilterType;
 import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
@@ -29,22 +29,34 @@ public class SoldierSearcher extends Executor {
 
         List<Soldier> soldierList = null;
         List<Filter> filters = new ArrayList<Filter>();//(List<Filter>) params.get("filterList");
-        if (params.get("queriedSoldierName") != null)
-            filters.add(new Filter(Soldier.ALIAS.NAME.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierName")));
-        if (params.get("queriedSoldierUnit") != null)
-            filters.add(new Filter(Unit.ALIAS.NAME.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierUnit")));
-        if (params.get("queriedSoldierLocation") != null)
-            filters.add(new Filter(Location.ALIAS.NAME.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierLocation")));
-        if (params.get("queriedSoldierCommanderName") != null)
-            filters.add(new Filter("commander_name", FilterType.LIKE, (String) params.get("queriedSoldierCommanderName")));
-        if (params.get("queriedSoldierRank") != null)
-            filters.add(new Filter(Soldier.ALIAS.RANK.getLabel(), FilterType.LIKE, (String) params.get("queriedSoldierRank")));
+
+        String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());//"queriedSoldierName");
+        if (param != null && !param.equals("") && !param.contains(" "))
+            filters.add(new Filter(Soldier.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
+
+        param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());//"queriedSoldierUnit");
+        if (param != null && !param.equals("") && !param.contains(" "))
+            filters.add(new Filter(Unit.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
+
+        param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());//"queriedSoldierLocation");
+        if (param != null && !param.equals("") && !param.contains(" "))
+            filters.add(new Filter(Location.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
+
+        param = (String) params.get("queried_commander_name");
+        if (param != null && !param.equals("") && !param.contains(" "))
+            filters.add(new Filter("commander_name", FilterType.LIKE, param));
+
+        param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());//"queriedSoldierRank");
+        if (param != null && !param.equals("") && !param.contains(" "))
+            filters.add(new Filter(Soldier.ALIAS.RANK.getLabel(), FilterType.LIKE, param));
 
         if (filters.size() != 0)
             soldierList = getDao().searchForSoldiers(filters);
+        else
+            soldierList = getDao().getAllSoldiers();
 
         result.put("listOfSoldiers", soldierList);
-        //result.put("queriedSoldierName", (String) params.get("queriedSoldierName"));
+
 
         return result;
     }

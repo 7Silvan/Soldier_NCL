@@ -2,7 +2,8 @@ package ncl.military.dao;
 
 import ncl.military.dao.exceptions.DAOInitException;
 import ncl.military.dao.exceptions.DataAccessException;
-import ncl.military.dao.searchtool.Filter;
+import ncl.military.dao.tools.EntityValue;
+import ncl.military.dao.tools.Filter;
 import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
@@ -22,8 +23,9 @@ public interface DAO {
 
     void init() throws DAOInitException;
 
-    // TODO implement FINDER using filters
-
+    ///////////
+    //GETTERS//
+    ///////////
     List<Soldier> getHierarchy(String idMatch) throws DataAccessException;
 
     // All about Soldiers
@@ -34,6 +36,8 @@ public interface DAO {
     List<Soldier> getSubSoldiersOfByID(String idMatch) throws DataAccessException;
 
     List<Soldier> getTopOfSoldiers() throws DataAccessException;
+
+    List<String> getAllSoldiersIds() throws DataAccessException;
 
     // All about Units
     List<Unit> getAllUnits() throws DataAccessException;
@@ -50,10 +54,27 @@ public interface DAO {
     List<Unit> getUnitsOfLocation(String locationIdMatch) throws DataAccessException;
 
     // Searchers
-
     List<Soldier> searchForSoldiers(List<Filter> filters) throws DataAccessException;
 
     List<Unit> searchForUnits(List<Filter> filters) throws DataAccessException;
 
     List<Location> searchForLocations(List<Filter> filters) throws DataAccessException;
+
+    ///////////
+    //SETTERS//
+    ///////////
+    // Soldier sets
+    Soldier setSoldierAttributes(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
+
+    // Location sets
+    Location setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException;
+
+    // Unit sets
+    Unit setUnitAttributes(String unitIdMatch, List<EntityValue> values) throws DataAccessException;
+
+    //////////
+    //ADDERS//
+    //////////
+    // Soldier adder
+    Soldier addSoldier(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
 }

@@ -26,6 +26,8 @@ public class HandlerFactory {
     // common actions
     public static final String GET_ALL = "getAll";
     public static final String GET_TOP = "getTop";
+    public static final String CHANGE = "changeOne";
+    public static final String GET = "getOne";
     public static final String GET_SEARCH_RESULTS = "getSearchResults";
 
     // actions for soldiers
@@ -88,10 +90,10 @@ public class HandlerFactory {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
             if ((GET_ALL).equals((String) params.get("action"))) {
-                executable = executors.get(AllOfUnitsGetter.class.getName());
+                executable = executors.get(AllUnitsGetter.class.getName());
                 if (executable == null) {
-                    executable = new AllOfUnitsGetter(dao);
-                    executors.put(AllOfUnitsGetter.class.getName(), executable);
+                    executable = new AllUnitsGetter(dao);
+                    executors.put(AllUnitsGetter.class.getName(), executable);
                 }
             }
             if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
@@ -113,10 +115,10 @@ public class HandlerFactory {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
             if ((GET_ALL).equals((String) params.get("action"))) {
-                executable = executors.get(AllOfLocationsGetter.class.getName());
+                executable = executors.get(AllLocationsGetter.class.getName());
                 if (executable == null) {
-                    executable = new AllOfLocationsGetter(dao);
-                    executors.put(AllOfLocationsGetter.class.getName(), executable);
+                    executable = new AllLocationsGetter(dao);
+                    executors.put(AllLocationsGetter.class.getName(), executable);
                 }
             }
             if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {

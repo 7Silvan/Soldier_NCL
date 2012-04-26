@@ -2,8 +2,9 @@ package ncl.military.dao.modules;
 
 import ncl.military.dao.DAO;
 import ncl.military.dao.exceptions.DataAccessException;
-import ncl.military.dao.searchtool.Filter;
-import ncl.military.dao.searchtool.FilterType;
+import ncl.military.dao.tools.EntityValue;
+import ncl.military.dao.tools.Filter;
+import ncl.military.dao.tools.FilterType;
 import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
@@ -34,146 +35,58 @@ public class OracleModule implements DAO {
     private OracleDataSource dataSource;
 
     private static final String SQL_GET_ALL_SOLDIERS_FULL_INFO =
-            //        "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-            //                "from soldier";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
-            // location_name
-            // commander_name
-            "select soldier_id, soldier_name, soldier_rank, soldier_commander, unit_name, soldier_birthdate, location_name, commander.name as commander_name from (select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate, location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location) soldier, (select soldier_id as id, name from soldier) commander where soldier.soldier_commander = commander.id ";
+            // values to take // soldier_id// soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate // location_name // commander_name
+            "select soldier_id, soldier_name, soldier_rank, soldier_commander, unit_name, soldier_birthdate, location_name, commander.name as commander_name from (select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate, location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location) soldier left join (select soldier_id as id, name from soldier) commander on soldier.soldier_commander = commander.id ";
 
     private static final String SQL_GET_ALL_SOLDIERS =
-            //        "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-            //                "from soldier";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
+            // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id ";
 
     private static final String SQL_GET_SOLDIER_BY_ID =
-//            "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-//                    "from soldier" +
-//                    "where soldier_id = ?";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
+            // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
                     "where soldier_id = ? ";
 
     private static final String SQL_GET_TOP_OF_SOLDIERS =
-//            "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-//                    "from soldier " +
-//                    "where commander is null";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location " +
-                    "where commander is null";
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location " +
+            "where commander is null";
 
     private static final String SQL_GET_SUBS_OF_SOLDIER_BY_ID =
-//            "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-//                    "from soldier " +
-//                    "start with commander = ? " +
-//                    "connect by prior soldier_id = commander " +
-//                    "order by 1 ";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
-                    "start with commander = ? connect by prior soldier_id = commander and level = 1  order by 1 ";
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+            "start with commander = ? connect by prior soldier_id = commander and level = 1  order by 1 ";
 
     private static final String SQL_GET_SOLDIERS_OF_UNIT =
-//            "select soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-//                    "from soldier" +
-//                    "where soldier_id = ?";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
-                    "where unit_id = ? ";
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+            "where unit_id = ? ";
 
     private static final String SQL_GET_HIERARCHY_OF_SOLDIERS_BY_ID =
-//            "select level, soldier_id, name, rank, commander, unit, birthdate, headofunit " +
-//                    "from soldier " +
-//                    "start with soldier_id = ? " +
-//                    "connect by prior commander = soldier_id " +
-//                    "order by level desc ";
-            // values to take
-            // soldier_id
-            // soldier_name
-            // soldier_rank
-            // soldier_commander
-            // unit_name
-            // soldier_birthdate
-            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
-                    "start with soldier_id = ? " +
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+            "start with soldier_id = ? " +
                     "connect by prior commander = soldier_id " +
                     "order by level desc ";
 
     private static final String SQL_GET_ALL_UNITS =
-            // values to take
-            // unit_id
-            // unit_name
-            // soldier_name
-            // location_name
+            // values to take // unit_id // unit_name // soldier_name // location_name
             "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id left join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1";
 
     private static final String SQL_GET_UNIT_BY_ID =
-            // values to take
-            // unit_id
-            // unit_name
-            // soldier_name
-            // location_name
+            // values to take // unit_id // unit_name // soldier_name // location_name
             "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where unit_id = ? ";
 
     private static final String SQL_GET_UNITS_OF_LOCATION =
-            // values to take
-            // unit_id
-            // unit_name
-            // soldier_name
-            // location_name
+            // values to take // unit_id // unit_name // soldier_name // location_name
             "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where location.loc_id = ? ";
 
     private static final String SQL_GET_ALL_LOCATIONS =
-            // values to take
-            // location_id
-            // location_name
-            // location_region
-            // location_city
+            // values to take // location_id // location_name // location_region // location_city
             "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location";
 
     private static final String SQL_GET_LOCATION_BY_ID =
-            // values to take
-            // location_id
-            // location_name
-            // location_region
-            // location_city
+            // values to take // location_id // location_name // location_region // location_city
             "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location where location_id = ?";
+
+    private static final String SQL_UPDATE_SOLDIER_BY_ID =
+            "update soldier set ? where soldier_id = ? ";
 
     public void init(Map<String, String> initParams) {
         try {
@@ -401,6 +314,11 @@ public class OracleModule implements DAO {
         }
     }
 
+    public List<String> getAllSoldiersIds() throws DataAccessException {
+        throw new UnsupportedOperationException("not implemented yet.");
+        //return null;//To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public List<Unit> getAllUnits() throws DataAccessException {
         try {
             return (List<Unit>) performQuery(SQL_GET_ALL_UNITS, new SetParser() {
@@ -550,7 +468,7 @@ public class OracleModule implements DAO {
 
     private String searchStatementsAppender(String attribute, FilterType type, String value) {
         if (type == FilterType.LIKE) {
-            return attribute + FilterType.LIKE.toString() + "'" + value + "%'";
+            return "UPPER(" + attribute + ")" + FilterType.LIKE.toString() + "UPPER('" + value + "%')";
         } else {
             return attribute + type.toString() + value;
         }
@@ -571,17 +489,17 @@ public class OracleModule implements DAO {
 
                 try {
                     searchQuery.append(
-                            searchStatementsAppender("UPPER(" +
-                                    Soldier.ALIAS.getAlias(
-                                            f.getAttribute()).getLabel() + ")",
+                            searchStatementsAppender(
+                                    f.getAttribute(),
                                     f.getTypeOfComparison(),
-                                    "UPPER(" + f.getValueToCompare() + ")")
+                                    f.getValue())
                     );
 
                     soldiers = getSoldiersListCustomQuery(searchQuery.toString());
 
                 } catch (IllegalArgumentException ex) {
                     Logger.getLogger("model").error("Wrong attribute name");
+
                 }
             }
         }
@@ -604,10 +522,9 @@ public class OracleModule implements DAO {
                 try {
                     searchQuery.append(
                             searchStatementsAppender(
-                                    Soldier.ALIAS.getAlias(
-                                            f.getAttribute()).getLabel(),
+                                    Soldier.ALIAS.getAlias(f.getAttribute()).getLabel(),
                                     f.getTypeOfComparison(),
-                                    f.getValueToCompare())
+                                    f.getValue())
                     );
 
                     units = getUnitsListCustomQuery(searchQuery.toString());
@@ -636,10 +553,9 @@ public class OracleModule implements DAO {
                 try {
                     searchQuery.append(
                             searchStatementsAppender(
-                                    Soldier.ALIAS.getAlias(
-                                            f.getAttribute()).getLabel(),
+                                    Soldier.ALIAS.getAlias(f.getAttribute()).getLabel(),
                                     f.getTypeOfComparison(),
-                                    f.getValueToCompare())
+                                    f.getValue())
                     );
 
                     locations = getLocationsListCustomQuery(searchQuery.toString());
@@ -650,6 +566,51 @@ public class OracleModule implements DAO {
             }
         }
         return locations;
+    }
+
+    public Soldier setSoldierAttributes(String soldierIdMatch, final List<EntityValue> values) throws DataAccessException {
+        try {
+            return (Soldier) performQuery(SQL_GET_SOLDIER_BY_ID, new SetParser() {
+                public Object parse(ResultSet raw) throws SQLException {
+                    Soldier soldier = null;
+                    if (raw.next()) {
+
+                        for (EntityValue value : values) {
+                            raw.updateString(value.getKey(), value.getValue());
+                        }
+
+                        soldier = new Soldier(
+                                raw.getString(Soldier.ALIAS.ID.getLabel()),
+                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
+                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
+                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
+                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
+                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel()));
+                    }
+                    ;
+                    return soldier;
+                }
+            }, soldierIdMatch);
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data getting failed.", e);
+        }
+    }
+
+    public Location setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException {
+        throw new UnsupportedOperationException("not implemented yet.");
+        // TODO implement
+    }
+
+    public Unit setUnitAttributes(String unitIdMatch, List<EntityValue> values) throws DataAccessException {
+        throw new UnsupportedOperationException("not implemented yet.");
+        // TODO implement
+    }
+
+    public Soldier addSoldier(String soldierIdMatch, List<EntityValue> values) throws DataAccessException {
+        throw new UnsupportedOperationException("not implemented yet.");
+        // TODO implement
     }
 
     public Soldier getSoldierById(String idMatch) throws DataAccessException {

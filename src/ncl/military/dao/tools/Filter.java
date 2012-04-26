@@ -1,4 +1,4 @@
-package ncl.military.dao.searchtool;
+package ncl.military.dao.tools;
 
 /**
  * @author gural
@@ -21,7 +21,7 @@ public class Filter {
         return attribute;
     }
 
-    public String getValueToCompare() {
+    public String getValue() {
         return valueToCompare;
     }
 

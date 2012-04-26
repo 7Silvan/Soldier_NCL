@@ -32,6 +32,10 @@ public class Location {
             return this.label;
         }
 
+        public String getLabelAsQueried() {
+            return "queried_" + this.label;
+        }
+
         public static ALIAS getAlias(String label) {
             if (label != null) {
                 for (ALIAS a : ALIAS.values()) {
