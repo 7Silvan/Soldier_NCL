@@ -4,6 +4,6 @@
   Time: 12:29
 --%>
 
-<h1>[here must be welcome page with nav-tips]</h1>
+<h1>Hello dear \${username}!</h1>
 
-
+This page will help you to get started with Soldiers(alpha).

@@ -25,15 +25,16 @@ public class SoldierAdder extends Executor {
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        Soldier soldier = null;
 
         String action = (String) params.get("action");
-        String soldierIdMatch = (String) params.get("soldierIdMatch");
+
         List<Soldier> soldierList = getDao().getAllSoldiers();
         result.put("listOfSoldiers", soldierList);
+        List<Unit> unitList = getDao().getAllUnits();
+        result.put("listOfUnits", unitList);
 
         List<EntityValue> values = null;
-        if ((HandlerFactory.EDIT).equals(action) && soldierIdMatch != null) {
+        if ((HandlerFactory.EDIT).equals(action)) {
             values = new ArrayList<EntityValue>();
             String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
             if (param != null && !param.equals("") && !param.contains(" "))
@@ -51,12 +52,7 @@ public class SoldierAdder extends Executor {
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Soldier.ALIAS.RANK.getLabel(), param));
 
-            soldier = getDao().setSoldierAttributes(soldierIdMatch, values);
-            result.put("currentSoldier", soldier);
-        }
-        if ((HandlerFactory.GET).equals(action) && soldierIdMatch != null) {
-            soldier = getDao().getSoldierById(soldierIdMatch);
-            result.put("currentSoldier", soldier);
+            getDao().addSoldier(values);
         }
 
         return result;

@@ -17,9 +17,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static ncl.military.entity.Soldier.ALIAS.getAlias;
 
 /**
  * User: Silvan
@@ -96,8 +100,9 @@ public class OracleModule implements DAO {
             // values to take // location_id // location_name // location_region // location_city
             "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location where location_id = ?";
 
-    private static final String SQL_UPDATE_SOLDIER_BY_ID =
-            "update soldier set ? where soldier_id = ? ";
+    private static final String SQL_GET_UNIT_BY_ID_FOR_UPDATE = // values to take // unit_id // unit_name // soldier_name // location_name
+            "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where unit_id = ? ";
+    ;
 
     public void init(Map<String, String> initParams) {
         try {
@@ -127,9 +132,6 @@ public class OracleModule implements DAO {
 
             rs = prst.executeQuery();
 
-//            Object o = parser.parse(rs, prst, conn);
-//            conn.commit();
-//            return o;
             return parser.parse(rs, prst, conn);
         } catch (SQLException e) {
             Logger.getLogger("model").error("Some SQL error occured.", e);
@@ -535,7 +537,7 @@ public class OracleModule implements DAO {
                 try {
                     searchQuery.append(
                             searchStatementsAppender(
-                                    Soldier.ALIAS.getAlias(f.getAttribute()).getLabel(),
+                                    getAlias(f.getAttribute()).getLabel(),
                                     f.getTypeOfComparison(),
                                     f.getValue())
                     );
@@ -566,7 +568,7 @@ public class OracleModule implements DAO {
                 try {
                     searchQuery.append(
                             searchStatementsAppender(
-                                    Soldier.ALIAS.getAlias(f.getAttribute()).getLabel(),
+                                    getAlias(f.getAttribute()).getLabel(),
                                     f.getTypeOfComparison(),
                                     f.getValue())
                     );
@@ -581,43 +583,47 @@ public class OracleModule implements DAO {
         return locations;
     }
 
-    public Soldier setSoldierAttributes(String soldierIdMatch, final List<EntityValue> values) throws DataAccessException {
+    public void setSoldierAttributes(String soldierIdMatch, final List<EntityValue> values) throws DataAccessException {
         try {
-            return (Soldier) performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+            performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
-                    Soldier soldier = null;
                     if (raw.next()) {
                         // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
                         for (EntityValue value : values) {
                             try {
-                                Integer intVal = null;
-                                try {
-                                    intVal = Integer.parseInt(value.getValue());
-                                } catch (NumberFormatException e) {
-                                    ;
-                                }
-                                if (intVal == null)
+                                String alias = value.getKey();
+                                if (alias.equals(Soldier.ALIAS.NAME.getLabel())
+                                        || alias.equals(Soldier.ALIAS.RANK.getLabel()))
                                     raw.updateString(value.getKey(), value.getValue());
-                                else
-                                    raw.updateInt(value.getKey(), intVal);
+
+                                if (alias.equals(Soldier.ALIAS.ID.getLabel())
+                                        || alias.equals(Soldier.ALIAS.UNIT.getLabel())
+                                        || alias.equals(Soldier.ALIAS.COMMANDER.getLabel()))
+                                    raw.updateInt(value.getKey(), Integer.parseInt(value.getValue()));
+
+                                if (alias.equals(Soldier.ALIAS.BIRTHDATE.getLabel())) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                    java.util.Date date = sdf.parse(value.getValue());
+                                    raw.updateDate(value.getKey(), new java.sql.Date(date.getTime()));
+                                }
+
+                            } catch (NumberFormatException e) {
+                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                e.printStackTrace();
+                                throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
                                 Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                e.printStackTrace();
                                 throw e;
+                            } catch (ParseException e) {
+                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                e.printStackTrace();
+                                throw new DataAccessException("Parsing data from given value error", e);
                             }
-
                         }
-
                         raw.updateRow();
-
-                        soldier = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel()));
                     }
-                    return soldier;
+                    return null;
                 }
             }, soldierIdMatch);
         } catch (SQLException e) {
@@ -627,24 +633,146 @@ public class OracleModule implements DAO {
         }
     }
 
-    public Soldier setNewCommander(String soldierIdMatch, String commanderIdMatch) throws DataAccessException {
-        throw new UnsupportedOperationException("not implemented yet.");
-        // TODO implement
+    public void setNewCommander(String soldierIdMatch, final String commanderIdMatch) throws DataAccessException {
+        try {
+            performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    if (raw.next()) {
+                        try {
+                            raw.updateString(Soldier.ALIAS.COMMANDER.getLabel(), commanderIdMatch);
+                        } catch (SQLException e) {
+                            Logger.getLogger("model").error("Didn\'t updated column :" + Soldier.ALIAS.COMMANDER.getLabel() +
+                                    " with value : " + commanderIdMatch, e);
+                            e.printStackTrace();
+                            throw e;
+                        }
+                    }
+                    raw.updateRow();
+                    return null;
+                }
+            }, soldierIdMatch);
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data operations failed.", e);
+        }
     }
 
-    public Location setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException {
-        throw new UnsupportedOperationException("not implemented yet.");
-        // TODO implement
+    public void setLocationAttributes(String locationIdMatch, final List<EntityValue> values) throws DataAccessException {
+        try {
+            performQuery(SQL_GET_LOCATION_BY_ID, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    if (raw.next()) {
+                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
+                        raw.moveToInsertRow();
+                        for (EntityValue value : values) {
+                            try {
+                                raw.updateString(value.getKey(), value.getValue());
+                            } catch (SQLException e) {
+                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                e.printStackTrace();
+                                throw e;
+                            }
+                        }
+                        raw.insertRow();
+                    }
+                    return null;
+                }
+            },
+                    locationIdMatch);
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data operations failed.", e);
+        }
     }
 
-    public Unit setUnitAttributes(String unitIdMatch, List<EntityValue> values) throws DataAccessException {
-        throw new UnsupportedOperationException("not implemented yet.");
-        // TODO implement
+    public void setUnitAttributes(String unitIdMatch, final List<EntityValue> values) throws DataAccessException {
+        try {
+            performQuery(SQL_GET_UNIT_BY_ID_FOR_UPDATE, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    if (raw.next()) {
+                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
+                        raw.moveToInsertRow();
+                        for (EntityValue value : values) {
+                            try {
+                                String alias = value.getKey();
+                                if (alias.equals(Unit.ALIAS.NAME.getLabel()))
+                                    raw.updateString(value.getKey(), value.getValue());
+
+                                if (alias.equals(Unit.ALIAS.LOCATION.getLabel()))
+                                    raw.updateInt(value.getKey(), Integer.parseInt(value.getValue()));
+                            } catch (NumberFormatException e) {
+                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                e.printStackTrace();
+                                throw new DataAccessException("Parsing data from given value error", e);
+                            } catch (SQLException e) {
+                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                e.printStackTrace();
+                                throw e;
+                            }
+                        }
+                        raw.insertRow();
+                    }
+                    return null;
+                }
+            },
+                    unitIdMatch);
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data operations failed.", e);
+        }
     }
 
-    public Soldier addSoldier(String soldierIdMatch, List<EntityValue> values) throws DataAccessException {
-        throw new UnsupportedOperationException("not implemented yet.");
-        // TODO implement
+    public void addSoldier(final List<EntityValue> values) throws DataAccessException {
+        try {
+            performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    if (raw.next()) {
+                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
+                        raw.moveToInsertRow();
+                        for (EntityValue value : values) {
+                            try {
+                                String alias = value.getKey();
+                                if (alias.equals(Soldier.ALIAS.NAME.getLabel())
+                                        || alias.equals(Soldier.ALIAS.RANK.getLabel()))
+                                    raw.updateString(value.getKey(), value.getValue());
+
+                                if (alias.equals(Soldier.ALIAS.ID.getLabel())
+                                        || alias.equals(Soldier.ALIAS.UNIT.getLabel())
+                                        || alias.equals(Soldier.ALIAS.COMMANDER.getLabel()))
+                                    raw.updateInt(value.getKey(), Integer.parseInt(value.getValue()));
+
+                                if (alias.equals(Soldier.ALIAS.BIRTHDATE.getLabel())) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                    java.util.Date date = sdf.parse(value.getValue());
+                                    raw.updateDate(value.getKey(), new java.sql.Date(date.getTime()));
+                                }
+                            } catch (NumberFormatException e) {
+                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                e.printStackTrace();
+                                throw new DataAccessException("Parsing data from given value error", e);
+                            } catch (SQLException e) {
+                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                e.printStackTrace();
+                                throw e;
+                            } catch (ParseException e) {
+                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                e.printStackTrace();
+                                throw new DataAccessException("Parsing data from given value error", e);
+                            }
+                        }
+                        raw.insertRow();
+                    }
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            Logger.getLogger("model").error("Parsing result set error.", e);
+            e.printStackTrace();
+            throw new DataAccessException("Performing data operations failed.", e);
+        }
     }
 
     public Soldier getSoldierById(String idMatch) throws DataAccessException {

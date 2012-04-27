@@ -64,19 +64,19 @@ public interface DAO {
     //SETTERS//
     ///////////
     // Soldier sets
-    Soldier setSoldierAttributes(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
+    void setSoldierAttributes(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
 
-    Soldier setNewCommander(String soldierIdMatch, String commanderIdMatch) throws DataAccessException;
+    void setNewCommander(String soldierIdMatch, String commanderIdMatch) throws DataAccessException;
 
     // Location sets
-    Location setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException;
+    void setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException;
 
     // Unit sets
-    Unit setUnitAttributes(String unitIdMatch, List<EntityValue> values) throws DataAccessException;
+    void setUnitAttributes(String unitIdMatch, List<EntityValue> values) throws DataAccessException;
 
     //////////
     //ADDERS//
     //////////
     // Soldier adder
-    Soldier addSoldier(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
+    void addSoldier(List<EntityValue> values) throws DataAccessException;
 }

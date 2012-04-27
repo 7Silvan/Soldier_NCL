@@ -202,10 +202,8 @@
                         </td>
                     </tr>
                 </c:forEach>
-
                 </tbody>
             </table>
-
         </c:if>
         <%--view of locations--%>
         <c:if test="${fn:contains(requestScope.viewType, '/viewLocations' )}">
@@ -216,6 +214,7 @@
                     <th>NAME</th>
                     <th>REGION</th>
                     <th>CITY</th>
+                    <th>ACTION</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -232,7 +231,13 @@
                         </td>
                         <td>${location.region}</td>
                         <td>${location.city}</td>
-
+                        <td>
+                            <c:url var="editUrl" value="/viewLocations">
+                                <c:param name="locationIdMatch" value="${location.id}"/>
+                                <c:param name="action" value="edit"/>
+                            </c:url>
+                            <a class="btn primary" href="${editUrl}">Edit</a>
+                        </td>
                     </tr>
                 </c:forEach>
 
@@ -249,6 +254,7 @@
                     <th>NAME</th>
                     <th>HEAD</th>
                     <th>LOCATION</th>
+                    <th>ACTION</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -272,6 +278,13 @@
                             <a href="${url}">${unit.head}</a>
                         </td>
                         <td>${unit.location}</td>
+                        <td>
+                            <c:url var="editUrl" value="/viewUnits">
+                                <c:param name="unitIdMatch" value="${unit.id}"/>
+                                <c:param name="action" value="edit"/>
+                            </c:url>
+                            <a class="btn primary" href="${editUrl}">Edit</a>
+                        </td>
                     </tr>
                 </c:forEach>
 
@@ -295,6 +308,7 @@
 
         <c:out value="${requestScope.viewType}"/>
         <c:out value="${pageContext.request.servletPath}"/>--%>
+
     </div>
 </div>
 

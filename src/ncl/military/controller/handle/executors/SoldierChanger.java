@@ -25,7 +25,6 @@ public class SoldierChanger extends Executor {
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        Soldier soldier = null;
 
         String action = (String) params.get("action");
         String soldierIdMatch = (String) params.get("soldierIdMatch");
@@ -33,6 +32,8 @@ public class SoldierChanger extends Executor {
         result.put("listOfSoldiers", soldierList);
         List<Unit> unitList = getDao().getAllUnits();
         result.put("listOfUnits", unitList);
+        result.put("currentSoldier", soldierIdMatch);
+
 
         List<EntityValue> values = null;
         if ((HandlerFactory.EDIT).equals(action) && soldierIdMatch != null) {
@@ -53,19 +54,15 @@ public class SoldierChanger extends Executor {
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Soldier.ALIAS.COMMANDER.getLabel(), param));
 
-            if (values.size() != 0) {
-                soldier = getDao().setSoldierAttributes(soldierIdMatch, values);
-                result.put("queriedSoldier", soldier);
-            }
-        } else {
-            result.put("action", HandlerFactory.ADD_SOLDIER);
-        }
-//        if ((HandlerFactory.GET).equals(action) && soldierIdMatch != null) {
-//            result.put("queriedSoldier", getDao().getSoldierById(soldierIdMatch));
-//        }
-        result.put("currentSoldier", soldierIdMatch);
-        result.put("queriedSoldier", getDao().getSoldierById(soldierIdMatch));
+            param = (String) params.get(Soldier.ALIAS.BIRTHDATE.getLabelAsQueried());
+            if (param != null && !param.equals("") && !param.contains(" "))
+                values.add(new EntityValue(Soldier.ALIAS.BIRTHDATE.getLabel(), param));
 
+            if (values.size() != 0)
+                getDao().setSoldierAttributes(soldierIdMatch, values);
+        }
+        Soldier soldier = getDao().getSoldierById(soldierIdMatch);
+        result.put("queriedSoldier", soldier);
         return result;
     }
 }

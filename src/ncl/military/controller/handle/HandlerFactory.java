@@ -48,13 +48,13 @@ public class HandlerFactory {
     //view
     public static final String VIEW_MAIN = "/view.jsp";
     public static final String VIEW_EDIT = "/editor.jsp";
+    private static final String VIEW_HOME = "/index.jsp";
 
     public static Handlable getHandler(DAO dao, Map<String, Object> params) {
 
         Executable executable = null;
         String view = null;
-        //String view = (String) params.get("userPath");
-        //if (view == null) view = VIEW_MAIN;
+        String overrideAction = null; // workaround to determinate next view
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_TOP);
@@ -87,12 +87,13 @@ public class HandlerFactory {
                 }
             }
             if ((ADD_SOLDIER).equals((String) params.get("action"))) {
-                view = VIEW_EDIT;
+                view = VIEW_MAIN;
                 executable = executors.get(SoldierAdder.class.getName());
                 if (executable == null) {
                     executable = new SoldierAdder(dao);
                     executors.put(SoldierAdder.class.getName(), executable);
                 }
+                overrideAction = HandlerFactory.GET_SEARCH_RESULTS;
             }
             if ((EDIT).equals((String) params.get("action"))) {
                 view = VIEW_EDIT;
@@ -127,6 +128,13 @@ public class HandlerFactory {
                     executors.put(AllUnitsOfLocationGetter.class.getName(), executable);
                 }
             }
+            if ((EDIT).equals((String) params.get("action"))) {
+                executable = executors.get(UnitChanger.class.getName());
+                if (executable == null) {
+                    executable = new UnitChanger(dao);
+                    executors.put(UnitChanger.class.getName(), executable);
+                }
+            }
         }
         if ((PATH_LOCATION).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
@@ -145,9 +153,16 @@ public class HandlerFactory {
                     executors.put(LocationSearcher.class.getName(), executable);
                 }
             }
+            if ((EDIT).equals((String) params.get("action"))) {
+                executable = executors.get(LocationChanger.class.getName());
+                if (executable == null) {
+                    executable = new LocationChanger(dao);
+                    executors.put(LocationChanger.class.getName(), executable);
+                }
+            }
         }
         if (executable == null)
             throw new IllegalStateException("Did not find matched executor");
-        return new Handler(executable, (String) params.get("userPath"), (String) params.get("action"), view);
+        return new Handler(executable, (String) params.get("userPath"), (overrideAction == null) ? (String) params.get("action") : overrideAction, view);
     }
 }

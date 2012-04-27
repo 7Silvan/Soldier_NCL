@@ -1,8 +1,14 @@
 package ncl.military.controller.handle.executors;
 
+import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
+import ncl.military.dao.tools.EntityValue;
+import ncl.military.entity.Location;
+import ncl.military.entity.Unit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,10 +25,32 @@ public class UnitChanger extends Executor {
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        // TODO implement
-//        List<Soldier> soldierList = getDao().getAllSoldiers();
-//        result.put("listOfSoldiers", soldierList);
+        String action = (String) params.get("action");
+        String unitIdMatch = (String) params.get("unitIdMatch");
+        List<Location> locationList = getDao().getAllLocations();
+        result.put("listOfLocations", locationList);
+        List<Unit> unitList = getDao().getAllUnits();
+        result.put("listOfUnits", unitList);
+        result.put("currentUnit", unitIdMatch);
 
+
+        List<EntityValue> values = null;
+        if ((HandlerFactory.EDIT).equals(action) && unitIdMatch != null) {
+            values = new ArrayList<EntityValue>();
+
+            String param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
+            if (param != null && !param.equals("") && !param.contains(" "))
+                values.add(new EntityValue(Unit.ALIAS.NAME.getLabel(), param));
+
+            param = (String) params.get(Unit.ALIAS.LOCATION.getLabelAsQueried());
+            if (param != null && !param.equals("") && !param.contains(" "))
+                values.add(new EntityValue(Unit.ALIAS.LOCATION.getLabel(), param));
+
+            if (values.size() != 0)
+                getDao().setSoldierAttributes(unitIdMatch, values);
+        }
+        Unit unit = getDao().getUnitById(unitIdMatch);
+        result.put("queriedUnit", unit);
         return result;
     }
 }
