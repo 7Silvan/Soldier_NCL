@@ -29,7 +29,9 @@ import java.util.Map;
 public class OracleModule implements DAO {
 
     private interface SetParser {
-        Object parse(ResultSet raw) throws SQLException;
+        //        Object parse(ResultSet raw) throws SQLException;
+//        Object parse(ResultSet raw, PreparedStatement prst) throws SQLException;
+        Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException;
     }
 
     private OracleDataSource dataSource;
@@ -42,26 +44,35 @@ public class OracleModule implements DAO {
             // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id ";
 
+    private static final String SQL_GET_SOLDIER_BY_ID_FOR_UPDATE =
+            // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,soldier.unit as unit_name,soldier.birthdate as soldier_birthdate from soldier " +
+                    "where soldier_id = ? ";
+
     private static final String SQL_GET_SOLDIER_BY_ID =
             // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
                     "where soldier_id = ? ";
 
     private static final String SQL_GET_TOP_OF_SOLDIERS =
-// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location " +
-            "where commander is null";
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location " +
+                    "where commander is null";
 
     private static final String SQL_GET_SUBS_OF_SOLDIER_BY_ID =
-// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
-            "start with commander = ? connect by prior soldier_id = commander and level = 1  order by 1 ";
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+                    "start with commander = ? connect by prior soldier_id = commander and level = 1  order by 1 ";
 
     private static final String SQL_GET_SOLDIERS_OF_UNIT =
-// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
-            "where unit_id = ? ";
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+                    "where unit_id = ? ";
 
     private static final String SQL_GET_HIERARCHY_OF_SOLDIERS_BY_ID =
-// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
-            "start with soldier_id = ? " +
+// values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
+            "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
+                    "start with soldier_id = ? " +
                     "connect by prior commander = soldier_id " +
                     "order by level desc ";
 
@@ -108,7 +119,7 @@ public class OracleModule implements DAO {
         ResultSet rs = null;
         try {
             conn = dataSource.getConnection();
-            prst = conn.prepareStatement(query);
+            prst = conn.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             int currentParameter = 0;
             for (String parameter : parameters) {
                 prst.setString(++currentParameter, parameter);
@@ -116,8 +127,10 @@ public class OracleModule implements DAO {
 
             rs = prst.executeQuery();
 
-            return parser.parse(rs);
-
+//            Object o = parser.parse(rs, prst, conn);
+//            conn.commit();
+//            return o;
+            return parser.parse(rs, prst, conn);
         } catch (SQLException e) {
             Logger.getLogger("model").error("Some SQL error occured.", e);
             e.printStackTrace();
@@ -163,7 +176,7 @@ public class OracleModule implements DAO {
     public List<Soldier> getSoldiersListCustomQuery(String query) throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(query, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
@@ -182,14 +195,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Unit> getUnitsListCustomQuery(String query) throws DataAccessException {
         try {
             return (List<Unit>) performQuery(query, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
                         Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
@@ -206,14 +219,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Location> getLocationsListCustomQuery(String query) throws DataAccessException {
         try {
             return (List<Location>) performQuery(SQL_GET_ALL_UNITS, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Location> locations = new ArrayList<Location>();
                     while (raw.next()) {
                         Location location = new Location(
@@ -231,14 +244,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Soldier> getHierarchy(String idMatch) throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_GET_HIERARCHY_OF_SOLDIERS_BY_ID, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
@@ -258,14 +271,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Soldier> getAllSoldiers() throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_GET_ALL_SOLDIERS, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier();
@@ -283,14 +296,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Soldier> getTopOfSoldiers() throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_GET_TOP_OF_SOLDIERS, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
 
@@ -310,7 +323,7 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
@@ -322,7 +335,7 @@ public class OracleModule implements DAO {
     public List<Unit> getAllUnits() throws DataAccessException {
         try {
             return (List<Unit>) performQuery(SQL_GET_ALL_UNITS, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
                         Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
@@ -339,14 +352,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public Unit getUnitById(String unitIdMatch) throws DataAccessException {
         try {
             return (Unit) performQuery(SQL_GET_UNIT_BY_ID, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     Unit unit = null;
                     if (raw.next()) {
                         unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
@@ -361,14 +374,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Soldier> getSoldiersOfUnit(String unitIdMatch) throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_GET_SOLDIERS_OF_UNIT, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
@@ -388,14 +401,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Location> getAllLocations() throws DataAccessException {
         try {
             return (List<Location>) performQuery(SQL_GET_ALL_LOCATIONS, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Location> locations = new ArrayList<Location>();
                     while (raw.next()) {
                         Location location = new Location(
@@ -413,14 +426,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public Location getLocationById(String locationIdMatch) throws DataAccessException {
         try {
             return (Location) performQuery(SQL_GET_LOCATION_BY_ID, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     Location location = null;
                     if (raw.next()) {
                         location = new Location(
@@ -437,14 +450,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Unit> getUnitsOfLocation(String locationIdMatch) throws DataAccessException {
         try {
             return (List<Unit>) performQuery(SQL_GET_UNITS_OF_LOCATION, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
                         Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
@@ -462,7 +475,7 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
@@ -570,14 +583,31 @@ public class OracleModule implements DAO {
 
     public Soldier setSoldierAttributes(String soldierIdMatch, final List<EntityValue> values) throws DataAccessException {
         try {
-            return (Soldier) performQuery(SQL_GET_SOLDIER_BY_ID, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+            return (Soldier) performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     Soldier soldier = null;
                     if (raw.next()) {
-
+                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
                         for (EntityValue value : values) {
-                            raw.updateString(value.getKey(), value.getValue());
+                            try {
+                                Integer intVal = null;
+                                try {
+                                    intVal = Integer.parseInt(value.getValue());
+                                } catch (NumberFormatException e) {
+                                    ;
+                                }
+                                if (intVal == null)
+                                    raw.updateString(value.getKey(), value.getValue());
+                                else
+                                    raw.updateInt(value.getKey(), intVal);
+                            } catch (SQLException e) {
+                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                throw e;
+                            }
+
                         }
+
+                        raw.updateRow();
 
                         soldier = new Soldier(
                                 raw.getString(Soldier.ALIAS.ID.getLabel()),
@@ -587,15 +617,19 @@ public class OracleModule implements DAO {
                                 raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
                                 raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel()));
                     }
-                    ;
                     return soldier;
                 }
             }, soldierIdMatch);
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
+    }
+
+    public Soldier setNewCommander(String soldierIdMatch, String commanderIdMatch) throws DataAccessException {
+        throw new UnsupportedOperationException("not implemented yet.");
+        // TODO implement
     }
 
     public Location setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException {
@@ -616,7 +650,7 @@ public class OracleModule implements DAO {
     public Soldier getSoldierById(String idMatch) throws DataAccessException {
         try {
             return (Soldier) performQuery(SQL_GET_SOLDIER_BY_ID, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     Soldier soldier = null;
                     if (raw.next())
                         soldier = new Soldier(
@@ -634,14 +668,14 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
     public List<Soldier> getSubSoldiersOfByID(String idMatch) throws DataAccessException {
         try {
             return (List<Soldier>) performQuery(SQL_GET_SUBS_OF_SOLDIER_BY_ID, new SetParser() {
-                public Object parse(ResultSet raw) throws SQLException {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
@@ -661,7 +695,7 @@ public class OracleModule implements DAO {
         } catch (SQLException e) {
             Logger.getLogger("model").error("Parsing result set error.", e);
             e.printStackTrace();
-            throw new DataAccessException("Performing data getting failed.", e);
+            throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 }

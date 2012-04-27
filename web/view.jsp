@@ -7,12 +7,13 @@
 
 <%--this is info block--%>
 <div class="container-fluid">
-    <div class="span-one-third">
-        <%--this is soldier's infoblock with url to it's commander page, some other blocke relates on this--%>
-        <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSubsOfSoldier')}">
+
+    <%--this is soldier's infoblock with url to it's commander page, some other blocke relates on this--%>
+    <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSubsOfSoldier')}">
+        <div class="span-one-third">
             <h3>Current Soldier</h3>
             <jsp:useBean id="currentSoldier" scope="request" class="ncl.military.entity.Soldier"/>
-            <%-- TODO check existance of currentSoldier--%>
+                <%-- TODO check existance of currentSoldier--%>
             <table class="condensed-table borderless">
                 <tr>
                     <th width="180">ID</th>
@@ -54,11 +55,13 @@
                     <td>${currentSoldier.birthDate}</td>
                 </tr>
             </table>
-        </c:if>
-    </div>
-    <div class="span-one-third">
-        <%--this is input form for search of soldiers on filters--%>
-        <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSearchResults')}">
+        </div>
+    </c:if>
+
+
+    <%--this is input form for search of soldiers on filters--%>
+    <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSearchResults')}">
+        <div class="span-one-third">
             <c:url var="url" value="/viewSoldiers">
                 <c:param name="action" value="getSearchResults"/>
             </c:url>
@@ -103,8 +106,55 @@
                         <%--<jsp:include page="jspf/soldierForm.jspf" flush="true"/>--%>
                 </form>
             </div>
-        </c:if>
+        </div>
+    </c:if>
+
+
+    <%--this is form for adding/editing soldiers--%>
+    <div class="span-one-third">
+        <un:useConstants var="FormConst" className="ncl.military.controller.handle.HandlerFactory"/>
+        <c:if test="${fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope, FormConst.EDIT)}">
+        <form action="/viewSoldiers" method="post">
+            <input name="action" value="${requestScope.action}" type="hidden"/>
+            <table>
+                <tr>
+                    <td><label for="queried_soldier_name">Soldier name: </label></td>
+                    <td><label>
+                        <input name="queried_soldier_name" type="text"/>
+                    </label></td>
+                </tr>
+                <tr>
+                    <td><label for="queried_unit_name">Unit: </label></td>
+                    <td><label>
+                        <input name="queried_unit_name" type="text"/>
+                    </label></td>
+                </tr>
+
+
+                <tr>
+                    <td><label for="queried_commander_name">Commander name: </label></td>
+                    <td><label>
+                        <select name="queried_commander_name">
+                            <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
+                                <option value="${soldier.id}">${soldier.name}</option>
+                            </c:forEach>
+                        </select>
+                        <!--<input id="queried_commander_name" name="queried_commander_name" type="text"/>-->
+                    </label></td>
+                </tr>
+
+                <tr>
+                    <td><label for="queried_soldier_rank">Rank: </label></td>
+                    <td><label>
+                        <input name="queried_soldier_rank" type="text"/>
+                    </label></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" class="btn primary pull-right" value="Add"/></td>
+                </tr>
+            </table>
     </div>
+    </c:if>
 </div>
 <%--this is for viewing items--%>
 <div class="item_list">
@@ -124,6 +174,7 @@
                         <%--<th>COMMANDER</th>--%>
                     <th>UNIT</th>
                     <th>BIRTHDATE</th>
+                    <th>ACTIONS</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -142,6 +193,13 @@
                             <%--<td>${soldier.commander}</td>--%>
                         <td>${soldier.unit}</td>
                         <td>${soldier.birthDate}</td>
+                        <td>
+                            <c:url var="editUrl" value="/viewSoldiers">
+                                <c:param name="soldierIdMatch" value="${soldier.id}"/>
+                                <c:param name="action" value="edit"/>
+                            </c:url>
+                            <a class="btn primary" href="${editUrl}">Edit</a>
+                        </td>
                     </tr>
                 </c:forEach>
 
@@ -174,6 +232,7 @@
                         </td>
                         <td>${location.region}</td>
                         <td>${location.city}</td>
+
                     </tr>
                 </c:forEach>
 
@@ -220,22 +279,22 @@
             </table>
         </c:if>
 
-        <hr/>
+        <%--<hr/>
         <h2>testing</h2>
         <c:forEach items="${requestScope}" var="attr">
             ${attr.key}=${attr.value}<br>
-            <%-- <c:if test="${attr.key eq 'listOfSoldiers' }">
+            &lt;%&ndash; <c:if test="${attr.key eq 'listOfSoldiers' }">
                  <c:forEach items="${requestScope.listOfSoldiers}" var="soldier">
                      <hr />
                      Name : ${soldier.name}
                      Unit : ${soldier.unit}
                      <hr />
                  </c:forEach>
-            </c:if>--%>
+            </c:if>&ndash;%&gt;
         </c:forEach>
 
         <c:out value="${requestScope.viewType}"/>
-        <c:out value="${pageContext.request.servletPath}"/>
+        <c:out value="${pageContext.request.servletPath}"/>--%>
     </div>
 </div>
 

@@ -5,8 +5,8 @@
 --%>
 <%@ taglib prefix="sql" uri="http://java.sun.com/jstl/sql" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="un" uri="http://jakarta.apache.org/taglibs/unstandard-1.0" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -25,7 +25,6 @@
     <!-- <link rel="icon" href="assets/img/favicon.ico" /> -->
 </head>
 <body>
-
 <div class="topbar">
     <div class="topbar-inner">
         <div class="container-fluid"><a target="_new" href="#" class="brand"> Soldiers <span
@@ -61,22 +60,24 @@
             <li><a href="${url}">
                 <p class="navbar_item navbar_wiki">Find Soldier</p>
             </a></li>
+            <%--
 
-            <c:url var="url" value="/viewUnits">
-                <c:param name="action" value="getSearchResults"/>
-            </c:url>
-            <li><a href="${url}">
-                <p class="navbar_item navbar_wiki">Find Unit</p>
-            </a></li>
+                        <c:url var="url" value="/viewUnits">
+                            <c:param name="action" value="getSearchResults"/>
+                        </c:url>
+                        <li><a href="${url}">
+                            <p class="navbar_item navbar_wiki">Find Unit</p>
+                        </a></li>
 
-            <c:url var="url" value="/viewLocations">
-                <c:param name="action" value="getSearchResults"/>
-            </c:url>
-            <li><a href="${url}">
-                <p class="navbar_item navbar_wiki">Find Location</p>
-            </a></li>
+                        <c:url var="url" value="/viewLocations">
+                            <c:param name="action" value="getSearchResults"/>
+                        </c:url>
+                        <li><a href="${url}">
+                            <p class="navbar_item navbar_wiki">Find Location</p>
+                        </a></li>
+            --%>
 
-            <c:url var="url" value="/view">
+            <c:url var="url" value="/viewSoldiers">
                 <c:param name="action" value="addSoldier"/>
             </c:url>
             <li><a href="${url}">

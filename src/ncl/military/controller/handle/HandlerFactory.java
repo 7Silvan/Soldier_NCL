@@ -26,12 +26,13 @@ public class HandlerFactory {
     // common actions
     public static final String GET_ALL = "getAll";
     public static final String GET_TOP = "getTop";
-    public static final String CHANGE = "changeOne";
+    public static final String EDIT = "edit";
     public static final String GET = "getOne";
     public static final String GET_SEARCH_RESULTS = "getSearchResults";
 
     // actions for soldiers
     public static final String GET_SUBS_OF_SOLDIER = "getSubsOfSoldier";
+    public static final String ADD_SOLDIER = "addSoldier";
 
     // actions for units
     public static final String GET_SOLDIERS_OF_UNIT = "getSoldiersOfUnit";
@@ -46,6 +47,7 @@ public class HandlerFactory {
 
     //view
     public static final String VIEW_MAIN = "/view.jsp";
+    public static final String VIEW_EDIT = "/editor.jsp";
 
     public static Handlable getHandler(DAO dao, Map<String, Object> params) {
 
@@ -53,7 +55,6 @@ public class HandlerFactory {
         String view = null;
         //String view = (String) params.get("userPath");
         //if (view == null) view = VIEW_MAIN;
-
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_TOP);
@@ -83,6 +84,22 @@ public class HandlerFactory {
                 if (executable == null) {
                     executable = new AllSoldiersOfUnitGetter(dao);
                     executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
+                }
+            }
+            if ((ADD_SOLDIER).equals((String) params.get("action"))) {
+                view = VIEW_EDIT;
+                executable = executors.get(SoldierAdder.class.getName());
+                if (executable == null) {
+                    executable = new SoldierAdder(dao);
+                    executors.put(SoldierAdder.class.getName(), executable);
+                }
+            }
+            if ((EDIT).equals((String) params.get("action"))) {
+                view = VIEW_EDIT;
+                executable = executors.get(SoldierChanger.class.getName());
+                if (executable == null) {
+                    executable = new SoldierChanger(dao);
+                    executors.put(SoldierAdder.class.getName(), executable);
                 }
             }
         }

@@ -66,6 +66,8 @@ public interface DAO {
     // Soldier sets
     Soldier setSoldierAttributes(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
 
+    Soldier setNewCommander(String soldierIdMatch, String commanderIdMatch) throws DataAccessException;
+
     // Location sets
     Location setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException;
 

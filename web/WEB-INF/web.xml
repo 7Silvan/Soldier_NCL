@@ -61,4 +61,8 @@
         <error-code>500</error-code>
         <location>/jspf/error/500.jspf</location>
     </error-page>   -->
+    <taglib>
+        <taglib-uri>http://jakarta.apache.org/taglibs/unstandard-1.0</taglib-uri>
+        <taglib-location>/WEB-INF/taglibs-unstandard.tld</taglib-location>
+    </taglib>
 </web-app>
