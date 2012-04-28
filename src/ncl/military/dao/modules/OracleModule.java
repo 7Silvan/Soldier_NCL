@@ -32,9 +32,9 @@ import static ncl.military.entity.Soldier.ALIAS.getAlias;
  */
 public class OracleModule implements DAO {
 
+    private static final Logger log = Logger.getLogger("model");
+
     private interface SetParser {
-        //        Object parse(ResultSet raw) throws SQLException;
-//        Object parse(ResultSet raw, PreparedStatement prst) throws SQLException;
         Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException;
     }
 
@@ -94,11 +94,11 @@ public class OracleModule implements DAO {
 
     private static final String SQL_GET_ALL_LOCATIONS =
             // values to take // location_id // location_name // location_region // location_city
-            "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location";
+            "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location ";
 
     private static final String SQL_GET_LOCATION_BY_ID =
             // values to take // location_id // location_name // location_region // location_city
-            "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location where location_id = ?";
+            "select loc_id as location_id, name as location_name, region as location_region, city as location_city from location where loc_id = ? ";
 
     private static final String SQL_GET_UNIT_BY_ID_FOR_UPDATE = // values to take // unit_id // unit_name // soldier_name // location_name
             "select unit_id as unit_id,unit.name as unit_name,soldier.soldier_id as soldier_id,soldier.name as soldier_name,location.name as location_name from unit join location on unit.location = location.loc_id join soldier on unit.unit_id = soldier.unit and soldier.headofunit = 1 where unit_id = ? ";
@@ -108,7 +108,7 @@ public class OracleModule implements DAO {
         try {
             dataSource = (OracleDataSource) new InitialContext().lookup(initParams.get("jndiPath"));
         } catch (NamingException e) {
-            Logger.getLogger("model").error("Cannot find resources over jndi");
+            log.error("Cannot find resources over jndi");
             e.printStackTrace();
         }
     }
@@ -125,16 +125,20 @@ public class OracleModule implements DAO {
         try {
             conn = dataSource.getConnection();
             prst = conn.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+            log.debug("Preparing statement with query : " + query);
+
             int currentParameter = 0;
             for (String parameter : parameters) {
                 prst.setString(++currentParameter, parameter);
+                log.info("assigning parameter #" + currentParameter + " with value: " + parameter);
             }
 
             rs = prst.executeQuery();
 
             return parser.parse(rs, prst, conn);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Some SQL error occured.", e);
+            log.error("Some SQL error occured.", e);
             e.printStackTrace();
         } finally {
             SQLException exception = null;
@@ -142,28 +146,28 @@ public class OracleModule implements DAO {
                 try {
                     rs.close();
                 } catch (SQLException e) {
-                    Logger.getLogger("model").error("Result set closing error.", e);
+                    log.error("Result set closing error.", e);
                     exception = e;
                 } finally {
                     if (prst != null) {
                         try {
                             prst.close();
                         } catch (SQLException e) {
-                            Logger.getLogger("model").error("Prepared statement closing error", e);
+                            log.error("Prepared statement closing error", e);
                             if (exception == null) exception = e;
                         } finally {
                             if (conn != null) {
                                 try {
                                     conn.close();
                                 } catch (SQLException e) {
-                                    Logger.getLogger("model").error("Connection closing error", e);
+                                    log.error("Connection closing error", e);
                                     if (exception == null) exception = e;
                                 }
                             } else
-                                Logger.getLogger("model").error("Connection was null.");
+                                log.error("Connection was null.");
                         }
                     } else
-                        Logger.getLogger("model").error("PreparedStatement was null.");
+                        log.error("PreparedStatement was null.");
                 }
             } else
                 Logger.getLogger("ResultSet was null.");
@@ -195,7 +199,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -219,7 +223,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -244,7 +248,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -271,7 +275,7 @@ public class OracleModule implements DAO {
             },
                     idMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -296,7 +300,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -323,7 +327,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -352,7 +356,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -372,9 +376,10 @@ public class OracleModule implements DAO {
                     }
                     return unit;
                 }
-            });
+            },
+                    unitIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -401,7 +406,7 @@ public class OracleModule implements DAO {
             },
                     unitIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -426,7 +431,7 @@ public class OracleModule implements DAO {
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -450,7 +455,7 @@ public class OracleModule implements DAO {
             },
                     locationIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -475,7 +480,7 @@ public class OracleModule implements DAO {
             },
                     locationIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -513,7 +518,7 @@ public class OracleModule implements DAO {
                     soldiers = getSoldiersListCustomQuery(searchQuery.toString());
 
                 } catch (IllegalArgumentException ex) {
-                    Logger.getLogger("model").error("Wrong attribute name");
+                    log.error("Wrong attribute name");
 
                 }
             }
@@ -545,7 +550,7 @@ public class OracleModule implements DAO {
                     units = getUnitsListCustomQuery(searchQuery.toString());
 
                 } catch (IllegalArgumentException ex) {
-                    Logger.getLogger("model").error("Wrong attribute name");
+                    log.error("Wrong attribute name");
                 }
             }
         }
@@ -576,19 +581,19 @@ public class OracleModule implements DAO {
                     locations = getLocationsListCustomQuery(searchQuery.toString());
 
                 } catch (IllegalArgumentException ex) {
-                    Logger.getLogger("model").error("Wrong attribute name");
+                    log.error("Wrong attribute name");
                 }
             }
         }
         return locations;
     }
 
-    public void setSoldierAttributes(String soldierIdMatch, final List<EntityValue> values) throws DataAccessException {
+    public Boolean setSoldierAttributes(String soldierIdMatch, final List<EntityValue> values) throws DataAccessException {
         try {
-            performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+            return (Boolean) performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    boolean updated = false;
                     if (raw.next()) {
-                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
                         for (EntityValue value : values) {
                             try {
                                 String alias = value.getKey();
@@ -608,92 +613,98 @@ public class OracleModule implements DAO {
                                 }
 
                             } catch (NumberFormatException e) {
-                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                log.error("Parsing data from given value error", e);
                                 e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
-                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
                                 e.printStackTrace();
                                 throw e;
                             } catch (ParseException e) {
-                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                log.error("Parsing data from given value error", e);
                                 e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             }
                         }
                         raw.updateRow();
+                        updated = raw.rowUpdated();
+                        conn.commit();
                     }
-                    return null;
+                    return updated;
                 }
             }, soldierIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
-    public void setNewCommander(String soldierIdMatch, final String commanderIdMatch) throws DataAccessException {
+    public Boolean setNewCommander(String soldierIdMatch, final String commanderIdMatch) throws DataAccessException {
         try {
-            performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+            return (Boolean) performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    boolean updated = false;
                     if (raw.next()) {
                         try {
                             raw.updateString(Soldier.ALIAS.COMMANDER.getLabel(), commanderIdMatch);
                         } catch (SQLException e) {
-                            Logger.getLogger("model").error("Didn\'t updated column :" + Soldier.ALIAS.COMMANDER.getLabel() +
+                            log.error("Didn\'t updated column :" + Soldier.ALIAS.COMMANDER.getLabel() +
                                     " with value : " + commanderIdMatch, e);
                             e.printStackTrace();
                             throw e;
                         }
                     }
                     raw.updateRow();
-                    return null;
+                    updated = raw.rowUpdated();
+                    conn.commit();
+                    return updated;
                 }
             }, soldierIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
-    public void setLocationAttributes(String locationIdMatch, final List<EntityValue> values) throws DataAccessException {
+    public Boolean setLocationAttributes(String locationIdMatch, final List<EntityValue> values) throws DataAccessException {
         try {
-            performQuery(SQL_GET_LOCATION_BY_ID, new SetParser() {
+            return (Boolean) performQuery(SQL_GET_LOCATION_BY_ID, new SetParser() {
+                boolean updated = false;
+
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     if (raw.next()) {
-                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
-                        raw.moveToInsertRow();
                         for (EntityValue value : values) {
                             try {
                                 raw.updateString(value.getKey(), value.getValue());
                             } catch (SQLException e) {
-                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
                                 e.printStackTrace();
                                 throw e;
                             }
                         }
-                        raw.insertRow();
+                        raw.updateRow();
+                        updated = raw.rowUpdated();
+                        conn.commit();
                     }
-                    return null;
+                    return updated;
                 }
             },
                     locationIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
-    public void setUnitAttributes(String unitIdMatch, final List<EntityValue> values) throws DataAccessException {
+    public Boolean setUnitAttributes(String unitIdMatch, final List<EntityValue> values) throws DataAccessException {
         try {
-            performQuery(SQL_GET_UNIT_BY_ID_FOR_UPDATE, new SetParser() {
+            return (Boolean) performQuery(SQL_GET_UNIT_BY_ID_FOR_UPDATE, new SetParser() {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    boolean updated = false;
                     if (raw.next()) {
-                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
-                        raw.moveToInsertRow();
                         for (EntityValue value : values) {
                             try {
                                 String alias = value.getKey();
@@ -702,35 +713,38 @@ public class OracleModule implements DAO {
 
                                 if (alias.equals(Unit.ALIAS.LOCATION.getLabel()))
                                     raw.updateInt(value.getKey(), Integer.parseInt(value.getValue()));
+
                             } catch (NumberFormatException e) {
-                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                log.error("Parsing data from given value error", e);
                                 e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
-                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
                                 e.printStackTrace();
                                 throw e;
                             }
                         }
-                        raw.insertRow();
+                        raw.updateRow();
+                        updated = raw.rowUpdated();
+                        conn.commit();
                     }
-                    return null;
+                    return updated;
                 }
             },
                     unitIdMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
 
-    public void addSoldier(final List<EntityValue> values) throws DataAccessException {
+    public Boolean addSoldier(final List<EntityValue> values) throws DataAccessException {
         try {
-            performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+            return (Boolean) performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    boolean added = false;
                     if (raw.next()) {
-                        // ResultSetMetaData rsmd = raw.getMetaData(); // TODO how to take data type with name of column
                         raw.moveToInsertRow();
                         for (EntityValue value : values) {
                             try {
@@ -749,27 +763,31 @@ public class OracleModule implements DAO {
                                     java.util.Date date = sdf.parse(value.getValue());
                                     raw.updateDate(value.getKey(), new java.sql.Date(date.getTime()));
                                 }
+
                             } catch (NumberFormatException e) {
-                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                log.error("Parsing data from given value error", e);
                                 e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
-                                Logger.getLogger("model").error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
+                                log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
                                 e.printStackTrace();
                                 throw e;
                             } catch (ParseException e) {
-                                Logger.getLogger("model").error("Parsing data from given value error", e);
+                                log.error("Parsing data from given value error", e);
                                 e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             }
                         }
                         raw.insertRow();
+                        added = raw.rowInserted();
+                        raw.moveToCurrentRow();
+                        conn.commit();
                     }
-                    return null;
+                    return added;
                 }
             });
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -794,7 +812,7 @@ public class OracleModule implements DAO {
             },
                     idMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
@@ -821,7 +839,7 @@ public class OracleModule implements DAO {
             },
                     idMatch);
         } catch (SQLException e) {
-            Logger.getLogger("model").error("Parsing result set error.", e);
+            log.error("Parsing result set error.", e);
             e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }

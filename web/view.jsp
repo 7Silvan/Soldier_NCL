@@ -8,154 +8,108 @@
 <%--this is info block--%>
 <div class="container-fluid">
 
-    <%--this is soldier's infoblock with url to it's commander page, some other blocke relates on this--%>
-    <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSubsOfSoldier')}">
-        <div class="span-one-third">
-            <h3>Current Soldier</h3>
-            <jsp:useBean id="currentSoldier" scope="request" class="ncl.military.entity.Soldier"/>
-                <%-- TODO check existance of currentSoldier--%>
-            <table class="condensed-table borderless">
-                <tr>
-                    <th width="180">ID</th>
-                    <td>${currentSoldier.id}</td>
-                </tr>
-                <tr>
-                    <th>Name</th>
-                    <td>${currentSoldier.name}</td>
-                </tr>
-                <tr>
-                    <th>Rank</th>
-                    <td>${currentSoldier.rank}</td>
-                </tr>
-                <tr>
-                    <th>Commander</th>
-                    <c:choose>
-                        <c:when test="${requestScope.hierarchyList ne null && fn:length(requestScope.hierarchyList) > 1}">
+<%--this is soldier's infoblock with url to it's commander page, some other blocke relates on this--%>
+<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') and fn:contains(requestScope.actionPerformed,'getSubsOfSoldier')}">
+<div class="span-one-third">
+    <h3>Current Soldier</h3>
+    <jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>
+        <%-- TODO check existance of queriedSoldier--%>
+    <table class="condensed-table borderless">
+        <tr>
+            <th width="180">ID</th>
+            <td>${queriedSoldier.id}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>${queriedSoldier.name}</td>
+        </tr>
+        <tr>
+            <th>Rank</th>
+            <td>${queriedSoldier.rank}</td>
+        </tr>
+        <tr>
+            <th>Commander</th>
+            <c:choose>
+                <c:when test="${requestScope.hierarchyList ne null && fn:length(requestScope.hierarchyList) > 1}">
 
-                            <c:url var="commanderUrl" value="/viewSoldiers">
-                                <c:param name="action" value="getSubsOfSoldier"/>
-                                <c:param name="queriedSoldierId"
-                                         value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-2].id}"/>
-                            </c:url>
-                            <td>
-                                <a href="${commanderUrl}">${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-2].name}</a>
-                            </td>
-                        </c:when>
-                        <c:otherwise>
-                            <td>${currentSoldier.commander}</td>
-                        </c:otherwise>
-                    </c:choose>
-                </tr>
-                <tr>
-                    <th>Unit</th>
-                    <td>${currentSoldier.unit}</td>
-                </tr>
-                <tr>
-                    <th>Birthday</th>
-                    <td>${currentSoldier.birthDate}</td>
-                </tr>
-            </table>
-        </div>
-    </c:if>
-
-
-    <%--this is input form for search of soldiers on filters--%>
-    <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSearchResults')}">
-        <div class="span-one-third">
-            <c:url var="url" value="/viewSoldiers">
-                <c:param name="action" value="getSearchResults"/>
-            </c:url>
-            <div class="span8">
-                <form action="${url}" method="post">
-                    <table>
-                        <tr>
-                            <td><label for="queried_soldier_name">Soldier name: </label></td>
-                            <td><label>
-                                <input id="queried_soldier_name" name="queried_soldier_name" type="text"/>
-                            </label></td>
-                        </tr>
-                        <tr>
-                            <td><label for="queried_unit_name">Unit: </label></td>
-                            <td><label>
-                                <input id="queried_unit_name" name="queried_unit_name" type="text"/>
-                            </label></td>
-                        </tr>
-                        <tr>
-                            <td><label for="queried_location_name">Location: </label></td>
-                            <td><label>
-                                <input id="queried_location_name" name="queried_location_name" type="text"/>
-                            </label></td>
-                        </tr>
-                        <tr>
-                            <td><label for="queried_commander_name">Commander name: </label></td>
-                            <td><label>
-                                <input id="queried_commander_name" name="queried_commander_name" type="text"/>
-                            </label></td>
-                        </tr>
-                        <tr>
-                            <td><label for="queried_soldier_rank">Rank: </label></td>
-                            <td><label>
-                                <input id="queried_soldier_rank" name="queried_soldier_rank" type="text"/>
-                            </label></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><input type="submit" class="btn primary pull-right" value="Find"/></td>
-                        </tr>
-                    </table>
-
-                        <%--<jsp:include page="jspf/soldierForm.jspf" flush="true"/>--%>
-                </form>
-            </div>
-        </div>
-    </c:if>
+                    <c:url var="commanderUrl" value="/viewSoldiers">
+                        <c:param name="action" value="getSubsOfSoldier"/>
+                        <c:param name="queriedSoldierId"
+                                 value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-2].id}"/>
+                    </c:url>
+                    <td>
+                        <a href="${commanderUrl}">${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-2].name}</a>
+                    </td>
+                </c:when>
+                <c:otherwise>
+                    <td>${queriedSoldier.commander}</td>
+                </c:otherwise>
+            </c:choose>
+        </tr>
+        <tr>
+            <th>Unit</th>
+            <td>${queriedSoldier.unit}</td>
+        </tr>
+        <tr>
+            <th>Birthday</th>
+            <td>${queriedSoldier.birthDate}</td>
+        </tr>
+    </table>
+</div>
+</c:if>
 
 
-    <%--this is form for adding/editing soldiers--%>
-    <div class="span-one-third">
-        <un:useConstants var="FormConst" className="ncl.military.controller.handle.HandlerFactory"/>
-        <c:if test="${fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope, FormConst.EDIT)}">
-        <form action="/viewSoldiers" method="post">
-            <input name="action" value="${requestScope.action}" type="hidden"/>
+<%--this is input form for search of soldiers on filters--%>
+<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSearchResults')}">
+<div class="span-one-third">
+    <c:url var="url" value="/viewSoldiers">
+        <c:param name="action" value="getSearchResults"/>
+    </c:url>
+    <div class="span8">
+        <form action="${url}" method="post">
             <table>
                 <tr>
                     <td><label for="queried_soldier_name">Soldier name: </label></td>
                     <td><label>
-                        <input name="queried_soldier_name" type="text"/>
+                        <input id="queried_soldier_name" name="queried_soldier_name" type="text"/>
                     </label></td>
                 </tr>
                 <tr>
                     <td><label for="queried_unit_name">Unit: </label></td>
                     <td><label>
-                        <input name="queried_unit_name" type="text"/>
+                        <input id="queried_unit_name" name="queried_unit_name" type="text"/>
                     </label></td>
                 </tr>
-
-
+                <tr>
+                    <td><label for="queried_location_name">Location: </label></td>
+                    <td><label>
+                        <input id="queried_location_name" name="queried_location_name" type="text"/>
+                    </label></td>
+                </tr>
                 <tr>
                     <td><label for="queried_commander_name">Commander name: </label></td>
                     <td><label>
-                        <select name="queried_commander_name">
-                            <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
-                                <option value="${soldier.id}">${soldier.name}</option>
-                            </c:forEach>
-                        </select>
-                        <!--<input id="queried_commander_name" name="queried_commander_name" type="text"/>-->
+                        <input id="queried_commander_name" name="queried_commander_name" type="text"/>
                     </label></td>
                 </tr>
-
                 <tr>
                     <td><label for="queried_soldier_rank">Rank: </label></td>
                     <td><label>
-                        <input name="queried_soldier_rank" type="text"/>
+                        <input id="queried_soldier_rank" name="queried_soldier_rank" type="text"/>
                     </label></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="submit" class="btn primary pull-right" value="Add"/></td>
+                    <td colspan="2"><input type="submit" class="btn primary pull-right" value="Find"/></td>
                 </tr>
             </table>
+
+                <%--<jsp:include page="jspf/soldierForm.jspf" flush="true"/>--%>
+        </form>
     </div>
-    </c:if>
 </div>
+</c:if>
+
+
 <%--this is for viewing items--%>
 <div class="item_list">
     <h4>[List of values below]</h4>

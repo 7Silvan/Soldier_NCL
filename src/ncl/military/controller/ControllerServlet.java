@@ -24,6 +24,8 @@ import java.util.Map;
  */
 public class ControllerServlet extends HttpServlet {
 
+    public static final Logger log = Logger.getLogger("controller");
+
     private DAO dao = null;
 
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -39,24 +41,37 @@ public class ControllerServlet extends HttpServlet {
         dao = DAOFactory.getDao();
         dao.init(initParams);
 
-        Logger.getLogger("controller").info("ControllerServlet initialized");
+        log.info("ControllerServlet initialized");
     }
 
     public void perfromAction(HttpServletRequest req, HttpServletResponse res) {
         String userPath = req.getServletPath();
+        req.setAttribute("userPath", userPath);
         HttpSession session = req.getSession();
 
         // Copying parameters from request scope to params-Map which will be feeded
         Map<String, Object> params = new HashMap<String, Object>();
         Iterator entryIt = req.getParameterMap().entrySet().iterator();
+        log.debug(" request params => Map of params for executrors");
         while (entryIt.hasNext()) {
             Map.Entry entry = (Map.Entry) entryIt.next();
-            if (entry.getValue() instanceof Object[] && ((Object[]) entry.getValue()).length > 1)
+            if (entry.getValue() instanceof Object[] && ((Object[]) entry.getValue()).length > 1) {
+                log.debug((String) entry.getKey() + " => " + entry.getValue());
                 params.put((String) entry.getKey(), entry.getValue());
-            else
+            } else {
+                StringBuilder str4log = new StringBuilder();
+                for (Object o : ((Object[]) entry.getValue())) {
+                    str4log.append(o);
+                    str4log.append(".");
+                }
+                log.debug((String) entry.getKey() + " => " + str4log.toString());
                 params.put((String) entry.getKey(), ((Object[]) entry.getValue())[0]);
+            }
         }
+
         params.put("userPath", userPath);
+        log.debug(" Puted into result Map: userPath => " + userPath);
+
 
         Handlable handle = HandlerFactory.getHandler(dao, params);
         Map<String, ? extends Object> result = handle.execute(params);

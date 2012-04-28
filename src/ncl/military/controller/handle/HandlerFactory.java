@@ -54,7 +54,6 @@ public class HandlerFactory {
 
         Executable executable = null;
         String view = null;
-        String overrideAction = null; // workaround to determinate next view
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_TOP);
@@ -87,13 +86,12 @@ public class HandlerFactory {
                 }
             }
             if ((ADD_SOLDIER).equals((String) params.get("action"))) {
-                view = VIEW_MAIN;
+                view = VIEW_EDIT;
                 executable = executors.get(SoldierAdder.class.getName());
                 if (executable == null) {
                     executable = new SoldierAdder(dao);
                     executors.put(SoldierAdder.class.getName(), executable);
                 }
-                overrideAction = HandlerFactory.GET_SEARCH_RESULTS;
             }
             if ((EDIT).equals((String) params.get("action"))) {
                 view = VIEW_EDIT;
@@ -129,6 +127,7 @@ public class HandlerFactory {
                 }
             }
             if ((EDIT).equals((String) params.get("action"))) {
+                view = VIEW_EDIT;
                 executable = executors.get(UnitChanger.class.getName());
                 if (executable == null) {
                     executable = new UnitChanger(dao);
@@ -154,6 +153,7 @@ public class HandlerFactory {
                 }
             }
             if ((EDIT).equals((String) params.get("action"))) {
+                view = VIEW_EDIT;
                 executable = executors.get(LocationChanger.class.getName());
                 if (executable == null) {
                     executable = new LocationChanger(dao);
@@ -162,7 +162,7 @@ public class HandlerFactory {
             }
         }
         if (executable == null)
-            throw new IllegalStateException("Did not find matched executor");
-        return new Handler(executable, (String) params.get("userPath"), (overrideAction == null) ? (String) params.get("action") : overrideAction, view);
+            throw new IllegalStateException("Did not matched executor");
+        return new Handler(executable, (String) params.get("userPath"), (String) params.get("action"), view);
     }
 }

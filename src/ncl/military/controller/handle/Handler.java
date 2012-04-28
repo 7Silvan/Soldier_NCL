@@ -1,7 +1,8 @@
 package ncl.military.controller.handle;
 
-import java.util.Map;
+import org.apache.log4j.Logger;
 
+import java.util.Map;
 
 /**
  * @author gural
@@ -29,7 +30,9 @@ public class Handler implements Handlable {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = executor.execute(params);
         result.put("viewType", params.get("userPath"));
-        result.put("actionPerformed", action);
+        Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: viewType => " + params.get("userPath"));
+        result.put("action", action);
+        Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: action =>" + action);
         return result;
     }
 

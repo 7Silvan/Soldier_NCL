@@ -3,7 +3,6 @@ package ncl.military.controller.handle.executors;
 import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
 import ncl.military.dao.tools.EntityValue;
-import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
 
@@ -34,7 +33,7 @@ public class SoldierAdder extends Executor {
         result.put("listOfUnits", unitList);
 
         List<EntityValue> values = null;
-        if ((HandlerFactory.EDIT).equals(action)) {
+        if ((HandlerFactory.ADD_SOLDIER).equals(action)) {
             values = new ArrayList<EntityValue>();
             String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
             if (param != null && !param.equals("") && !param.contains(" "))
@@ -44,15 +43,20 @@ public class SoldierAdder extends Executor {
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Unit.ALIAS.NAME.getLabel(), param));
 
-            param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());
+            param = (String) params.get(Soldier.ALIAS.COMMANDER.getLabelAsQueried());
             if (param != null && !param.equals("") && !param.contains(" "))
-                values.add(new EntityValue(Location.ALIAS.NAME.getLabel(), param));
+                values.add(new EntityValue(Soldier.ALIAS.COMMANDER.getLabel(), param));
 
             param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Soldier.ALIAS.RANK.getLabel(), param));
 
-            getDao().addSoldier(values);
+            param = (String) params.get(Soldier.ALIAS.BIRTHDATE.getLabelAsQueried());
+            if (param != null && !param.equals("") && !param.contains(" "))
+                values.add(new EntityValue(Soldier.ALIAS.BIRTHDATE.getLabel(), param));
+
+            if (values.size() != 0)
+                getDao().addSoldier(values);
         }
 
         return result;

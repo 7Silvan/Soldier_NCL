@@ -28,12 +28,12 @@ public class SoldierChanger extends Executor {
 
         String action = (String) params.get("action");
         String soldierIdMatch = (String) params.get("soldierIdMatch");
-        List<Soldier> soldierList = getDao().getAllSoldiers();
-        result.put("listOfSoldiers", soldierList);
-        List<Unit> unitList = getDao().getAllUnits();
-        result.put("listOfUnits", unitList);
-        result.put("currentSoldier", soldierIdMatch);
 
+        List<Soldier> soldierList = getDao().getAllSoldiers();
+        List<Unit> unitList = getDao().getAllUnits();
+
+        result.put("listOfSoldiers", soldierList);
+        result.put("listOfUnits", unitList);
 
         List<EntityValue> values = null;
         if ((HandlerFactory.EDIT).equals(action) && soldierIdMatch != null) {

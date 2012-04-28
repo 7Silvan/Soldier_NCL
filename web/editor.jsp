@@ -3,17 +3,16 @@
   Date: 27.04.12
   Time: 5:47
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<un:useConstants var="FormConst" className="ncl.military.controller.handle.HandlerFactory"/>
-<c:if test="${fn:contains(param.userPath, '/viewSoldiers') and (fn:contains(param.action, FormConst.ADD_SOLDIER) or fn:contains(param.action, FormConst.EDIT))}">
-    <jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>
+
+<c:if test="${fn:contains(requestScope.userPath, '/viewSoldiers') and (fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope.action, FormConst.EDIT))}">
+    <%--<jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>--%>
 
     <form action="/viewSoldiers" method="post">
     <table>
-        <input name="soldierIdMatch" value="${param.soldierIdMatch}" type="hidden"/>
+        <input name="soldierIdMatch" value="${requestScope.soldierIdMatch}" type="hidden"/>
 
         <c:choose>
-            <c:when test="${param.action eq FormConst.EDIT}">
+            <c:when test="${requestScope.action eq FormConst.EDIT}">
                 <input name="action" value="${FormConst.EDIT}" type="hidden"/>
             </c:when>
             <c:otherwise>
@@ -25,7 +24,7 @@
             <td><label for="queried_soldier_name">Soldier name: </label></td>
             <td><label>
                 <input id="queried_soldier_name" name="queried_soldier_name" type="text"
-                       value="${queriedSoldier.name}"/>
+                       value="${requestScope.queriedSoldier.name}"/>
             </label></td>
         </tr>
         <tr>
@@ -35,7 +34,7 @@
                 <select id="queried_unit_name" name="queried_unit_name">
                     <c:forEach var="unit" items="${requestScope.listOfUnits}">
                         <c:choose>
-                            <c:when test="${queriedSoldier.unit eq unit.name}">
+                            <c:when test="${requestScope.queriedSoldier.unit eq unit.name}">
                                 <option value="${unit.id}" selected="">${unit.name}</option>
                             </c:when>
                             <c:otherwise>
@@ -54,11 +53,11 @@
                 <select id="queried_soldier_commander" name="queried_soldier_commander">
                     <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                         <c:choose>
-                            <c:when test="${queriedSoldier.commander eq soldier.id}">
+                            <c:when test="${requestScope.queriedSoldier.commander eq soldier.id}">
                                 <option value="${soldier.id}" selected="">${soldier.name}</option>
                             </c:when>
                             <c:otherwise>
-                                <c:if test="${queriedSoldier.id ne soldier.id}">
+                                <c:if test="${requestScope.queriedSoldier.id ne soldier.id}">
                                     <option value="${soldier.id}">${soldier.name}</option>
                                 </c:if>
                             </c:otherwise>
@@ -73,20 +72,20 @@
             <td><label for="queried_soldier_rank">Rank: </label></td>
             <td><label>
                 <input id="queried_soldier_rank" name="queried_soldier_rank" type="text"
-                       value="${queriedSoldier.rank}"/>
+                       value="${requestScope.queriedSoldier.rank}"/>
             </label></td>
         </tr>
         <tr>
-            <td><label for="queried_soldier_birthdate">Rank: </label></td>
+            <td><label for="queried_soldier_birthdate">Date: </label></td>
             <td><label>
                 <input id="queried_soldier_birthdate" name="queried_soldier_birthdate" type="text"
-                       value="${queriedSoldier.birthDate}"/>
+                       value="${requestScope.queriedSoldier.birthDate}"/>
             </label></td>
         </tr>
         <tr>
             <td colspan="2">
                 <c:choose>
-                    <c:when test="${param.action eq FormConst.EDIT}">
+                    <c:when test="${requestScope.action eq FormConst.EDIT}">
                         <input type="submit" class="btn primary pull-right" value="Edit"/>
                     </c:when>
                     <c:otherwise>
@@ -97,25 +96,26 @@
         </tr>
     </table>
 </c:if>
-<c:if test="${fn:contains(param.userPath, '/viewUnits') and fn:contains(param.action, FormConst.EDIT)}">
-    <jsp:useBean id="queriedUnit" scope="request" class="ncl.military.entity.Unit"/>
-    <input name="unitIdMatch" value="${param.unitIdMatch}" type="hidden"/>
+<c:if test="${fn:contains(requestScope.userPath, '/viewUnits') and fn:contains(requestScope.action, FormConst.EDIT)}">
+    <%--<jsp:useBean id="queriedUnit" scope="request" class="ncl.military.entity.Unit"/>--%>
+    <form action="/viewUnits" method="post">
+    <input name="unitIdMatch" value="${requestScope.unitIdMatch}" type="hidden"/>
 
     <input name="action" value="${FormConst.EDIT}" type="hidden"/>
 
     <tr>
         <td><label for="queried_unit_name">Unit: </label></td>
         <td><label>
-            <input name="queried_unit_name" type="text" value="${queriedUnit.name}"/>
+            <input name="queried_unit_name" type="text" value="${requestScope.queriedUnit.name}"/>
         </label></td>
     </tr>
     <tr>
-        <td>Location:</td>
+        <td><label>Location:</label></td>
         <td><label>
             <select name="queried_location_name">
                 <c:forEach var="location" items="${requestScope.listOfLocations}">
                     <c:choose>
-                        <c:when test="${queriedUnit.location eq location.id}">
+                        <c:when test="${requestScope.queriedUnit.location eq location.id}">
                             <option value="${location.id}" selected="">${location.name}</option>
                         </c:when>
                         <c:otherwise>
@@ -135,28 +135,28 @@
     </table>
 </c:if>
 
-<c:if test="${fn:contains(param.userPath, '/viewLocations') and fn:contains(param.action, FormConst.EDIT)}">
-    <jsp:useBean id="queriedLocation" scope="request" class="ncl.military.entity.Location"/>
-    <input name="locationIdMatch" value="${param.locationIdMatch}" type="hidden"/>
+<c:if test="${fn:contains(requestScope.userPath, '/viewLocations') and fn:contains(requestScope.action, FormConst.EDIT)}">
+    <%--<jsp:useBean id="queriedLocation" scope="request" class="ncl.military.entity.Location"/>--%>
+    <input name="locationIdMatch" value="${requestScope.locationIdMatch}" type="hidden"/>
 
     <input name="action" value="${FormConst.EDIT}" type="hidden"/>
 
     <tr>
         <td>Location:</td>
         <td><label>
-            <input name="queried_location_name" value="${queriedLocation.name}" type="text"/>
+            <input name="queried_location_name" value="${requestScope.queriedLocation.name}" type="text"/>
         </label></td>
     </tr>
     <tr>
         <td>Location:</td>
         <td><label>
-            <input name="queried_location_name" value="${queriedLocation.region}" type="text"/>
+            <input name="queried_location_name" value="${requestScope.queriedLocation.region}" type="text"/>
         </label></td>
     </tr>
     <tr>
         <td>Location:</td>
         <td><label>
-            <input name="queried_location_name" value="${queriedLocation.city}" type="text"/>
+            <input name="queried_location_name" value="${requestScope.queriedLocation.city}" type="text"/>
         </label></td>
     </tr>
     <tr>

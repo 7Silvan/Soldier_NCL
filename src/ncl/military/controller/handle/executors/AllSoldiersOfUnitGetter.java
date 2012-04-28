@@ -21,7 +21,7 @@ public class AllSoldiersOfUnitGetter extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        String unitIdMatch = (String) params.get("queriedUnitId");
+        String unitIdMatch = (String) params.get("unitIdMatch");
         List<Soldier> soldierList = getDao().getSoldiersOfUnit(unitIdMatch);
         result.put("listOfSoldiers", soldierList);
 

@@ -4,6 +4,7 @@ import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
 import ncl.military.dao.tools.EntityValue;
 import ncl.military.entity.Location;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import java.util.Map;
  */
 public class LocationChanger extends Executor {
 
+    public static final Logger log = Logger.getLogger("controller");
+
     public LocationChanger(DAO dao) {
         super(dao);
     }
@@ -28,7 +31,7 @@ public class LocationChanger extends Executor {
         String locationIdMatch = (String) params.get("locationIdMatch");
         List<Location> locationList = getDao().getAllLocations();
         result.put("listOfLocations", locationList);
-        result.put("currentLocation", locationIdMatch);
+        result.put("locationIdMatch", locationIdMatch);
 
 
         List<EntityValue> values = null;
@@ -47,8 +50,12 @@ public class LocationChanger extends Executor {
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Location.ALIAS.CITY.getLabel(), param));
 
-            if (values.size() != 0)
+            if (values.size() != 0) {
                 getDao().setSoldierAttributes(locationIdMatch, values);
+
+            } else {
+
+            }
         }
         Location location = getDao().getLocationById(locationIdMatch);
         result.put("queriedLocation", location);

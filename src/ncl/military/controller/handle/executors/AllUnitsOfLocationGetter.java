@@ -21,7 +21,7 @@ public class AllUnitsOfLocationGetter extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        String locationIdMatch = (String) params.get("queriedLocationId");
+        String locationIdMatch = (String) params.get("locationIdMatch");
         List<Unit> unitList = getDao().getUnitsOfLocation(locationIdMatch);
         result.put("listOfUnits", unitList);
 

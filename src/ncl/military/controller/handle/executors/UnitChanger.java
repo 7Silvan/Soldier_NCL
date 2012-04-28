@@ -28,10 +28,9 @@ public class UnitChanger extends Executor {
         String action = (String) params.get("action");
         String unitIdMatch = (String) params.get("unitIdMatch");
         List<Location> locationList = getDao().getAllLocations();
+
         result.put("listOfLocations", locationList);
-        List<Unit> unitList = getDao().getAllUnits();
-        result.put("listOfUnits", unitList);
-        result.put("currentUnit", unitIdMatch);
+        result.put("unitIdMatch", unitIdMatch);
 
 
         List<EntityValue> values = null;
@@ -47,8 +46,11 @@ public class UnitChanger extends Executor {
                 values.add(new EntityValue(Unit.ALIAS.LOCATION.getLabel(), param));
 
             if (values.size() != 0)
-                getDao().setSoldierAttributes(unitIdMatch, values);
+                getDao().setUnitAttributes(unitIdMatch, values);
+        } else {
+
         }
+
         Unit unit = getDao().getUnitById(unitIdMatch);
         result.put("queriedUnit", unit);
         return result;

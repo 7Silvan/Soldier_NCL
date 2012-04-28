@@ -2,6 +2,7 @@ package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
 import ncl.military.entity.Soldier;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +24,14 @@ public class SubsOfSoldierGetter extends Executor {
         Map<String, Object> result = new HashMap<String, Object>();
 
         String idMatch = (String) params.get("queriedSoldierId");
+        Logger.getLogger("controller").debug("queriedSoldierId got : " + idMatch);
+
         List<Soldier> soldierList = getDao().getSubSoldiersOfByID(idMatch);
         result.put("listOfSoldiers", soldierList);
+
         List<Soldier> hierarchyList = getDao().getHierarchy(idMatch);
         result.put("hierarchyList", hierarchyList);
+
         Soldier currentSoldier = getDao().getSoldierById(idMatch);
         result.put("currentSoldier", currentSoldier);
 
