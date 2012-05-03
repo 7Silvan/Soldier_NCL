@@ -40,6 +40,9 @@ public class OracleModule implements DAO {
 
     private OracleDataSource dataSource;
 
+    private static final String SQL_GET_SOLDIERS_PURE_4_INSERT =
+            "select soldier_id, name, rank, commander, unit, birthdate from soldier";
+
     private static final String SQL_GET_ALL_SOLDIERS_FULL_INFO =
             // values to take // soldier_id// soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate // location_name // commander_name
             "select soldier_id, soldier_name, soldier_rank, soldier_commander, unit_name, soldier_birthdate, location_name, commander.name as commander_name from (select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate, location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location) soldier left join (select soldier_id as id, name from soldier) commander on soldier.soldier_commander = commander.id ";
@@ -741,7 +744,7 @@ public class OracleModule implements DAO {
 
     public Boolean addSoldier(final List<EntityValue> values) throws DataAccessException {
         try {
-            return (Boolean) performQuery(SQL_GET_SOLDIER_BY_ID_FOR_UPDATE, new SetParser() {
+            return (Boolean) performQuery(SQL_GET_SOLDIERS_PURE_4_INSERT, new SetParser() {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     boolean added = false;
                     if (raw.next()) {
@@ -749,7 +752,7 @@ public class OracleModule implements DAO {
                         for (EntityValue value : values) {
                             try {
                                 String alias = value.getKey();
-                                if (alias.equals(Soldier.ALIAS.NAME.getLabel())
+                                /*if (alias.equals(Soldier.ALIAS.NAME.getLabel())
                                         || alias.equals(Soldier.ALIAS.RANK.getLabel()))
                                     raw.updateString(value.getKey(), value.getValue());
 
@@ -762,6 +765,22 @@ public class OracleModule implements DAO {
                                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                                     java.util.Date date = sdf.parse(value.getValue());
                                     raw.updateDate(value.getKey(), new java.sql.Date(date.getTime()));
+                                }*/
+
+                                if (alias.equals(Soldier.ALIAS.NAME.getLabel()))
+                                    raw.updateString("name", value.getValue());
+                                if (alias.equals(Soldier.ALIAS.RANK.getLabel()))
+                                    raw.updateString("rank", value.getValue());
+
+                                if (alias.equals(Soldier.ALIAS.UNIT.getLabel()))
+                                    raw.updateInt("unit", Integer.parseInt(value.getValue()));
+                                if (alias.equals(Soldier.ALIAS.COMMANDER.getLabel()))
+                                    raw.updateInt("commander", Integer.parseInt(value.getValue()));
+
+                                if (alias.equals(Soldier.ALIAS.BIRTHDATE.getLabel())) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                    java.util.Date date = sdf.parse(value.getValue());
+                                    raw.updateDate("birthdate", new java.sql.Date(date.getTime()));
                                 }
 
                             } catch (NumberFormatException e) {
@@ -779,9 +798,10 @@ public class OracleModule implements DAO {
                             }
                         }
                         raw.insertRow();
-                        added = raw.rowInserted();
                         raw.moveToCurrentRow();
                         conn.commit();
+                        added = true;
+                        log.debug("Success of adding soldier : " + added);
                     }
                     return added;
                 }

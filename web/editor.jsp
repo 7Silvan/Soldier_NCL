@@ -4,12 +4,21 @@
   Time: 5:47
 --%>
 
+<c:if test="${fn:contains(requestScope.success, 'true')}">
+
+    <h1>Action executed successfully!</h1>
+
+</c:if>
+
+
 <c:if test="${fn:contains(requestScope.userPath, '/viewSoldiers') and (fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope.action, FormConst.EDIT))}">
     <%--<jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>--%>
 
     <form action="/viewSoldiers" method="post">
     <table>
-        <input name="soldierIdMatch" value="${requestScope.soldierIdMatch}" type="hidden"/>
+        <input name="soldierIdMatch" value="${pageContext.request.parameterMap.soldierIdMatch[0]}"
+               type="hidden"/> <%--workaround--%>
+        <% log.debug("Checking parameter soldierIdMatch : " + pageContext.getRequest().getParameter("soldierIdMatch")); %>
 
         <c:choose>
             <c:when test="${requestScope.action eq FormConst.EDIT}">
@@ -51,6 +60,7 @@
             <td><label for="queried_soldier_commander">Commander name: </label></td>
             <td><label>
                 <select id="queried_soldier_commander" name="queried_soldier_commander">
+                    <option value="">--Top of commanding--</option>
                     <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                         <c:choose>
                             <c:when test="${requestScope.queriedSoldier.commander eq soldier.id}">
@@ -99,7 +109,7 @@
 <c:if test="${fn:contains(requestScope.userPath, '/viewUnits') and fn:contains(requestScope.action, FormConst.EDIT)}">
     <%--<jsp:useBean id="queriedUnit" scope="request" class="ncl.military.entity.Unit"/>--%>
     <form action="/viewUnits" method="post">
-    <input name="unitIdMatch" value="${requestScope.unitIdMatch}" type="hidden"/>
+    <input name="unitIdMatch" value="${requestScope.unitIdMatch}" type="text"/>
 
     <input name="action" value="${FormConst.EDIT}" type="hidden"/>
 
