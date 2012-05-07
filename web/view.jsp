@@ -146,8 +146,16 @@
             <tr>
                     <%--<td>${soldier.id}</td>--%>
                 <td>
+                        <%--<c:forEach var="par" items="${requestScope}" >
+                            ${par.key}||${par.value}
+                        </c:forEach>--%>
                     <c:url var="url" value="/viewSoldiers">
                         <c:param name="action" value="getSubsOfSoldier"/>
+                        <c:param name="subAction" value="${requestScope.subAction}"/>
+                        <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
+                        <%--<c:forEach var="par" items="${requestScope}" >
+                            <c:param name="${par.key}" value="${par.value}"/>
+                        </c:forEach>--%>
                         <c:param name="queriedSoldierId" value="${soldier.id}"/>
                     </c:url>
                     <a href="${url}">${soldier.name}</a>
@@ -173,7 +181,7 @@
                 <td>
                     <c:choose>
 
-                        <c:when test="${fn:contains(requestScope.action, 'moveSoldier' )}">
+                        <c:when test="${fn:contains(requestScope.subAction, 'moveSoldier' )}">
 
                             <c:if test="${requestScope.soldierIdMatch ne soldier.id}">
                                 <c:url var="moveUnderThisUrl" value="/viewSoldiers">
@@ -200,7 +208,8 @@
 
                             <c:url var="moveUrl" value="/viewSoldiers">
                                 <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                <c:param name="action" value="${FormConst.MOVE_SOLDIER}"/>
+                                <c:param name="action" value="${FormConst.GET_TOP}"/>
+                                <c:param name="subAction" value="${FormConst.MOVE_SOLDIER}"/>
                             </c:url>
                             <a class="btn primary" href="${moveUrl}">Move</a>
                         </c:otherwise>

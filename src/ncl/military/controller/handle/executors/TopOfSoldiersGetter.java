@@ -22,6 +22,11 @@ public class TopOfSoldiersGetter extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
+        if (params.get("subAction") != null) {
+            result.put("subAction", params.get("subAction"));
+            result.put("soldierIdMatch", params.get("soldierIdMatch"));
+        }
+
         List<Soldier> soldierList = getDao().getTopOfSoldiers();
         result.put("listOfSoldiers", soldierList);
 

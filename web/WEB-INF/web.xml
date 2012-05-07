@@ -49,27 +49,8 @@
         <jsp-property-group>
             <description>JSP config for pages</description>
             <url-pattern>*.jsp</url-pattern>
-            <url-pattern>/WEB-INF/jspf/error/*</url-pattern>
             <include-prelude>/jspf/header.jspf</include-prelude>
             <include-coda>/jspf/footer.jspf</include-coda>
         </jsp-property-group>
     </jsp-config>
-    <!-- <error-page>
-        <error-code>403</error-code>
-        <location>/jspf/error/403.jspf</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/jspf/error/404.jspf</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/jspf/error/500.jspf</location>
-    </error-page>   -->
-    <!--  <jsp-config>
-        <taglib>
-            <taglib-uri>http://jakarta.apache.org/taglibs/unstandard-1.0</taglib-uri>
-            <taglib-location>/META-INF/taglibs-unstandard.tld</taglib-location>
-        </taglib>
-    </jsp-config>-->
 </web-app>

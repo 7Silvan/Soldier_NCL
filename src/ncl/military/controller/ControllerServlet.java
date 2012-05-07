@@ -82,7 +82,9 @@ public class ControllerServlet extends HttpServlet {
         for (String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
         }
-
+        if (session.getAttribute("subAction") != null) {
+            req.setAttribute("subAction", session.getAttribute("subAction"));
+        }
 
         try {
             if (result.get("success") != null && !(Boolean) result.get("success")) {

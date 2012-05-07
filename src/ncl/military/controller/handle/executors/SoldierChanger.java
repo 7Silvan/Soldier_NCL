@@ -27,6 +27,7 @@ public class SoldierChanger extends Executor {
         Map<String, Object> result = new HashMap<String, Object>();
 
         String action = (String) params.get("action");
+        String subAction = (String) params.get("subAction");
         String soldierIdMatch = (String) params.get("soldierIdMatch");
 
         List<Soldier> soldierList = getDao().getAllSoldiers();
@@ -58,11 +59,18 @@ public class SoldierChanger extends Executor {
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Soldier.ALIAS.BIRTHDATE.getLabel(), param));
 
-            if (values.size() != 0)
+            if (values.size() != 0) {
                 getDao().setSoldierAttributes(soldierIdMatch, values);
+                if (subAction != null && (HandlerFactory.MOVE_SOLDIER).equals(subAction)) {
+                    subAction = null;
+                    soldierIdMatch = null;
+                }
+            }
         }
         Soldier soldier = getDao().getSoldierById(soldierIdMatch);
         result.put("queriedSoldier", soldier);
+        result.put("subAction", subAction);
+        result.put("soldierIdMatch", soldierIdMatch);
         return result;
     }
 }

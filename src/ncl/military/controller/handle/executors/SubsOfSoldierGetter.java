@@ -23,6 +23,10 @@ public class SubsOfSoldierGetter extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
+        if (params.get("subAction") != null) {
+            result.put("subAction", params.get("subAction"));
+            result.put("soldierIdMatch", params.get("soldierIdMatch"));
+        }
         String idMatch = (String) params.get("queriedSoldierId");
         Logger.getLogger("controller").debug("queriedSoldierId got : " + idMatch);
 
