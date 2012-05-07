@@ -26,7 +26,6 @@ public class SoldiersFragmentGetter extends Executor {
         String idMatch = (String) params.get("soldierIdMatch");
         Logger.getLogger("controller").debug("soldierIdMatch got : " + idMatch);
 
-        // TODO make list of soldiers without the queried one
         List<Soldier> soldierList = getDao().getAllSoldiers();
         result.put("listOfSoldiers", soldierList);
 

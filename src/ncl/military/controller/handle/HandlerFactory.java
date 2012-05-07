@@ -34,6 +34,8 @@ public class HandlerFactory {
     public static final String GET_SUBS_OF_SOLDIER = "getSubsOfSoldier";
     public static final String ADD_SOLDIER = "addSoldier";
     public static final String DELETE_SOLDIER = "deleteSoldier";
+    public static final String MOVE_SOLDIER = "moveSoldier";
+    public static final String MOVE_UNDER_THIS_SOLDIER = "moveUnderThisSoldier";
 
     public static final String GET_VIEWING_FRAGMENT = "viewSoldiersAsFragment";
     public static final String GET_ADDING_FRAGMENT = "addSoldierAsFragment";
@@ -53,6 +55,7 @@ public class HandlerFactory {
     public static final String VIEW_MAIN = "/view.jsp";
     public static final String VIEW_EDIT = "/editor.jsp";
     private static final String VIEW_HOME = "/index.jsp";
+    public static final String VIEW_ERROR = "/error.jsp";
 
     //fragment view
     public static final String VIEW_SOLDIERS_LIST_FRAGMENT = "/jspf/soldierList.jspf";
@@ -101,12 +104,21 @@ public class HandlerFactory {
                     executors.put(SoldierAdder.class.getName(), executable);
                 }
             }
-            if ((EDIT).equals((String) params.get("action"))) {
-                view = VIEW_EDIT;
+            if ((EDIT).equals((String) params.get("action")) ||
+                    (MOVE_UNDER_THIS_SOLDIER).equals((String) params.get("action"))) {
+                view = ((EDIT).equals((String) params.get("action"))) ? VIEW_EDIT : VIEW_MAIN;
                 executable = executors.get(SoldierChanger.class.getName());
                 if (executable == null) {
                     executable = new SoldierChanger(dao);
-                    executors.put(SoldierAdder.class.getName(), executable);
+                    executors.put(SoldierChanger.class.getName(), executable);
+                }
+            }
+            if ((MOVE_SOLDIER).equals((String) params.get("action"))) {
+                view = VIEW_MAIN;
+                executable = executors.get(SoldierMover.class.getName());
+                if (executable == null) {
+                    executable = new SoldierMover(dao);
+                    executors.put(SoldierMover.class.getName(), executable);
                 }
             }
             if ((DELETE_SOLDIER).equals((String) params.get("action"))) {

@@ -36,7 +36,7 @@ public class SoldierChanger extends Executor {
         result.put("listOfUnits", unitList);
 
         List<EntityValue> values = null;
-        if ((HandlerFactory.EDIT).equals(action) && soldierIdMatch != null) {
+        if (((HandlerFactory.EDIT).equals(action) || (HandlerFactory.MOVE_UNDER_THIS_SOLDIER).equals(action)) && soldierIdMatch != null) {
             values = new ArrayList<EntityValue>();
             String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
             if (param != null && !param.equals("") && !param.contains(" "))

@@ -59,8 +59,6 @@ public class SoldierAdder extends Executor {
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Soldier.ALIAS.BIRTHDATE.getLabel(), param));
 
-            // TODO validate
-
             if (values.size() != 0)
                 result.put("success", getDao().addSoldier(values));
         }

@@ -1,11 +1,4 @@
 $(document).ready(function () {
-    zebraRows('tr:odd td', 'odd');
-
-    $('tbody tr').hover(function () {
-        $(this).find('td').addClass('hovered');
-    }, function () {
-        $(this).find('td').removeClass('hovered');
-    });
 
     //default each row to visible
     $('tbody tr').addClass('visible');
@@ -37,7 +30,7 @@ $(document).ready(function () {
     });
 
     //grab all header rows
-    $('thead th').each(function (column) {
+    $('#resultTable thead th').each(function (column) {
         $(this).addClass('sortable')
             .click(function () {
                 var findSortKey = function ($cell) {
@@ -68,17 +61,17 @@ $(document).ready(function () {
 
                 //add the rows in the correct order to the bottom of the table
                 $.each($rows, function (index, row) {
-                    $('tbody').append(row);
+                    $('#resultTable tbody').append(row);
                     row.sortKey = null;
                 });
 
                 //identify the column sort order
-                $('th').removeClass('sorted-asc sorted-desc');
-                var $sortHead = $('th').filter(':nth-child(' + (column + 1) + ')');
+                $('#resultTable th').removeClass('sorted-asc sorted-desc');
+                var $sortHead = $('#resultTable th').filter(':nth-child(' + (column + 1) + ')');
                 sortDirection == 1 ? $sortHead.addClass('sorted-asc') : $sortHead.addClass('sorted-desc');
 
                 //identify the column to be sorted by
-                $('td').removeClass('sorted')
+                $('#resultTable td').removeClass('sorted')
                     .filter(':nth-child(' + (column + 1) + ')')
                     .addClass('sorted');
 
@@ -88,13 +81,6 @@ $(document).ready(function () {
     });
 });
 
-
-//used to apply alternating row styles
-function zebraRows(selector, className) {
-    $(selector).removeClass(className)
-        .addClass(className);
-}
-
 //filter results based on query
 function filter(selector, query) {
     query = $.trim(query); //trim white space
@@ -103,4 +89,36 @@ function filter(selector, query) {
     $(selector).each(function () {
         ($(this).text().search(new RegExp(query, "i")) < 0) ? $(this).hide().removeClass('visible') : $(this).show().addClass('visible');
     });
+}
+function validateForm() {
+    var x = document.forms["addSoldierForm"]["queried_soldier_name"].value;
+    if (x == null || x == "") {
+        alert("Soldier's name must be filled out");
+        return false;
+    }
+
+    x = document.forms["addSoldierForm"]["queried_unit_name"].value;
+    if (x == null || x == "") {
+        alert("Unit name must be filled out");
+        return false;
+    }
+    x = document.forms["addSoldierForm"]["queried_soldier_rank"].value;
+    if (x == null || x == "") {
+        alert("Soldier's rank must be filled out");
+        return false;
+    }
+    x = document.forms["addSoldierForm"]["queried_soldier_birthdate"].value;
+    var date_regex = /^([0-9]){4}(-){1}([0-9]){2}(-){1}([0-9]){2}$/;
+    if (date_regex.test(x)) {
+        var numbers = x.split('-');
+        if (numbers[1] > 12) {
+            alert("Soldier's birth date must be filled out properly, data must match pattern ('YYYY-MM-DD')");
+            return false;
+        }
+    } else {
+        alert("Soldier's birth date must be filled out properly");
+        return false;
+    }
+
+
 }

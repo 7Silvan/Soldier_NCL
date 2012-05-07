@@ -78,19 +78,27 @@ public class ControllerServlet extends HttpServlet {
 
         //req.getParameterMap().putAll(result);  //java.lang.IllegalStateException: No modifications are allowed to a locked ParameterMap
 
+
         for (String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
         }
 
+
         try {
-            log.debug("forwarding to " + handle.getView());
-            if ("xml".equals(req.getParameter("format"))) {
-                res.setContentType("text/xml");
+            if (result.get("success") != null && !(Boolean) result.get("success")) {
+                req.setAttribute("errorCause", "Some actions caused error, check your input data.");
+                log.debug("forwarding to error page");
+                req.getRequestDispatcher(HandlerFactory.VIEW_ERROR).forward(req, res);
+            } else {
+                log.debug("forwarding to " + handle.getView());
+                /*if ("xml".equals(req.getParameter("format"))) {
+                    res.setContentType("text/xml");
+                }*/
+                //req.getRequestDispatcher(handle.getView()).include(req, res);
+                //} else {
+                req.getRequestDispatcher(handle.getView()).forward(req, res);
+                //}
             }
-            //req.getRequestDispatcher(handle.getView()).include(req, res);
-            //} else {
-            req.getRequestDispatcher(handle.getView()).forward(req, res);
-            //}
         } catch (Exception ex) {
             ex.printStackTrace();
         }

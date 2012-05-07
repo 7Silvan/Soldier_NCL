@@ -104,3 +104,17 @@ body {
     font-style: italic;
 }
 
+th.sortable {
+    /*    color: #666;
+
+   text-decoration: underline;*/
+    cursor: pointer;
+}
+
+th.sortable:hover {
+    /*color: black; */
+}
+
+th.sorted-asc, th.sorted-desc {
+    /*color: black; */
+}

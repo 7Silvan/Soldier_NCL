@@ -18,10 +18,9 @@
             <form id="checkoutForm" class="cmxform" action="/viewSoldiers" method="post">
         </c:when>
         <c:otherwise>
-            <form id="checkoutForm" name="addSoldierForm" class="cmxform" action="/viewSoldiers" method="post">
+            <form id="checkoutForm" name="addSoldierForm" onsubmit="return validateForm();" class="cmxform" action="/viewSoldiers" method="post">
         </c:otherwise>
     </c:choose>
-    <form id="checkoutForm" class="cmxform" action="/viewSoldiers" method="post">
     <table>
         <input name="soldierIdMatch" value="${pageContext.request.parameterMap.soldierIdMatch[0]}"
                type="hidden"/> <%--workaround--%>
@@ -97,7 +96,8 @@
             <td><label>
                 <input id="date" name="queried_soldier_birthdate" type="text" class="required"
                        value="${requestScope.queriedSoldier.birthDate}"/>
-            </label></td>
+            </label>
+            </td>
         </tr>
         <tr>
             <td colspan="2">
