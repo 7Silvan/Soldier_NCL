@@ -6,6 +6,12 @@
 
 <c:if test="${fn:contains(requestScope.success, 'true')}">
 
+    <script type="text/javascript">
+
+        setTimeout('location.replace("/viewSoldiers?action=getTop")', 1000);
+
+    </script>
+
     <h1>Action executed successfully!</h1>
 
 </c:if>
@@ -23,7 +29,7 @@
     </c:choose>
     <table>
         <input name="soldierIdMatch" value="${pageContext.request.parameterMap.soldierIdMatch[0]}"
-               type="hidden"/> <%--workaround--%>
+               type="hidden"/>
         <% log.debug("Checking parameter soldierIdMatch : " + pageContext.getRequest().getParameter("soldierIdMatch")); %>
 
         <c:choose>
@@ -60,8 +66,6 @@
                 </select>
             </label></td>
         </tr>
-
-
         <tr>
             <td><label for="queried_soldier_commander">Commander name: </label></td>
             <td><label>
@@ -69,18 +73,16 @@
                     <option value="">--Top of commanding--</option>
                     <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                         <c:choose>
-                            <c:when test="${requestScope.queriedSoldier.commander eq soldier.id}">
+                            <c:when test="${requestScope.queriedSoldier.commander eq soldier.id or
+                                            requestScope.queriedCommanderId eq soldier.id}">
                                 <option value="${soldier.id}" selected="">${soldier.name}</option>
                             </c:when>
                             <c:otherwise>
-                                <c:if test="${requestScope.queriedSoldier.id ne soldier.id}">
-                                    <option value="${soldier.id}">${soldier.name}</option>
-                                </c:if>
+                                <option value="${soldier.id}">${soldier.name}</option>
                             </c:otherwise>
                         </c:choose>
                     </c:forEach>
                 </select>
-                <!--<input id="queried_commander_name" name="queried_commander_name" type="text"/>-->
             </label></td>
         </tr>
 
@@ -94,7 +96,7 @@
         <tr>
             <td><label>Date: </label></td>
             <td><label>
-                <input id="date" name="queried_soldier_birthdate" type="text" class="required"
+                <input id="date" name="queried_soldier_birthdate" type="text" class="required" autocomplete="off"
                        value="${requestScope.queriedSoldier.birthDate}"/>
             </label>
             </td>

@@ -28,7 +28,7 @@ public class SoldierSearcher extends Executor {
         Map<String, Object> result = new HashMap<String, Object>();
 
         List<Soldier> soldierList = null;
-        List<Filter> filters = new ArrayList<Filter>();//(List<Filter>) params.get("filterList");
+        List<Filter> filters = new ArrayList<Filter>();
 
         String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
         if (param != null && !param.equals("") && !param.contains(" "))

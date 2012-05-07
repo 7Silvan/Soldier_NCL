@@ -30,7 +30,7 @@ public class SoldierChanger extends Executor {
         String subAction = (String) params.get("subAction");
         String soldierIdMatch = (String) params.get("soldierIdMatch");
 
-        List<Soldier> soldierList = getDao().getAllSoldiers();
+        List<Soldier> soldierList = getDao().getNotSubsSoldiers(soldierIdMatch);
         List<Unit> unitList = getDao().getAllUnits();
 
         result.put("listOfSoldiers", soldierList);

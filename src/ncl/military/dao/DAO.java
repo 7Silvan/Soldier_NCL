@@ -21,8 +21,6 @@ public interface DAO {
     // special for dao
     void init(Map<String, String> initParams) throws DAOInitException;
 
-    void init() throws DAOInitException;
-
     ///////////
     //GETTERS//
     ///////////
@@ -37,7 +35,7 @@ public interface DAO {
 
     List<Soldier> getTopOfSoldiers() throws DataAccessException;
 
-    List<String> getAllSoldiersIds() throws DataAccessException;
+    List<Soldier> getNotSubsSoldiers(String idMatch) throws DataAccessException;
 
     // All about Units
     List<Unit> getAllUnits() throws DataAccessException;
@@ -56,17 +54,11 @@ public interface DAO {
     // Searchers
     List<Soldier> searchForSoldiers(List<Filter> filters) throws DataAccessException;
 
-    List<Unit> searchForUnits(List<Filter> filters) throws DataAccessException;
-
-    List<Location> searchForLocations(List<Filter> filters) throws DataAccessException;
-
     ///////////
     //SETTERS//
     ///////////
     // Soldier sets
     Boolean setSoldierAttributes(String soldierIdMatch, List<EntityValue> values) throws DataAccessException;
-
-    Boolean setNewCommander(String soldierIdMatch, String commanderIdMatch) throws DataAccessException;
 
     // Location sets
     Boolean setLocationAttributes(String locationIdMatch, List<EntityValue> values) throws DataAccessException;

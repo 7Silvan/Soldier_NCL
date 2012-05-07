@@ -76,9 +76,6 @@ public class ControllerServlet extends HttpServlet {
         Handlable handle = HandlerFactory.getHandler(dao, params);
         Map<String, ? extends Object> result = handle.execute(params);
 
-        //req.getParameterMap().putAll(result);  //java.lang.IllegalStateException: No modifications are allowed to a locked ParameterMap
-
-
         for (String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
         }
@@ -93,13 +90,7 @@ public class ControllerServlet extends HttpServlet {
                 req.getRequestDispatcher(HandlerFactory.VIEW_ERROR).forward(req, res);
             } else {
                 log.debug("forwarding to " + handle.getView());
-                /*if ("xml".equals(req.getParameter("format"))) {
-                    res.setContentType("text/xml");
-                }*/
-                //req.getRequestDispatcher(handle.getView()).include(req, res);
-                //} else {
                 req.getRequestDispatcher(handle.getView()).forward(req, res);
-                //}
             }
         } catch (Exception ex) {
             ex.printStackTrace();

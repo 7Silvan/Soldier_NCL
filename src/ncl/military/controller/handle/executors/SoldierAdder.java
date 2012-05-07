@@ -63,6 +63,10 @@ public class SoldierAdder extends Executor {
                 result.put("success", getDao().addSoldier(values));
         }
 
+        if (params.get("queriedCommanderId") != null) {
+            result.put("queriedCommanderId", params.get("queriedCommanderId"));
+        }
+
         return result;
     }
 }

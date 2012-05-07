@@ -13,10 +13,7 @@ import java.util.Map;
  *          Time: 13:52
  */
 public class HandlerFactory {
-    private static Map<String, Handlable> handlers;
     private static Map<String, Executable> executors = new HashMap<String, Executable>();
-    private static Map<String, String> config;
-
 
     // path
     public static final String PATH_SOLDIER = "/viewSoldiers";
@@ -46,15 +43,10 @@ public class HandlerFactory {
     // actions for locations
     public static final String GET_UNITS_OF_LOCATION = "getUnitsOfLocations";
 
-    // type of view
-    public static final String VIEW_TYPE_SOLDIER = "Soldiers";
-    public static final String VIEW_TYPE_UNIT = "Units";
-    public static final String VIEW_TYPE_LOCATION = "Locations";
-
     //view
     public static final String VIEW_MAIN = "/view.jsp";
     public static final String VIEW_EDIT = "/editor.jsp";
-    private static final String VIEW_HOME = "/index.jsp";
+    public static final String VIEW_HOME = "/index.jsp";
     public static final String VIEW_ERROR = "/error.jsp";
 
     //fragment view

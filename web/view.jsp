@@ -3,7 +3,6 @@
   Date: 24.04.12
   Time: 12:29
 --%>
-
 <%--this is info block--%>
 <div class="container-fluid">
 
@@ -12,12 +11,7 @@
 <div class="span-one-third">
     <h3>Current Soldier</h3>
     <jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>
-
     <table class="condensed-table borderless">
-            <%--<tr>
-                <th width="180">ID</th>
-                <td>${queriedSoldier.id}</td>
-            </tr>--%>
         <tr>
             <th>Name</th>
             <td>${queriedSoldier.name}</td>
@@ -30,7 +24,8 @@
             <th>Commander</th>
             <c:choose>
                 <c:when test="${requestScope.hierarchyList ne null && fn:length(requestScope.hierarchyList) > 1}">
-
+                    <c:set var="commanderId"
+                           value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-1].id}"/>
                     <c:url var="commanderUrl" value="/viewSoldiers">
                         <c:param name="action" value="getSubsOfSoldier"/>
                         <c:param name="queriedSoldierId"
@@ -41,6 +36,8 @@
                     </td>
                 </c:when>
                 <c:otherwise>
+                    <c:set var="commanderId"
+                           value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-1].id}"/>
                     <c:url var="commanderUrl" value="/viewSoldiers">
                         <c:param name="action" value="getTop"/>
                     </c:url>
@@ -59,11 +56,11 @@
     </table>
 </div>
 </c:if>
-
-
 <%--this is input form for search of soldiers on filters--%>
 <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.action,'getSearchResults')}">
 <h2>Search Tool</h2>
+
+<h6>* rule of serching "begins with"</h6>
 
 <div class="span-one-third">
     <c:url var="url" value="/viewSoldiers">
@@ -111,229 +108,198 @@
                     <td colspan="2"><input type="submit" class="btn primary pull-right" value="Find"/></td>
                 </tr>
             </table>
-
-                <%--<jsp:include page="jspf/soldierForm.jspf" flush="true"/>--%>
         </form>
     </div>
 </div>
 </c:if>
-
-
 <%--this is for viewing items--%>
 <div class="item_list">
-<c:if test="${not empty commanderUrl}">
-    <div style="margin: 4px 0 8px;"><a class="btn primary" href="${commanderUrl}">Level up!</a></div>
-</c:if>
-<div style="margin-top:15px; ">
-<%--view of soldiers--%>
-<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers')}">
-    <h3> View of Soldiers</h3>
-    <table id="resultTable" class="condensed-table bordered-table zebra-striped">
-        <thead>
-        <tr>
-                <%--<th>ID</th>--%>
-            <th>NAME</th>
-            <th>RANK</th>
-                <%--<th>COMMANDER</th>--%>
-            <th>UNIT</th>
-            <th>BIRTHDATE</th>
-            <th>ACTIONS</th>
-        </tr>
-        </thead>
-        <tbody>
+    <c:if test="${not empty commanderUrl}">
 
-        <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
-            <tr>
-                    <%--<td>${soldier.id}</td>--%>
-                <td>
-                        <%--<c:forEach var="par" items="${requestScope}" >
-                            ${par.key}||${par.value}
-                        </c:forEach>--%>
-                    <c:url var="url" value="/viewSoldiers">
-                        <c:param name="action" value="getSubsOfSoldier"/>
-                        <c:param name="subAction" value="${requestScope.subAction}"/>
-                        <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
-                        <%--<c:forEach var="par" items="${requestScope}" >
-                            <c:param name="${par.key}" value="${par.value}"/>
-                        </c:forEach>--%>
-                        <c:param name="queriedSoldierId" value="${soldier.id}"/>
-                    </c:url>
-                    <a href="${url}">${soldier.name}</a>
-                </td>
-                <td>
-                    <c:url var="url" value="/viewSoldiers">
-                        <c:param name="action" value="getSearchResults"/>
-                        <c:param name="queried_soldier_rank" value="${soldier.rank}"/>
-                    </c:url>
-                    <a href="${url}">${soldier.rank}</a>
-                </td>
-                    <%--<td>${soldier.commander}</td>--%>
-                <td>
-                    <c:url var="url" value="/viewSoldiers">
-                        <c:param name="action" value="getSearchResults"/>
-                        <c:param name="queried_unit_name" value="${soldier.unit}"/>
-                    </c:url>
-                    <a href="${url}">${soldier.unit}</a>
-                </td>
-                <td>
-                        ${soldier.birthDate}
-                </td>
-                <td>
-                    <c:choose>
+        <div style="margin: 4px 0 8px;" class="span-one-third">
+            <a class="btn primary" href="${commanderUrl}">Level up!</a>
+            <c:url var="editUrl" value="/viewSoldiers">
+                <c:param name="soldierIdMatch" value="${commanderId}"/>
+                <c:param name="action" value="${FormConst.EDIT}"/>
+            </c:url>
+            <a class="btn primary" href="${editUrl}">Edit</a>
+            <c:url var="addUrl" value="/viewSoldiers">
+                <c:param name="queriedCommanderId" value="${commanderId}"/>
+                <c:param name="action" value="${FormConst.ADD_SOLDIER}"/>
+            </c:url>
+            <a class="btn primary" href="${addUrl}">Add New Soldier</a>
+        </div>
+    </c:if>
+    <div style="margin-top:15px; ">
+        <%--view of soldiers--%>
+        <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers')}">
+            <h3> View of Soldiers
+                <c:if test="${fn:contains(requestScope.subAction, '${FormConst.MOVE_SOLDIER}')}"> (Select soldier to command the selected one) </c:if>
+            </h3>
+            <table id="resultTable" class="condensed-table bordered-table zebra-striped">
+                <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>RANK</th>
+                    <th>UNIT</th>
+                    <th>BIRTHDATE</th>
+                    <th>ACTIONS</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
+                    <tr>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSubsOfSoldier"/>
+                                <c:param name="subAction" value="${requestScope.subAction}"/>
+                                <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
+                                <c:param name="queriedSoldierId" value="${soldier.id}"/>
+                            </c:url>
+                            <a href="${url}">${soldier.name}</a>
+                        </td>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSearchResults"/>
+                                <c:param name="queried_soldier_rank" value="${soldier.rank}"/>
+                            </c:url>
+                            <a href="${url}">${soldier.rank}</a>
+                        </td>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSearchResults"/>
+                                <c:param name="queried_unit_name" value="${soldier.unit}"/>
+                            </c:url>
+                            <a href="${url}">${soldier.unit}</a>
+                        </td>
+                        <td>
+                                ${soldier.birthDate}
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${fn:contains(requestScope.subAction, 'moveSoldier' )}">
+                                    <c:if test="${requestScope.soldierIdMatch ne soldier.id}">
+                                        <c:url var="moveUnderThisUrl" value="/viewSoldiers">
+                                            <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
+                                            <c:param name="queried_soldier_commander" value="${soldier.id}"/>
+                                            <c:param name="action" value="${FormConst.MOVE_UNDER_THIS_SOLDIER}"/>
+                                        </c:url>
+                                        <a class="btn primary" href="${moveUnderThisUrl}">Select</a>
+                                    </c:if>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:url var="editUrl" value="/viewSoldiers">
+                                        <c:param name="soldierIdMatch" value="${soldier.id}"/>
+                                        <c:param name="action" value="${FormConst.EDIT}"/>
+                                    </c:url>
+                                    <a class="btn primary" href="${editUrl}">Edit</a>
+                                    <c:url var="deleteUrl" value="/viewSoldiers">
+                                        <c:param name="soldierIdMatch" value="${soldier.id}"/>
+                                        <c:param name="action" value="${FormConst.DELETE_SOLDIER}"/>
+                                    </c:url>
+                                    <a class="btn primary" href="${deleteUrl}">Delete</a>
+                                    <c:url var="moveUrl" value="/viewSoldiers">
+                                        <c:param name="soldierIdMatch" value="${soldier.id}"/>
+                                        <c:param name="action" value="${FormConst.GET_TOP}"/>
+                                        <c:param name="subAction" value="${FormConst.MOVE_SOLDIER}"/>
+                                    </c:url>
+                                    <a class="btn primary" href="${moveUrl}">Move</a>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+            <h6>Press rank or unit to search for soldier's with same attribute.</h6>
+        </c:if>
+        <%--view of locations--%>
+        <c:if test="${fn:contains(requestScope.viewType, '/viewLocations' )}">
+            <h3> View of Locations</h3>
+            <table id="resultTable" class="condensed-table bordered-table zebra-striped">
+                <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>REGION</th>
+                    <th>CITY</th>
+                    <th>ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="location" items="${requestScope.listOfLocations}">
+                    <tr>
+                        <td>
+                            <c:url var="url" value="/viewUnits">
+                                <c:param name="action" value="getUnitsOfLocations"/>
+                                <c:param name="locationIdMatch" value="${location.id}"/>
+                            </c:url>
+                            <a href="${url}">${location.name}</a>
+                        </td>
+                        <td>${location.region}</td>
+                        <td>${location.city}</td>
+                        <td>
+                            <c:url var="editUrl" value="/viewLocations">
+                                <c:param name="locationIdMatch" value="${location.id}"/>
+                                <c:param name="action" value="edit"/>
+                            </c:url>
+                            <a class="btn primary" href="${editUrl}">Edit</a>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </c:if>
+        <c:if test="${fn:contains(requestScope.viewType, '/viewUnits' )}">
+            <h3> View of Units</h3>
+            <table id="resultTable" class="condensed-table bordered-table zebra-striped">
+                <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>HEAD</th>
+                    <th>LOCATION</th>
+                    <th>ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
 
-                        <c:when test="${fn:contains(requestScope.subAction, 'moveSoldier' )}">
+                <c:forEach var="unit" items="${requestScope.listOfUnits}">
+                    <tr>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSoldiersOfUnit"/>
+                                <c:param name="unitIdMatch" value="${unit.id}"/>
+                            </c:url>
+                            <a href="${url}">${unit.name}</a>
+                        </td>
 
-                            <c:if test="${requestScope.soldierIdMatch ne soldier.id}">
-                                <c:url var="moveUnderThisUrl" value="/viewSoldiers">
-                                    <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
-                                    <c:param name="queried_soldier_commander" value="${soldier.id}"/>
-                                    <c:param name="action" value="${FormConst.MOVE_UNDER_THIS_SOLDIER}"/>
-                                </c:url>
-                                <a class="btn primary" href="${moveUnderThisUrl}">Select</a>
-                            </c:if>
-                        </c:when>
-                        <c:otherwise>
-
-                            <c:url var="editUrl" value="/viewSoldiers">
-                                <c:param name="soldierIdMatch" value="${soldier.id}"/>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSubsOfSoldier"/>
+                                <c:param name="queriedSoldierId" value="${unit.headId}"/>
+                            </c:url>
+                            <a href="${url}">${unit.head}</a>
+                        </td>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSearchResults"/>
+                                <c:param name="queried_location_name" value="${unit.location}"/>
+                            </c:url>
+                            <a href="${url}">${unit.location}</a>
+                        </td>
+                        <td>
+                            <c:url var="editUrl" value="/viewUnits">
+                                <c:param name="unitIdMatch" value="${unit.id}"/>
                                 <c:param name="action" value="${FormConst.EDIT}"/>
                             </c:url>
                             <a class="btn primary" href="${editUrl}">Edit</a>
+                        </td>
+                    </tr>
+                </c:forEach>
 
-                            <c:url var="deleteUrl" value="/viewSoldiers">
-                                <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                <c:param name="action" value="${FormConst.DELETE_SOLDIER}"/>
-                            </c:url>
-                            <a class="btn primary" href="${deleteUrl}">Delete</a>
-
-                            <c:url var="moveUrl" value="/viewSoldiers">
-                                <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                <c:param name="action" value="${FormConst.GET_TOP}"/>
-                                <c:param name="subAction" value="${FormConst.MOVE_SOLDIER}"/>
-                            </c:url>
-                            <a class="btn primary" href="${moveUrl}">Move</a>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</c:if>
-<%--view of locations--%>
-<c:if test="${fn:contains(requestScope.viewType, '/viewLocations' )}">
-    <h3> View of Locations</h3>
-    <table id="resultTable" class="condensed-table bordered-table zebra-striped">
-        <thead>
-        <tr>
-                <%--<th>ID</th>--%>
-            <th>NAME</th>
-            <th>REGION</th>
-            <th>CITY</th>
-            <th>ACTION</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        <c:forEach var="location" items="${requestScope.listOfLocations}">
-            <tr>
-                    <%--<td>${location.id}</td>--%>
-                <td>
-                    <c:url var="url" value="/viewUnits">
-                        <c:param name="action" value="getUnitsOfLocations"/>
-                        <c:param name="locationIdMatch" value="${location.id}"/>
-                    </c:url>
-                    <a href="${url}">${location.name}</a>
-                </td>
-                <td>${location.region}</td>
-                <td>${location.city}</td>
-                <td>
-                    <c:url var="editUrl" value="/viewLocations">
-                        <c:param name="locationIdMatch" value="${location.id}"/>
-                        <c:param name="action" value="edit"/>
-                    </c:url>
-                    <a class="btn primary" href="${editUrl}">Edit</a>
-                </td>
-            </tr>
-        </c:forEach>
-
-        </tbody>
-    </table>
-
-</c:if>
-<%--view of units--%>
-<c:if test="${fn:contains(requestScope.viewType, '/viewUnits' )}">
-    <h3> View of Units</h3>
-    <table id="resultTable" class="condensed-table bordered-table zebra-striped">
-        <thead>
-        <tr>
-                <%--<th>ID</th>--%>
-            <th>NAME</th>
-            <th>HEAD</th>
-            <th>LOCATION</th>
-            <th>ACTION</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        <c:forEach var="unit" items="${requestScope.listOfUnits}">
-            <tr>
-                    <%--<td>${unit.id}</td>--%>
-                <td>
-                    <c:url var="url" value="/viewSoldiers">
-                        <c:param name="action" value="getSoldiersOfUnit"/>
-                        <c:param name="unitIdMatch" value="${unit.id}"/>
-                    </c:url>
-                    <a href="${url}">${unit.name}</a>
-                </td>
-
-                <td>
-                    <c:url var="url" value="/viewSoldiers">
-                        <c:param name="action" value="getSubsOfSoldier"/>
-                        <c:param name="queriedSoldierId" value="${unit.headId}"/>
-                    </c:url>
-                    <a href="${url}">${unit.head}</a>
-                </td>
-                <td>
-                    <c:url var="url" value="/viewSoldiers">
-                        <c:param name="action" value="getSearchResults"/>
-                        <c:param name="queried_location_name" value="${unit.location}"/>
-                    </c:url>
-                    <a href="${url}">${unit.location}</a>
-                </td>
-                <td>
-                    <c:url var="editUrl" value="/viewUnits">
-                        <c:param name="unitIdMatch" value="${unit.id}"/>
-                        <c:param name="action" value="${FormConst.EDIT}"/>
-                    </c:url>
-                    <a class="btn primary" href="${editUrl}">Edit</a>
-                </td>
-            </tr>
-        </c:forEach>
-
-        </tbody>
-    </table>
-</c:if>
-
-<small>* To sort values in the table press the headers.</small>
-
-<%--<hr/>
-<h2>testing</h2>
-<c:forEach items="${requestScope}" var="attr">
-   ${attr.key}=${attr.value}<br>
-   &lt;%&ndash; <c:if test="${attr.key eq 'listOfSoldiers' }">
-        <c:forEach items="${requestScope.listOfSoldiers}" var="soldier">
-            <hr />
-            Name : ${soldier.name}
-            Unit : ${soldier.unit}
-            <hr />
-        </c:forEach>
-   </c:if>&ndash;%&gt;
-</c:forEach>
-
-<c:out value="${requestScope.viewType}"/>
-<c:out value="${pageContext.request.servletPath}"/>--%>
-
-</div>
+                </tbody>
+            </table>
+        </c:if>
+        <small>* To sort values in the table press the headers.</small>
+    </div>
 </div>
 
