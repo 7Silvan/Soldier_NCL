@@ -31,8 +31,15 @@ public class Handler implements Handlable {
         Map<String, Object> result = executor.execute(params);
         result.put("viewType", params.get("userPath"));
         Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: viewType => " + params.get("userPath"));
+        Logger.getLogger("controller").debug("[Handler Executed]registered view => " + view);
+        if (action.equals(HandlerFactory.DELETE_SOLDIER)) {
+            action = HandlerFactory.GET_TOP;
+        }
+
+
         result.put("action", action);
         Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: action =>" + action);
+
         return result;
     }
 

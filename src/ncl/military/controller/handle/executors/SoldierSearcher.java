@@ -30,15 +30,15 @@ public class SoldierSearcher extends Executor {
         List<Soldier> soldierList = null;
         List<Filter> filters = new ArrayList<Filter>();//(List<Filter>) params.get("filterList");
 
-        String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());//"queriedSoldierName");
+        String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
         if (param != null && !param.equals("") && !param.contains(" "))
             filters.add(new Filter(Soldier.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
 
-        param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());//"queriedSoldierUnit");
+        param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
         if (param != null && !param.equals("") && !param.contains(" "))
             filters.add(new Filter(Unit.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
 
-        param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());//"queriedSoldierLocation");
+        param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());
         if (param != null && !param.equals("") && !param.contains(" "))
             filters.add(new Filter(Location.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
 
@@ -46,7 +46,7 @@ public class SoldierSearcher extends Executor {
         if (param != null && !param.equals("") && !param.contains(" "))
             filters.add(new Filter("commander_name", FilterType.LIKE, param));
 
-        param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());//"queriedSoldierRank");
+        param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());
         if (param != null && !param.equals("") && !param.contains(" "))
             filters.add(new Filter(Soldier.ALIAS.RANK.getLabel(), FilterType.LIKE, param));
 

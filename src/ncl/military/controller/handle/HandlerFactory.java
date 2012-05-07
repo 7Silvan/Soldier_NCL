@@ -33,6 +33,10 @@ public class HandlerFactory {
     // actions for soldiers
     public static final String GET_SUBS_OF_SOLDIER = "getSubsOfSoldier";
     public static final String ADD_SOLDIER = "addSoldier";
+    public static final String DELETE_SOLDIER = "deleteSoldier";
+
+    public static final String GET_VIEWING_FRAGMENT = "viewSoldiersAsFragment";
+    public static final String GET_ADDING_FRAGMENT = "addSoldierAsFragment";
 
     // actions for units
     public static final String GET_SOLDIERS_OF_UNIT = "getSoldiersOfUnit";
@@ -49,6 +53,10 @@ public class HandlerFactory {
     public static final String VIEW_MAIN = "/view.jsp";
     public static final String VIEW_EDIT = "/editor.jsp";
     private static final String VIEW_HOME = "/index.jsp";
+
+    //fragment view
+    public static final String VIEW_SOLDIERS_LIST_FRAGMENT = "/jspf/soldierList.jspf";
+    public static final String VIEW_SOLDIERS_ADD_FORM_FRAGMENT = "/jspf/soldierAddForm.jspf";
 
     public static Handlable getHandler(DAO dao, Map<String, Object> params) {
 
@@ -101,6 +109,30 @@ public class HandlerFactory {
                     executors.put(SoldierAdder.class.getName(), executable);
                 }
             }
+            if ((DELETE_SOLDIER).equals((String) params.get("action"))) {
+                view = VIEW_MAIN;
+                executable = executors.get(SoldierDeletter.class.getName());
+                if (executable == null) {
+                    executable = new SoldierDeletter(dao);
+                    executors.put(SoldierDeletter.class.getName(), executable);
+                }
+            }
+            if ((GET_VIEWING_FRAGMENT).equals((String) params.get("action"))) {
+                view = VIEW_SOLDIERS_LIST_FRAGMENT;
+                executable = executors.get(SoldiersFragmentGetter.class.getName());
+                if (executable == null) {
+                    executable = new SoldiersFragmentGetter(dao);
+                    executors.put(SoldiersFragmentGetter.class.getName(), executable);
+                }
+            }
+            if ((GET_ADDING_FRAGMENT).equals((String) params.get("action"))) {
+                view = VIEW_SOLDIERS_ADD_FORM_FRAGMENT;
+                executable = executors.get(SoldierAdder.class.getName());
+                if (executable == null) {
+                    executable = new SoldierAdder(dao);
+                    executors.put(SoldierAdder.class.getName(), executable);
+                }
+            }
         }
         if ((PATH_UNIT).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
@@ -110,13 +142,6 @@ public class HandlerFactory {
                 if (executable == null) {
                     executable = new AllUnitsGetter(dao);
                     executors.put(AllUnitsGetter.class.getName(), executable);
-                }
-            }
-            if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
-                executable = executors.get(UnitSearcher.class.getName());
-                if (executable == null) {
-                    executable = new UnitSearcher(dao);
-                    executors.put(UnitSearcher.class.getName(), executable);
                 }
             }
             if ((GET_UNITS_OF_LOCATION).equals((String) params.get("action"))) {
@@ -145,13 +170,6 @@ public class HandlerFactory {
                     executors.put(AllLocationsGetter.class.getName(), executable);
                 }
             }
-            if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
-                executable = executors.get(LocationSearcher.class.getName());
-                if (executable == null) {
-                    executable = new LocationSearcher(dao);
-                    executors.put(LocationSearcher.class.getName(), executable);
-                }
-            }
             if ((EDIT).equals((String) params.get("action"))) {
                 view = VIEW_EDIT;
                 executable = executors.get(LocationChanger.class.getName());
@@ -161,6 +179,7 @@ public class HandlerFactory {
                 }
             }
         }
+
         if (executable == null)
             throw new IllegalStateException("Did not matched executor");
         return new Handler(executable, (String) params.get("userPath"), (String) params.get("action"), view);

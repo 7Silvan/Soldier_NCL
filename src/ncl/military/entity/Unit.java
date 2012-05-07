@@ -17,9 +17,9 @@ public class Unit {
     public enum ALIAS {
         ID("unit_id"),
         NAME("unit_name"),
-        HEAD("soldier_name"),
-        LOCATION("location_name"),
-        HEADID("soldier_id");
+        HEAD_NAME("head_of_unit_name"),
+        HEAD_ID("head_of_unit"),
+        LOCATION("location_name");
 
         // with no inheritance for a while
 

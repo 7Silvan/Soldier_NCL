@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soldiers>
+    <headings>
+        <heading>Name</heading>
+        <heading>Rank</heading>
+        <heading>Unit</heading>
+        <heading>Birthdate</heading>
+        <heading>Action</heading>
+    </headings>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <c:forEach var="soldier" items="${listOfSoldiers}">
+        <soldier>
+            <name>${soldier.name}</name>
+            <rank>${soldier.rank}</rank>
+            <unit>${soldier.unit}</unit>
+            <birthdate>${soldier.unit}</birthdate>
+            <action>
+                <input class="btn primary" name="submit">
+                Select
+                </input>
+            </action>
+        </soldier>
+    </c:forEach>
+</soldiers>

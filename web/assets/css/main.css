@@ -5,6 +5,8 @@ body {
 
 #banner-top {
     height: 80px;
+    margin-left: -20px;
+    margin-right: -20px;
     border-bottom: solid 2px #CCC;
     overflow: hidden;
     background-image: url(../img/banner-top-background.png);
@@ -46,7 +48,7 @@ body {
 }
 
 .page-content {
-    padding-top: 25px;
+    padding-top: 0px;
 }
 
 .navbar_item {

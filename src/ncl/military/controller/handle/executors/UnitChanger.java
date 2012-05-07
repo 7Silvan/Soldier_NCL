@@ -4,6 +4,7 @@ import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
 import ncl.military.dao.tools.EntityValue;
 import ncl.military.entity.Location;
+import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
 
 import java.util.ArrayList;
@@ -28,7 +29,9 @@ public class UnitChanger extends Executor {
         String action = (String) params.get("action");
         String unitIdMatch = (String) params.get("unitIdMatch");
         List<Location> locationList = getDao().getAllLocations();
+        List<Soldier> soldierList = getDao().getSoldiersOfUnit(unitIdMatch);
 
+        result.put("listOfSoldiers", soldierList);
         result.put("listOfLocations", locationList);
         result.put("unitIdMatch", unitIdMatch);
 
@@ -44,6 +47,13 @@ public class UnitChanger extends Executor {
             param = (String) params.get(Unit.ALIAS.LOCATION.getLabelAsQueried());
             if (param != null && !param.equals("") && !param.contains(" "))
                 values.add(new EntityValue(Unit.ALIAS.LOCATION.getLabel(), param));
+
+            param = (String) params.get(Unit.ALIAS.HEAD_ID.getLabelAsQueried());
+            if (param != null && !param.equals("") && !param.contains(" ")) {
+                values.add(new EntityValue(Unit.ALIAS.HEAD_ID.getLabel(), param));
+                values.add(new EntityValue(Unit.ALIAS.HEAD_NAME.getLabel(), getDao().getSoldierById(param).getName()));
+            }
+
 
             if (values.size() != 0)
                 getDao().setUnitAttributes(unitIdMatch, values);

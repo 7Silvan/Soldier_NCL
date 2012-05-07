@@ -83,7 +83,14 @@ public class ControllerServlet extends HttpServlet {
         }
 
         try {
+            log.debug("forwarding to " + handle.getView());
+            if ("xml".equals(req.getParameter("format"))) {
+                res.setContentType("text/xml");
+            }
+            //req.getRequestDispatcher(handle.getView()).include(req, res);
+            //} else {
             req.getRequestDispatcher(handle.getView()).forward(req, res);
+            //}
         } catch (Exception ex) {
             ex.printStackTrace();
         }

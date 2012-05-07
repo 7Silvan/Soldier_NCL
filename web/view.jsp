@@ -3,22 +3,21 @@
   Date: 24.04.12
   Time: 12:29
 --%>
-<h1>[View.jsp]</h1>
 
 <%--this is info block--%>
 <div class="container-fluid">
 
 <%--this is soldier's infoblock with url to it's commander page, some other blocke relates on this--%>
-<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') and fn:contains(requestScope.actionPerformed,'getSubsOfSoldier')}">
+<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') and fn:contains(requestScope.action,'getSubsOfSoldier')}">
 <div class="span-one-third">
     <h3>Current Soldier</h3>
     <jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>
-        <%-- TODO check existance of queriedSoldier--%>
+
     <table class="condensed-table borderless">
-        <tr>
-            <th width="180">ID</th>
-            <td>${queriedSoldier.id}</td>
-        </tr>
+            <%--<tr>
+                <th width="180">ID</th>
+                <td>${queriedSoldier.id}</td>
+            </tr>--%>
         <tr>
             <th>Name</th>
             <td>${queriedSoldier.name}</td>
@@ -42,6 +41,9 @@
                     </td>
                 </c:when>
                 <c:otherwise>
+                    <c:url var="commanderUrl" value="/viewSoldiers">
+                        <c:param name="action" value="getTop"/>
+                    </c:url>
                     <td>${queriedSoldier.commander}</td>
                 </c:otherwise>
             </c:choose>
@@ -60,7 +62,9 @@
 
 
 <%--this is input form for search of soldiers on filters--%>
-<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.actionPerformed,'getSearchResults')}">
+<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') && fn:contains(requestScope.action,'getSearchResults')}">
+<h2>Search Tool</h2>
+
 <div class="span-one-third">
     <c:url var="url" value="/viewSoldiers">
         <c:param name="action" value="getSearchResults"/>
@@ -71,31 +75,36 @@
                 <tr>
                     <td><label for="queried_soldier_name">Soldier name: </label></td>
                     <td><label>
-                        <input id="queried_soldier_name" name="queried_soldier_name" type="text"/>
+                        <input id="queried_soldier_name" name="queried_soldier_name" type="text"
+                               value="${requestScope.queried_soldier_name}"/>
                     </label></td>
                 </tr>
                 <tr>
                     <td><label for="queried_unit_name">Unit: </label></td>
                     <td><label>
-                        <input id="queried_unit_name" name="queried_unit_name" type="text"/>
+                        <input id="queried_unit_name" name="queried_unit_name" type="text"
+                               value="${requestScope.queried_unit_name}"/>
                     </label></td>
                 </tr>
                 <tr>
                     <td><label for="queried_location_name">Location: </label></td>
                     <td><label>
-                        <input id="queried_location_name" name="queried_location_name" type="text"/>
+                        <input id="queried_location_name" name="queried_location_name" type="text"
+                               value="${requestScope.queried_location_name}"/>
                     </label></td>
                 </tr>
                 <tr>
                     <td><label for="queried_commander_name">Commander name: </label></td>
                     <td><label>
-                        <input id="queried_commander_name" name="queried_commander_name" type="text"/>
+                        <input id="queried_commander_name" name="queried_commander_name" type="text"
+                               value="${requestScope.queried_commander_name}"/>
                     </label></td>
                 </tr>
                 <tr>
                     <td><label for="queried_soldier_rank">Rank: </label></td>
                     <td><label>
-                        <input id="queried_soldier_rank" name="queried_soldier_rank" type="text"/>
+                        <input id="queried_soldier_rank" name="queried_soldier_rank" type="text"
+                               value="${requestScope.queried_soldier_rank}"/>
                     </label></td>
                 </tr>
                 <tr>
@@ -112,14 +121,13 @@
 
 <%--this is for viewing items--%>
 <div class="item_list">
-    <h4>[List of values below]</h4>
     <c:if test="${not empty commanderUrl}">
         <div style="margin: 4px 0 8px;"><a class="btn primary" href="${commanderUrl}">Level up!</a></div>
     </c:if>
     <div style="margin-top:15px; ">
         <%--view of soldiers--%>
         <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers')}">
-            <table class="condensed-table bordered-table zebra-striped">
+            <table id="resultTable" class="condensed-table bordered-table zebra-striped">
                 <thead>
                 <tr>
                         <%--<th>ID</th>--%>
@@ -143,16 +151,36 @@
                             </c:url>
                             <a href="${url}">${soldier.name}</a>
                         </td>
-                        <td>${soldier.rank}</td>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSearchResults"/>
+                                <c:param name="queried_soldier_rank" value="${soldier.rank}"/>
+                            </c:url>
+                            <a href="${url}">${soldier.rank}</a>
+                        </td>
                             <%--<td>${soldier.commander}</td>--%>
-                        <td>${soldier.unit}</td>
-                        <td>${soldier.birthDate}</td>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSearchResults"/>
+                                <c:param name="queried_unit_name" value="${soldier.unit}"/>
+                            </c:url>
+                            <a href="${url}">${soldier.unit}</a>
+                        </td>
+                        <td>
+                                ${soldier.birthDate}
+                        </td>
                         <td>
                             <c:url var="editUrl" value="/viewSoldiers">
                                 <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                <c:param name="action" value="edit"/>
+                                <c:param name="action" value="${FormConst.EDIT}"/>
                             </c:url>
                             <a class="btn primary" href="${editUrl}">Edit</a>
+
+                            <c:url var="deleteUrl" value="/viewSoldiers">
+                                <c:param name="soldierIdMatch" value="${soldier.id}"/>
+                                <c:param name="action" value="${FormConst.DELETE_SOLDIER}"/>
+                            </c:url>
+                            <a class="btn primary" href="${deleteUrl}">Delete</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -179,7 +207,7 @@
                         <td>
                             <c:url var="url" value="/viewUnits">
                                 <c:param name="action" value="getUnitsOfLocations"/>
-                                <c:param name="queriedLocationId" value="${location.id}"/>
+                                <c:param name="locationIdMatch" value="${location.id}"/>
                             </c:url>
                             <a href="${url}">${location.name}</a>
                         </td>
@@ -219,7 +247,7 @@
                         <td>
                             <c:url var="url" value="/viewSoldiers">
                                 <c:param name="action" value="getSoldiersOfUnit"/>
-                                <c:param name="queriedUnitId" value="${unit.id}"/>
+                                <c:param name="unitIdMatch" value="${unit.id}"/>
                             </c:url>
                             <a href="${url}">${unit.name}</a>
                         </td>
@@ -231,11 +259,17 @@
                             </c:url>
                             <a href="${url}">${unit.head}</a>
                         </td>
-                        <td>${unit.location}</td>
+                        <td>
+                            <c:url var="url" value="/viewSoldiers">
+                                <c:param name="action" value="getSearchResults"/>
+                                <c:param name="queried_location_name" value="${unit.location}"/>
+                            </c:url>
+                            <a href="${url}">${unit.location}</a>
+                        </td>
                         <td>
                             <c:url var="editUrl" value="/viewUnits">
                                 <c:param name="unitIdMatch" value="${unit.id}"/>
-                                <c:param name="action" value="edit"/>
+                                <c:param name="action" value="${FormConst.EDIT}"/>
                             </c:url>
                             <a class="btn primary" href="${editUrl}">Edit</a>
                         </td>

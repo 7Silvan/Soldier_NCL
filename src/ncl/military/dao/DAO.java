@@ -79,4 +79,6 @@ public interface DAO {
     //////////
     // Soldier adder
     Boolean addSoldier(List<EntityValue> values) throws DataAccessException;
+
+    Boolean deleteSoldierById(String soldierIdMatch);
 }

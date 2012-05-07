@@ -11,26 +11,24 @@ import java.util.Map;
 /**
  * @author gural
  * @version 1.0
- *          Date: 19.04.12
- *          Time: 14:44
+ *          Date: 03.05.12
+ *          Time: 18:25
  */
-public class SubsOfSoldierGetter extends Executor {
+public class SoldiersFragmentGetter extends Executor {
 
-    public SubsOfSoldierGetter(DAO dao) {
+    public SoldiersFragmentGetter(DAO dao) {
         super(dao);
     }
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        String idMatch = (String) params.get("queriedSoldierId");
-        Logger.getLogger("controller").debug("queriedSoldierId got : " + idMatch);
+        String idMatch = (String) params.get("soldierIdMatch");
+        Logger.getLogger("controller").debug("soldierIdMatch got : " + idMatch);
 
-        List<Soldier> soldierList = getDao().getSubSoldiersOfByID(idMatch);
+        // TODO make list of soldiers without the queried one
+        List<Soldier> soldierList = getDao().getAllSoldiers();
         result.put("listOfSoldiers", soldierList);
-
-        List<Soldier> hierarchyList = getDao().getHierarchy(idMatch);
-        result.put("hierarchyList", hierarchyList);
 
         Soldier currentSoldier = getDao().getSoldierById(idMatch);
         result.put("queriedSoldier", currentSoldier);

@@ -5,6 +5,7 @@ import ncl.military.dao.DAO;
 import ncl.military.dao.tools.EntityValue;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +30,11 @@ public class SoldierAdder extends Executor {
 
         List<Soldier> soldierList = getDao().getAllSoldiers();
         result.put("listOfSoldiers", soldierList);
+        Logger.getLogger("controller").info("listOfSoldier added to context");
+
         List<Unit> unitList = getDao().getAllUnits();
         result.put("listOfUnits", unitList);
+        Logger.getLogger("controller").info("listOfUnits added to context");
 
         List<EntityValue> values = null;
         if ((HandlerFactory.ADD_SOLDIER).equals(action)) {
