@@ -39,9 +39,8 @@
         <div class="container-fluid"><a target="_new" href="#" class="brand"> Soldiers <span
                 style="background-color:#387690;padding-top:100px" class="label warning">Alpha</span> </a>
             <ul class="nav secondary-nav">
-                <li><a href="<c:url value='/' />">Home</a></li>
-                <li><a href="<c:url value="https://github.com/7Silvan/Soldier_NCL"/> ">GitHub</a></li>
-                <li><a href="<c:url value='/info.jsp' />">info</a></li>
+                <li><a href="<c:url value='/' />" target="_blank">Home</a></li>
+                <li><a href="<c:url value="https://github.com/7Silvan/Soldier_NCL"/> " target="_blank">GitHub</a></li>
             </ul>
         </div>
     </div>
