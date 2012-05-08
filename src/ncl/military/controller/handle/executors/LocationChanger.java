@@ -51,7 +51,7 @@ public class LocationChanger extends Executor {
                 values.add(new EntityValue(Location.ALIAS.CITY.getLabel(), param));
 
             if (values.size() != 0) {
-                getDao().setLocationAttributes(locationIdMatch, values);
+                result.put("success", getDao().setLocationAttributes(locationIdMatch, values));
             }
         }
         Location location = getDao().getLocationById(locationIdMatch);

@@ -3,13 +3,12 @@
   Date: 27.04.12
   Time: 5:47
 --%>
-
 <c:if test="${fn:contains(requestScope.success, 'true')}">
     <c:choose>
         <c:when test="${fn:contains(requestScope.action, 'addSoldier')}">
             <c:url var="redirectUrl" value="/viewSoldiers">
                 <c:choose>
-                    <c:when test="${requestScope.commanderIdMatch ne null}">
+                    <c:when test="${requestScope.commanderIdMatch ne ''}">
                         <c:param name="action" value="getSubsOfSoldier"/>
                         <c:param name="queriedSoldierId" value="${requestScope.commanderIdMatch}"/>
                     </c:when>
@@ -29,6 +28,20 @@
                 <c:param name="action" value="getSubsOfSoldier"/>
                 <c:param name="queriedSoldierId" value="${requestScope.queriedSoldier.id}"/>
             </c:url>
+            <script type="text/javascript">
+                setTimeout('location.replace("${redirectUrl}")', 1000);
+            </script>
+            <h1>Saved!</h1>
+        </c:when>
+        <c:when test="${fn:contains(requestScope.viewType, '/viewUnits')}">
+            <c:url var="redirectUrl" value="/viewUnits"/>
+            <script type="text/javascript">
+                setTimeout('location.replace("${redirectUrl}")', 1000);
+            </script>
+            <h1>Saved!</h1>
+        </c:when>
+        <c:when test="${requestScope.viewType eq '/viewLocations'}">
+            <c:url var="redirectUrl" value="/viewLocations"/>
             <script type="text/javascript">
                 setTimeout('location.replace("${redirectUrl}")', 1000);
             </script>

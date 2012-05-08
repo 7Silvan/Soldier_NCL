@@ -136,7 +136,9 @@
     <div style="margin-top:15px; ">
         <%--view of soldiers--%>
         <c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers')}">
-            <h3> View of Soldiers
+            <h3> View
+                <c:if test="${fn:contains(requestScope.action, 'getTop')}"> Top </c:if>
+                of Soldiers
                 <c:if test="${fn:contains(requestScope.subAction, '${FormConst.MOVE_SOLDIER}')}"> (Select soldier to command the selected one) </c:if>
             </h3>
             <table id="resultTable" class="condensed-table bordered-table zebra-striped">

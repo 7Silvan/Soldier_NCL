@@ -56,7 +56,7 @@ public class UnitChanger extends Executor {
 
 
             if (values.size() != 0)
-                getDao().setUnitAttributes(unitIdMatch, values);
+                result.put("success", getDao().setUnitAttributes(unitIdMatch, values));
         } else {
 
         }
