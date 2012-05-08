@@ -39,15 +39,15 @@ public class LocationChanger extends Executor {
             values = new ArrayList<EntityValue>();
 
             String param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Location.ALIAS.NAME.getLabel(), param));
 
             param = (String) params.get(Location.ALIAS.REGION.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Location.ALIAS.REGION.getLabel(), param));
 
             param = (String) params.get(Location.ALIAS.CITY.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Location.ALIAS.CITY.getLabel(), param));
 
             if (values.size() != 0) {

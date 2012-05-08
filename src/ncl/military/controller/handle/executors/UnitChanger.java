@@ -41,15 +41,15 @@ public class UnitChanger extends Executor {
             values = new ArrayList<EntityValue>();
 
             String param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Unit.ALIAS.NAME.getLabel(), param));
 
             param = (String) params.get(Unit.ALIAS.LOCATION.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Unit.ALIAS.LOCATION.getLabel(), param));
 
             param = (String) params.get(Unit.ALIAS.HEAD_ID.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" ")) {
+            if (param != null && !param.equals("")) {
                 values.add(new EntityValue(Unit.ALIAS.HEAD_ID.getLabel(), param));
                 values.add(new EntityValue(Unit.ALIAS.HEAD_NAME.getLabel(), getDao().getSoldierById(param).getName()));
             }

@@ -7,7 +7,8 @@
 <div class="container-fluid">
 
 <%--this is soldier's infoblock with url to it's commander page, some other blocke relates on this--%>
-<c:if test="${fn:contains(requestScope.viewType, '/viewSoldiers') and fn:contains(requestScope.action,'getSubsOfSoldier')}">
+
+<c:if test="${fn:contains(requestScope.action,'getSubsOfSoldier')}">
 <div class="span-one-third">
     <h3>Current Soldier</h3>
     <jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>
@@ -27,6 +28,8 @@
                     <c:set var="commanderId"
                            value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-1].id}"/>
                     <c:url var="commanderUrl" value="/viewSoldiers">
+                        <c:param name="subAction" value="${requestScope.subAction}"/>
+                        <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
                         <c:param name="action" value="getSubsOfSoldier"/>
                         <c:param name="queriedSoldierId"
                                  value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-2].id}"/>

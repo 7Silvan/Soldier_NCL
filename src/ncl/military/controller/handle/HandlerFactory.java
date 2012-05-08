@@ -24,7 +24,6 @@ public class HandlerFactory {
     public static final String GET_ALL = "getAll";
     public static final String GET_TOP = "getTop";
     public static final String EDIT = "edit";
-    public static final String GET = "getOne";
     public static final String GET_SEARCH_RESULTS = "getSearchResults";
 
     // actions for soldiers
@@ -33,9 +32,6 @@ public class HandlerFactory {
     public static final String DELETE_SOLDIER = "deleteSoldier";
     public static final String MOVE_SOLDIER = "moveSoldier";
     public static final String MOVE_UNDER_THIS_SOLDIER = "moveUnderThisSoldier";
-
-    public static final String GET_VIEWING_FRAGMENT = "viewSoldiersAsFragment";
-    public static final String GET_ADDING_FRAGMENT = "addSoldierAsFragment";
 
     // actions for units
     public static final String GET_SOLDIERS_OF_UNIT = "getSoldiersOfUnit";
@@ -48,10 +44,6 @@ public class HandlerFactory {
     public static final String VIEW_EDIT = "/editor.jsp";
     public static final String VIEW_HOME = "/index.jsp";
     public static final String VIEW_ERROR = "/error.jsp";
-
-    //fragment view
-    public static final String VIEW_SOLDIERS_LIST_FRAGMENT = "/jspf/soldierList.jspf";
-    public static final String VIEW_SOLDIERS_ADD_FORM_FRAGMENT = "/jspf/soldierAddForm.jspf";
 
     public static Handlable getHandler(DAO dao, Map<String, Object> params) {
 
@@ -119,22 +111,6 @@ public class HandlerFactory {
                 if (executable == null) {
                     executable = new SoldierDeletter(dao);
                     executors.put(SoldierDeletter.class.getName(), executable);
-                }
-            }
-            if ((GET_VIEWING_FRAGMENT).equals((String) params.get("action"))) {
-                view = VIEW_SOLDIERS_LIST_FRAGMENT;
-                executable = executors.get(SoldiersFragmentGetter.class.getName());
-                if (executable == null) {
-                    executable = new SoldiersFragmentGetter(dao);
-                    executors.put(SoldiersFragmentGetter.class.getName(), executable);
-                }
-            }
-            if ((GET_ADDING_FRAGMENT).equals((String) params.get("action"))) {
-                view = VIEW_SOLDIERS_ADD_FORM_FRAGMENT;
-                executable = executors.get(SoldierAdder.class.getName());
-                if (executable == null) {
-                    executable = new SoldierAdder(dao);
-                    executors.put(SoldierAdder.class.getName(), executable);
                 }
             }
         }

@@ -574,7 +574,7 @@ public class OracleModule implements DAO {
                             }
                         }
                         raw.updateRow();
-                        updated = raw.rowUpdated();
+                        updated = true;
                         conn.commit();
                     }
                     return updated;
@@ -604,7 +604,7 @@ public class OracleModule implements DAO {
                             }
                         }
                         raw.updateRow();
-                        updated = raw.rowUpdated();
+                        updated = true;
                         conn.commit();
                     }
                     return updated;
@@ -645,7 +645,7 @@ public class OracleModule implements DAO {
                             }
                         }
                         raw.updateRow();
-                        updated = raw.rowUpdated();
+                        updated = true;
                         conn.commit();
                     }
                     return updated;

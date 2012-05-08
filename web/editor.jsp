@@ -5,14 +5,43 @@
 --%>
 
 <c:if test="${fn:contains(requestScope.success, 'true')}">
+    <c:choose>
+        <c:when test="${fn:contains(requestScope.action, 'addSoldier')}">
+            <c:url var="redirectUrl" value="/viewSoldiers">
+                <c:choose>
+                    <c:when test="${requestScope.commanderIdMatch ne null}">
+                        <c:param name="action" value="getSubsOfSoldier"/>
+                        <c:param name="queriedSoldierId" value="${requestScope.commanderIdMatch}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <c:param name="action" value="getTop"/>
+                    </c:otherwise>
+                </c:choose>
+            </c:url>
 
-    <script type="text/javascript">
+            <script type="text/javascript">
+                setTimeout('location.replace("${redirectUrl}")', 1000);
+            </script>
+            <h1>Added!</h1>
+        </c:when>
+        <c:when test="${fn:contains(requestScope.viewType, '/viewSoldiers') and fn:contains(requestScope.action, 'edit')}">
+            <c:url var="redirectUrl" value="/viewSoldiers">
+                <c:param name="action" value="getSubsOfSoldier"/>
+                <c:param name="queriedSoldierId" value="${requestScope.queriedSoldier.id}"/>
+            </c:url>
+            <script type="text/javascript">
+                setTimeout('location.replace("${redirectUrl}")', 1000);
+            </script>
+            <h1>Saved!</h1>
+        </c:when>
+        <c:otherwise>
+            <script type="text/javascript">
+                setTimeout('location.replace("/viewSoldiers?action=getTop")', 1000);
+            </script>
+        </c:otherwise>
 
-        setTimeout('location.replace("/viewSoldiers?action=getTop")', 1000);
+    </c:choose>
 
-    </script>
-
-    <h1>Action executed successfully!</h1>
 
 </c:if>
 

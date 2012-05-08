@@ -40,31 +40,34 @@ public class SoldierAdder extends Executor {
         if ((HandlerFactory.ADD_SOLDIER).equals(action)) {
             values = new ArrayList<EntityValue>();
             String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Soldier.ALIAS.NAME.getLabel(), param));
 
             param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Unit.ALIAS.NAME.getLabel(), param));
 
             param = (String) params.get(Soldier.ALIAS.COMMANDER.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Soldier.ALIAS.COMMANDER.getLabel(), param));
 
             param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Soldier.ALIAS.RANK.getLabel(), param));
 
             param = (String) params.get(Soldier.ALIAS.BIRTHDATE.getLabelAsQueried());
-            if (param != null && !param.equals("") && !param.contains(" "))
+            if (param != null && !param.equals(""))
                 values.add(new EntityValue(Soldier.ALIAS.BIRTHDATE.getLabel(), param));
 
-            if (values.size() != 0)
+            if (values.size() != 0) {
                 result.put("success", getDao().addSoldier(values));
+                result.put("commanderIdMatch", (String) params.get(Soldier.ALIAS.COMMANDER.getLabelAsQueried()));
+            }
         }
 
         if (params.get("queriedCommanderId") != null) {
             result.put("queriedCommanderId", params.get("queriedCommanderId"));
+            Logger.getLogger("controller").info("queriedCommanderId added to context");
         }
 
         return result;

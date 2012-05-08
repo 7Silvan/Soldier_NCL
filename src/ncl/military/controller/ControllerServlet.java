@@ -85,7 +85,7 @@ public class ControllerServlet extends HttpServlet {
 
         try {
             if (result.get("success") != null && !(Boolean) result.get("success")) {
-                req.setAttribute("errorCause", "Some actions caused error, check your input data.");
+                //req.setAttribute("errorCause", "Some actions caused error, check your input data.");
                 log.debug("forwarding to error page");
                 req.getRequestDispatcher(HandlerFactory.VIEW_ERROR).forward(req, res);
             } else {

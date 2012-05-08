@@ -28,7 +28,7 @@ public class SubsOfSoldierGetter extends Executor {
             result.put("soldierIdMatch", params.get("soldierIdMatch"));
         }
         String idMatch = (String) params.get("queriedSoldierId");
-        Logger.getLogger("controller").debug("queriedSoldierId got : " + idMatch);
+        Logger.getLogger("controller").debug("queriedSoldierId for getting soldier got : " + idMatch);
 
         List<Soldier> soldierList = getDao().getSubSoldiersOfByID(idMatch);
         result.put("listOfSoldiers", soldierList);

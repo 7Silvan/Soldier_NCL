@@ -24,7 +24,7 @@ public class SoldierMover extends Executor {
         String soldierIdMatch = (String) params.get("soldierIdMatch");
 
         result.put("soldierIdMatch", soldierIdMatch);
-        result.put("listOfSoldiers", getDao().getTopOfSoldiers());
+        result.put("listOfSoldiers", getDao().getNotSubsSoldiers(soldierIdMatch));
 
         return result;
     }

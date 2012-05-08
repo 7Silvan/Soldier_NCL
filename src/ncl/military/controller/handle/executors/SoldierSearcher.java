@@ -31,23 +31,23 @@ public class SoldierSearcher extends Executor {
         List<Filter> filters = new ArrayList<Filter>();
 
         String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
-        if (param != null && !param.equals("") && !param.contains(" "))
+        if (param != null && !param.equals(""))
             filters.add(new Filter(Soldier.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
 
         param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
-        if (param != null && !param.equals("") && !param.contains(" "))
+        if (param != null && !param.equals(""))
             filters.add(new Filter(Unit.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
 
         param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());
-        if (param != null && !param.equals("") && !param.contains(" "))
+        if (param != null && !param.equals(""))
             filters.add(new Filter(Location.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
 
         param = (String) params.get("queried_commander_name");
-        if (param != null && !param.equals("") && !param.contains(" "))
+        if (param != null && !param.equals(""))
             filters.add(new Filter("commander_name", FilterType.LIKE, param));
 
         param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());
-        if (param != null && !param.equals("") && !param.contains(" "))
+        if (param != null && !param.equals(""))
             filters.add(new Filter(Soldier.ALIAS.RANK.getLabel(), FilterType.LIKE, param));
 
         if (filters.size() != 0)
