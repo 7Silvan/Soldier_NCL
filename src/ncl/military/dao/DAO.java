@@ -33,9 +33,13 @@ public interface DAO {
 
     List<Soldier> getSubSoldiersOfByID(String idMatch) throws DataAccessException;
 
+    List<Soldier> getSubsOfParentOfThisSoldier(String idMatch) throws DataAccessException;
+
     List<Soldier> getTopOfSoldiers() throws DataAccessException;
 
     List<Soldier> getNotSubsSoldiers(String idMatch) throws DataAccessException;
+
+    Soldier getCommanderOfSoldierById(String idMatch) throws DataAccessException;
 
     // All about Units
     List<Unit> getAllUnits() throws DataAccessException;
@@ -73,4 +77,6 @@ public interface DAO {
     Boolean addSoldier(List<EntityValue> values) throws DataAccessException;
 
     Boolean deleteSoldierById(String soldierIdMatch);
+
+
 }

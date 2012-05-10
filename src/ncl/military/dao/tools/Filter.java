@@ -7,17 +7,17 @@ package ncl.military.dao.tools;
  *          Time: 16:39
  */
 public class Filter {
-    private String attribute;
+    private Alias attribute;
     private String valueToCompare;
     private FilterType typeOfComparison;
 
-    public Filter(String attribute, FilterType type, String value) {
+    public Filter(Alias attribute, FilterType type, String value) {
         this.attribute = attribute;
         this.valueToCompare = value;
         this.typeOfComparison = type;
     }
 
-    public String getAttribute() {
+    public Alias getAttribute() {
         return attribute;
     }
 

@@ -1,11 +1,9 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
+import ncl.military.dao.tools.Alias;
 import ncl.military.dao.tools.Filter;
-import ncl.military.dao.tools.FilterType;
-import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
-import ncl.military.entity.Unit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,37 +26,21 @@ public class SoldierSearcher extends Executor {
         Map<String, Object> result = new HashMap<String, Object>();
 
         List<Soldier> soldierList = null;
-        List<Filter> filters = new ArrayList<Filter>();
 
-        String param = (String) params.get(Soldier.ALIAS.NAME.getLabelAsQueried());
-        if (param != null && !param.equals("")) {
-            filters.add(new Filter(Soldier.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
-            result.put(Soldier.ALIAS.NAME.getLabelAsQueried(), param);
+        List<Alias> aliases = new ArrayList<Alias>() {{
+            add(Alias.SOLDIER_NAME);
+            add(Alias.UNIT_NAME);
+            add(Alias.LOCATION_NAME);
+            add(Alias.SOLDIER_COMMANDER_NAME);
+            add(Alias.SOLDIER_RANK);
+        }};
+
+        // putting search-params into output map (result) to view it in search form
+        for (Alias alias : aliases) {
+            result.put(alias.getLabelAsQueried(), (String) params.get(alias.getLabelAsQueried()));
         }
 
-        param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
-        if (param != null && !param.equals("")) {
-            filters.add(new Filter(Unit.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
-            result.put(Unit.ALIAS.NAME.getLabelAsQueried(), param);
-        }
-
-        param = (String) params.get(Location.ALIAS.NAME.getLabelAsQueried());
-        if (param != null && !param.equals("")) {
-            filters.add(new Filter(Location.ALIAS.NAME.getLabel(), FilterType.LIKE, param));
-            result.put(Location.ALIAS.NAME.getLabelAsQueried(), param);
-        }
-
-        param = (String) params.get("queried_commander_name");
-        if (param != null && !param.equals("")) {
-            filters.add(new Filter("commander_name", FilterType.LIKE, param));
-            result.put("queried_commander_name", param);
-        }
-
-        param = (String) params.get(Soldier.ALIAS.RANK.getLabelAsQueried());
-        if (param != null && !param.equals("")) {
-            filters.add(new Filter(Soldier.ALIAS.RANK.getLabel(), FilterType.LIKE, param));
-            result.put(Soldier.ALIAS.RANK.getLabelAsQueried(), param);
-        }
+        List<Filter> filters = getFiltersOfSearch(aliases, params);
 
         if (filters.size() != 0)
             soldierList = getDao().searchForSoldiers(filters);
@@ -66,7 +48,6 @@ public class SoldierSearcher extends Executor {
             soldierList = getDao().getAllSoldiers();
 
         result.put("listOfSoldiers", soldierList);
-
 
         return result;
     }

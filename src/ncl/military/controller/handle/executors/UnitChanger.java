@@ -7,7 +7,6 @@ import ncl.military.entity.Location;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,25 +34,8 @@ public class UnitChanger extends Executor {
         result.put("listOfLocations", locationList);
         result.put("unitIdMatch", unitIdMatch);
 
-
-        List<EntityValue> values = null;
         if ((HandlerFactory.EDIT).equals(action) && unitIdMatch != null) {
-            values = new ArrayList<EntityValue>();
-
-            String param = (String) params.get(Unit.ALIAS.NAME.getLabelAsQueried());
-            if (param != null && !param.equals(""))
-                values.add(new EntityValue(Unit.ALIAS.NAME.getLabel(), param));
-
-            param = (String) params.get(Unit.ALIAS.LOCATION.getLabelAsQueried());
-            if (param != null && !param.equals(""))
-                values.add(new EntityValue(Unit.ALIAS.LOCATION.getLabel(), param));
-
-            param = (String) params.get(Unit.ALIAS.HEAD_ID.getLabelAsQueried());
-            if (param != null && !param.equals("")) {
-                values.add(new EntityValue(Unit.ALIAS.HEAD_ID.getLabel(), param));
-                values.add(new EntityValue(Unit.ALIAS.HEAD_NAME.getLabel(), getDao().getSoldierById(param).getName()));
-            }
-
+            List<EntityValue> values = getValuesOfUnit(params);
 
             if (values.size() != 0)
                 result.put("success", getDao().setUnitAttributes(unitIdMatch, values));

@@ -15,6 +15,62 @@
     <servlet>
         <servlet-name>ControllerServlet</servlet-name>
         <servlet-class>ncl.military.controller.ControllerServlet</servlet-class>
+        <init-param>
+            <param-name>/viewSoldiers:getTop</param-name>
+            <param-value>ncl.military.controller.handle.executors.TopOfSoldiersGetter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:getSubsOfSoldiers</param-name>
+            <param-value>ncl.military.controller.handle.executors.SubsOfSoldierGetter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:getSearchResults</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierSearcher</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:getSoldiersOfUnit</param-name>
+            <param-value>ncl.military.controller.handle.executors.AllSoldiersOfUnitGetter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:addSoldier</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierAdder</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:moveSoldier</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierMover</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:moveUnderThisSoldier</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierChanger</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:edit</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierChanger</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:deleteSoldier</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierDeletter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewUnits:getAll</param-name>
+            <param-value>ncl.military.controller.handle.executors.AllUnitsGetter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewUnits:getUnitsOfLocation</param-name>
+            <param-value>ncl.military.controller.handle.executors.AllUnitsOfLocationGetter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewUnits:edit</param-name>
+            <param-value>ncl.military.controller.handle.executors.UnitChanger</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewLocations:getAll</param-name>
+            <param-value>ncl.military.controller.handle.executors.AllLocationsGetter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewLocations:edit</param-name>
+            <param-value>ncl.military.controller.handle.executors.LocationChanger</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>ControllerServlet</servlet-name>
@@ -43,6 +99,10 @@
     <context-param>
         <param-name>debugMode</param-name>
         <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>daoModule</param-name>
+        <param-value>ncl.military.dao.modules.OracleModule</param-value>
     </context-param>
 
     <jsp-config>

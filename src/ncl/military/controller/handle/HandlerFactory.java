@@ -1,8 +1,12 @@
 package ncl.military.controller.handle;
 
-import ncl.military.controller.handle.executors.*;
+import ncl.military.controller.exceptions.HandlerException;
 import ncl.military.dao.DAO;
+import org.apache.log4j.Logger;
 
+import javax.servlet.ServletConfig;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +17,9 @@ import java.util.Map;
  *          Time: 13:52
  */
 public class HandlerFactory {
+
+    private static final Logger log = Logger.getLogger("controller");
+
     private static Map<String, Executable> executors = new HashMap<String, Executable>();
 
     // path
@@ -45,119 +52,73 @@ public class HandlerFactory {
     public static final String VIEW_HOME = "/index.jsp";
     public static final String VIEW_ERROR = "/error.jsp";
 
-    public static Handlable getHandler(DAO dao, Map<String, Object> params) {
+    public static Handlable getHandler(DAO dao, ServletConfig config, Map<String, Object> params) throws HandlerException {
 
         Executable executable = null;
         String view = null;
+
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_TOP);
-            if ((GET_TOP).equals((String) params.get("action"))) {
-                executable = executors.get(TopOfSoldiersGetter.class.getName());
-                if (executable == null) {
-                    executable = new TopOfSoldiersGetter(dao);
-                    executors.put(TopOfSoldiersGetter.class.getName(), executable);
-                }
-            }
-            if ((GET_SUBS_OF_SOLDIER).equals((String) params.get("action"))) {
-                executable = executors.get(SubsOfSoldierGetter.class.getName());
-                if (executable == null) {
-                    executable = new SubsOfSoldierGetter(dao);
-                    executors.put(SubsOfSoldierGetter.class.getName(), executable);
-                }
-            }
-            if ((GET_SEARCH_RESULTS).equals((String) params.get("action"))) {
-                executable = executors.get(SoldierSearcher.class.getName());
-                if (executable == null) {
-                    executable = new SoldierSearcher(dao);
-                    executors.put(SoldierSearcher.class.getName(), executable);
-                }
-            }
-            if ((GET_SOLDIERS_OF_UNIT).equals((String) params.get("action"))) {
-                executable = executors.get(AllSoldiersOfUnitGetter.class.getName());
-                if (executable == null) {
-                    executable = new AllSoldiersOfUnitGetter(dao);
-                    executors.put(AllSoldiersOfUnitGetter.class.getName(), executable);
-                }
-            }
             if ((ADD_SOLDIER).equals((String) params.get("action"))) {
                 view = VIEW_EDIT;
-                executable = executors.get(SoldierAdder.class.getName());
-                if (executable == null) {
-                    executable = new SoldierAdder(dao);
-                    executors.put(SoldierAdder.class.getName(), executable);
-                }
             }
             if ((EDIT).equals((String) params.get("action")) ||
                     (MOVE_UNDER_THIS_SOLDIER).equals((String) params.get("action"))) {
                 view = ((EDIT).equals((String) params.get("action"))) ? VIEW_EDIT : VIEW_MAIN;
-                executable = executors.get(SoldierChanger.class.getName());
-                if (executable == null) {
-                    executable = new SoldierChanger(dao);
-                    executors.put(SoldierChanger.class.getName(), executable);
-                }
             }
             if ((MOVE_SOLDIER).equals((String) params.get("action"))) {
                 view = VIEW_MAIN;
-                executable = executors.get(SoldierMover.class.getName());
-                if (executable == null) {
-                    executable = new SoldierMover(dao);
-                    executors.put(SoldierMover.class.getName(), executable);
-                }
             }
             if ((DELETE_SOLDIER).equals((String) params.get("action"))) {
                 view = VIEW_MAIN;
-                executable = executors.get(SoldierDeletter.class.getName());
-                if (executable == null) {
-                    executable = new SoldierDeletter(dao);
-                    executors.put(SoldierDeletter.class.getName(), executable);
-                }
             }
         }
         if ((PATH_UNIT).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
-            if ((GET_ALL).equals((String) params.get("action"))) {
-                executable = executors.get(AllUnitsGetter.class.getName());
-                if (executable == null) {
-                    executable = new AllUnitsGetter(dao);
-                    executors.put(AllUnitsGetter.class.getName(), executable);
-                }
-            }
-            if ((GET_UNITS_OF_LOCATION).equals((String) params.get("action"))) {
-                executable = executors.get(AllUnitsOfLocationGetter.class.getName());
-                if (executable == null) {
-                    executable = new AllUnitsOfLocationGetter(dao);
-                    executors.put(AllUnitsOfLocationGetter.class.getName(), executable);
-                }
-            }
             if ((EDIT).equals((String) params.get("action"))) {
                 view = VIEW_EDIT;
-                executable = executors.get(UnitChanger.class.getName());
-                if (executable == null) {
-                    executable = new UnitChanger(dao);
-                    executors.put(UnitChanger.class.getName(), executable);
-                }
             }
         }
         if ((PATH_LOCATION).equals((String) params.get("userPath"))) {
             view = VIEW_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
-            if ((GET_ALL).equals((String) params.get("action"))) {
-                executable = executors.get(AllLocationsGetter.class.getName());
-                if (executable == null) {
-                    executable = new AllLocationsGetter(dao);
-                    executors.put(AllLocationsGetter.class.getName(), executable);
-                }
-            }
             if ((EDIT).equals((String) params.get("action"))) {
                 view = VIEW_EDIT;
-                executable = executors.get(LocationChanger.class.getName());
-                if (executable == null) {
-                    executable = new LocationChanger(dao);
-                    executors.put(LocationChanger.class.getName(), executable);
-                }
             }
+        }
+
+        String executorSpec = params.get("userPath") + ":" + params.get("action");
+        try {
+            String executorClass = config.getInitParameter(executorSpec);
+            if (executorClass == null)
+                throw new IllegalStateException("Descriptor have no match for given param.");
+            if (executors.containsKey(executorClass)) {
+                executable = executors.get(executorClass);
+            } else {
+                Class executor = Class.forName(executorClass);
+                Constructor executorConstructor = executor.getConstructor(DAO.class);
+                executable = (Executable) executorConstructor.newInstance(dao);
+            }
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage(), e);
+            throw new HandlerException(e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            log.error("Could not load class with given name.", e);
+            throw new HandlerException("Could not load class with given name.", e);
+        } catch (NoSuchMethodException e) {
+            log.error("There is no such constructor in loaded class.", e);
+            throw new HandlerException("There is no such constructor in loaded class.", e);
+        } catch (InvocationTargetException e) {
+            log.error(e.getMessage(), e);
+            throw new HandlerException(e.getMessage(), e);
+        } catch (InstantiationException e) {
+            log.error(e.getMessage(), e);
+            throw new HandlerException(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            log.error(e.getMessage(), e);
+            throw new HandlerException(e.getMessage(), e);
         }
 
         if (executable == null)

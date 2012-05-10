@@ -4,6 +4,7 @@ import ncl.military.controller.handle.Handlable;
 import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
 import ncl.military.dao.DAOFactory;
+import ncl.military.dao.exceptions.DataAccessException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
@@ -11,7 +12,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,17 +37,20 @@ public class ControllerServlet extends HttpServlet {
             initParams.put(parameter, servletConfig.getServletContext().getInitParameter(parameter));
         }
 
-
-        dao = DAOFactory.getDao();
-        dao.init(initParams);
-
-        log.info("ControllerServlet initialized");
+        try {
+            dao = DAOFactory.getDao(getServletContext());
+            dao.init(initParams);
+            log.info("ControllerServlet initialized");
+        } catch (DataAccessException e) {
+            log.fatal("DAO-module wasn't initialized, see log to find out.", e);
+            throw new ServletException("DAO-module wasn't initialized, see log to find out.", e);
+        }
     }
 
     public void perfromAction(HttpServletRequest req, HttpServletResponse res) {
         String userPath = req.getServletPath();
         req.setAttribute("userPath", userPath);
-        HttpSession session = req.getSession();
+//        HttpSession session = req.getSession();
 
         // Copying parameters from request scope to params-Map which will be feeded
         Map<String, Object> params = new HashMap<String, Object>();
@@ -59,12 +62,14 @@ public class ControllerServlet extends HttpServlet {
                 log.debug((String) entry.getKey() + " => " + entry.getValue());
                 params.put((String) entry.getKey(), entry.getValue());
             } else {
-                StringBuilder str4log = new StringBuilder();
-                for (Object o : ((Object[]) entry.getValue())) {
-                    str4log.append(o);
-                    str4log.append(".");
+                if (log.isDebugEnabled()) {
+                    StringBuilder str4log = new StringBuilder();
+                    for (Object o : ((Object[]) entry.getValue())) {
+                        str4log.append(o);
+                        str4log.append(".");
+                    }
+                    log.debug((String) entry.getKey() + " => " + str4log.toString());
                 }
-                log.debug((String) entry.getKey() + " => " + str4log.toString());
                 params.put((String) entry.getKey(), ((Object[]) entry.getValue())[0]);
             }
         }
@@ -72,16 +77,17 @@ public class ControllerServlet extends HttpServlet {
         params.put("userPath", userPath);
         log.debug(" Puted into result Map: userPath => " + userPath);
 
+        ServletConfig config = getServletConfig();
 
-        Handlable handle = HandlerFactory.getHandler(dao, params);
+        Handlable handle = HandlerFactory.getHandler(dao, config, params);
         Map<String, ? extends Object> result = handle.execute(params);
 
         for (String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
         }
-        if (session.getAttribute("subAction") != null) {
+        /*if (session.getAttribute("subAction") != null) {
             req.setAttribute("subAction", session.getAttribute("subAction"));
-        }
+        }*/
 
         try {
             if (result.get("success") != null && !(Boolean) result.get("success")) {
@@ -93,7 +99,7 @@ public class ControllerServlet extends HttpServlet {
                 req.getRequestDispatcher(handle.getView()).forward(req, res);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error(ex.getMessage(), ex);
         }
     }
 

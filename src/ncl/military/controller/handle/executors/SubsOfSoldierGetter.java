@@ -14,6 +14,7 @@ import java.util.Map;
  *          Date: 19.04.12
  *          Time: 14:44
  */
+
 public class SubsOfSoldierGetter extends Executor {
 
     public SubsOfSoldierGetter(DAO dao) {

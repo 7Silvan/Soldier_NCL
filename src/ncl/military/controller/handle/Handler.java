@@ -30,16 +30,14 @@ public class Handler implements Handlable {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = executor.execute(params);
         result.put("viewType", params.get("userPath"));
+
         Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: viewType => " + params.get("userPath"));
         Logger.getLogger("controller").debug("[Handler Executed]registered view => " + view);
-        // this is wrong
-        if (action.equals(HandlerFactory.DELETE_SOLDIER)) {
-            action = HandlerFactory.GET_TOP;
-        }
+
         if (result.get("action") == null) {
-            //action=(String) params.get("action");
             result.put("action", action);
         }
+
         Logger.getLogger("controller").debug("[Handler Executed] Action => " + action);
         Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: action =>" + action);
 

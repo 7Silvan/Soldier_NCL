@@ -3,6 +3,7 @@ package ncl.military.dao.modules;
 import ncl.military.dao.DAO;
 import ncl.military.dao.exceptions.DAOInitException;
 import ncl.military.dao.exceptions.DataAccessException;
+import ncl.military.dao.tools.Alias;
 import ncl.military.dao.tools.EntityValue;
 import ncl.military.dao.tools.Filter;
 import ncl.military.dao.tools.FilterType;
@@ -21,6 +22,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +46,52 @@ public class OracleModule implements DAO {
 
     private OracleDataSource dataSource;
 
+    // SOLDIER ALIASES //
+    private static final String SOLDIER_ID = "soldier_id";
+    private static final String SOLDIER_NAME = "soldier_name";
+    private static final String SOLDIER_RANK = "soldier_rank";
+    private static final String SOLDIER_COMMANDER = "soldier_commander";
+    private static final String SOLDIER_UNIT = /*"soldier_*/"unit_name"; // TODO careful
+    private static final String SOLDIER_BIRTHDATE = "soldier_birthdate";
+    private static final String SOLDIER_COMMANDER_NAME = "commander_name";
+    // UNIT ALIASES //
+    private static final String UNIT_ID = "unit_id";
+    private static final String UNIT_NAME = "unit_name";
+    private static final String UNIT_HEAD_NAME = "head_of_unit_name";//"unit_"; // TODO careful
+    private static final String UNIT_HEAD_ID = "head_of_unit";//"unit_"; // TODO careful
+    private static final String UNIT_LOCATION = "location_name";//"unit_"; //TODO careful
+    // LOCATION ALIASES //
+    private static final String LOCATION_ID = "location_id";
+    private static final String LOCATION_NAME = "location_name";
+    private static final String LOCATION_REGION = "location_region";
+    private static final String LOCATION_CITY = "location_city";
+
+    private static final Map<Alias, String> aliasMapping = new HashMap<Alias, String>() {{
+        put(Alias.SOLDIER_ID, SOLDIER_ID);
+        put(Alias.SOLDIER_NAME, SOLDIER_NAME);
+        put(Alias.SOLDIER_RANK, SOLDIER_RANK);
+        put(Alias.SOLDIER_COMMANDER, SOLDIER_COMMANDER);
+        put(Alias.SOLDIER_UNIT, SOLDIER_UNIT);
+        put(Alias.SOLDIER_BIRTHDATE, SOLDIER_BIRTHDATE);
+        put(Alias.SOLDIER_COMMANDER_NAME, SOLDIER_COMMANDER_NAME);
+        put(Alias.UNIT_ID, UNIT_ID);
+        put(Alias.UNIT_NAME, UNIT_NAME);
+        put(Alias.UNIT_HEAD_ID, UNIT_HEAD_ID);
+        put(Alias.UNIT_HEAD_NAME, UNIT_HEAD_NAME);
+        put(Alias.UNIT_LOCATION, UNIT_LOCATION);
+        put(Alias.LOCATION_ID, LOCATION_ID);
+        put(Alias.LOCATION_NAME, LOCATION_NAME);
+        put(Alias.LOCATION_CITY, LOCATION_CITY);
+        put(Alias.LOCATION_REGION, LOCATION_REGION);
+    }};
+
+    private String getColumnNameForAlias(Alias alias) {
+        return aliasMapping.get(alias);
+    }
+
     private static final String SQL_GET_SOLDIERS_PURE_4_INSERT =
-            "select soldier_id, name, rank, commander, unit, birthdate from soldier";
+            // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
+            "select soldier_id as soldier_id, name as soldier_name, rank as soldier_rank, commander as soldier_commander, unit as unit_name, birthdate as soldier_birthdate from soldier ";
 
     private static final String SQL_GET_ALL_SOLDIERS_FULL_INFO =
             // values to take // soldier_id// soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate // location_name // commander_name
@@ -65,6 +111,17 @@ public class OracleModule implements DAO {
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from unit join soldier on unit = unit_id " +
                     "where soldier_id = ? ";
 
+    private static final String SQL_GET_COMMANDER_OF_SOLDIER_BY_ID =
+            "select \n" +
+                    "    soldier_id as soldier_id,\n" +
+                    "    soldier.name as soldier_name,\n" +
+                    "    soldier.rank as soldier_rank,\n" +
+                    "    soldier.commander as soldier_commander,\n" +
+                    "    unit.name as unit_name,\n" +
+                    "    soldier.birthdate as soldier_birthdate \n" +
+                    "  from soldier join unit on unit.unit_id = soldier.unit\n" +
+                    "  where soldier.soldier_id = (select commander from soldier where soldier_id = ?)";
+
     private static final String SQL_GET_TOP_OF_SOLDIERS =
 // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate,location.name as location_name from unit join soldier on unit = unit_id join location on location.loc_id = unit.location " +
@@ -74,6 +131,18 @@ public class OracleModule implements DAO {
 // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
             "select soldier_id as soldier_id,soldier.name as soldier_name,soldier.rank as soldier_rank,soldier.commander as soldier_commander,unit.name as unit_name,soldier.birthdate as soldier_birthdate from soldier left join unit on unit = unit_id " +
                     "start with commander = ? connect by prior soldier_id = commander and level = 1  order by 1 ";
+
+    private static final String SQL_GET_SUBS_OF_PARENT_OF_SOLDIER_BY_ID =
+            "select\n" +
+                    "        soldier_id as soldier_id,\n" +
+                    "        soldier.name as soldier_name,\n" +
+                    "        soldier.rank as soldier_rank,\n" +
+                    "        soldier.commander as soldier_commander,\n" +
+                    "        unit.name as unit_name,\n" +
+                    "        soldier.birthdate as soldier_birthdate\n" +
+                    "  from soldier left join unit on unit = unit_id\n" +
+                    "  where soldier.commander = (select commander from soldier where soldier_id = ? )\n" +
+                    "  order by 1";
 
     private static final String SQL_GET_SOLDIERS_OF_UNIT =
 // values to take // soldier_id // soldier_name // soldier_rank // soldier_commander // unit_name // soldier_birthdate
@@ -123,8 +192,7 @@ public class OracleModule implements DAO {
         try {
             dataSource = (OracleDataSource) new InitialContext().lookup(initParams.get("jndiPath"));
         } catch (NamingException e) {
-            log.error("Cannot find resources over jndi");
-            e.printStackTrace();
+            log.error("Cannot find resources over jndi", e);
             throw new DAOInitException("Cannot find resources over jndi", e);
         }
     }
@@ -143,7 +211,7 @@ public class OracleModule implements DAO {
         Connection conn = null;
         PreparedStatement prst = null;
         ResultSet rs = null;
-
+        SQLException exception = null;
         try {
             conn = dataSource.getConnection();
             prst = conn.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -153,7 +221,7 @@ public class OracleModule implements DAO {
             int currentParameter = 0;
             for (String parameter : parameters) {
                 prst.setString(++currentParameter, parameter);
-                log.info("assigning parameter #" + currentParameter + " with value: " + parameter);
+                log.debug("assigning parameter #" + currentParameter + " with value: " + parameter);
             }
 
             rs = prst.executeQuery();
@@ -161,15 +229,14 @@ public class OracleModule implements DAO {
             return parser.parse(rs, prst, conn);
         } catch (SQLException e) {
             log.error("Some SQL error occured.", e);
-            e.printStackTrace();
+            exception = e;
         } finally {
-            SQLException exception = null;
             if (rs != null) {
                 try {
                     rs.close();
                 } catch (SQLException e) {
                     log.error("Result set closing error.", e);
-                    exception = e;
+                    if (exception == null) exception = e;
                 } finally {
                     if (prst != null) {
                         try {
@@ -192,11 +259,10 @@ public class OracleModule implements DAO {
                         log.error("PreparedStatement was null.");
                 }
             } else
-                Logger.getLogger("ResultSet was null.");
+                log.error("ResultSet was null.");
             if (exception != null)
-                throw new DataAccessException(exception); // this may override exception from try block
+                throw new DataAccessException("Performing query/Closing connection resources errors.", exception); // this will not override exception from catch block
         }
-
         return parser;
     }
 
@@ -214,12 +280,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                         soldiers.add(sd);
                     }
@@ -228,7 +294,6 @@ public class OracleModule implements DAO {
             });
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -240,12 +305,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                         soldiers.add(sd);
                     }
@@ -255,7 +320,6 @@ public class OracleModule implements DAO {
                     idMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -267,12 +331,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier();
-                        sd.setId(raw.getString(Soldier.ALIAS.ID.getLabel()));
-                        sd.setName(raw.getString(Soldier.ALIAS.NAME.getLabel()));
-                        sd.setRank(raw.getString(Soldier.ALIAS.RANK.getLabel()));
-                        sd.setUnit(raw.getString(Soldier.ALIAS.UNIT.getLabel()));
-                        sd.setCommander(raw.getString(Soldier.ALIAS.COMMANDER.getLabel()));
-                        sd.setBirthDate(raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel()));
+                        sd.setId(raw.getString(SOLDIER_ID));
+                        sd.setName(raw.getString(SOLDIER_NAME));
+                        sd.setRank(raw.getString(SOLDIER_RANK));
+                        sd.setUnit(raw.getString(SOLDIER_UNIT));
+                        sd.setCommander(raw.getString(SOLDIER_COMMANDER));
+                        sd.setBirthDate(raw.getDate(SOLDIER_BIRTHDATE));
                         soldiers.add(sd);
                     }
                     return soldiers;
@@ -280,7 +344,6 @@ public class OracleModule implements DAO {
             });
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -291,14 +354,13 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
-
                         Soldier sd = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                         soldiers.add(sd);
                     }
@@ -307,7 +369,6 @@ public class OracleModule implements DAO {
             });
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -319,12 +380,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                         soldiers.add(sd);
                     }
@@ -334,7 +395,31 @@ public class OracleModule implements DAO {
                     idMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
+            throw new DataAccessException("Performing data operations failed.", e);
+        }
+    }
+
+    public Soldier getCommanderOfSoldierById(String idMatch) throws DataAccessException {
+        try {
+            return (Soldier) performQuery(SQL_GET_COMMANDER_OF_SOLDIER_BY_ID, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    Soldier soldier = null;
+                    while (raw.next()) {
+                        soldier = new Soldier(
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
+                        );
+                    }
+                    return soldier;
+                }
+            },
+                    idMatch);
+        } catch (SQLException e) {
+            log.error("Parsing result set error.", e);
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -345,12 +430,11 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
-                        Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
-                                raw.getString(Unit.ALIAS.HEAD_NAME.getLabel()),
-                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()),
-                                raw.getString(Unit.ALIAS.HEAD_ID.getLabel()));
-
+                        Unit unit = new Unit(raw.getString(UNIT_ID),
+                                raw.getString(UNIT_HEAD_NAME),
+                                raw.getString(UNIT_LOCATION),
+                                raw.getString(UNIT_NAME),
+                                raw.getString(UNIT_HEAD_ID));
                         units.add(unit);
                     }
                     return units;
@@ -358,7 +442,6 @@ public class OracleModule implements DAO {
             });
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -369,11 +452,11 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     Unit unit = null;
                     if (raw.next()) {
-                        unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
-                                raw.getString(Unit.ALIAS.HEAD_NAME.getLabel()),
-                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()),
-                                raw.getString(Unit.ALIAS.HEAD_ID.getLabel()));
+                        unit = new Unit(raw.getString(UNIT_ID),
+                                raw.getString(UNIT_HEAD_NAME),
+                                raw.getString(UNIT_LOCATION),
+                                raw.getString(UNIT_NAME),
+                                raw.getString(UNIT_HEAD_ID));
                     }
                     return unit;
                 }
@@ -381,7 +464,6 @@ public class OracleModule implements DAO {
                     unitIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -393,12 +475,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                         soldiers.add(sd);
                     }
@@ -408,7 +490,6 @@ public class OracleModule implements DAO {
                     unitIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -420,12 +501,11 @@ public class OracleModule implements DAO {
                     List<Location> locations = new ArrayList<Location>();
                     while (raw.next()) {
                         Location location = new Location(
-                                raw.getString(Location.ALIAS.ID.getLabel()),
-                                raw.getString(Location.ALIAS.NAME.getLabel()),
-                                raw.getString(Location.ALIAS.REGION.getLabel()),
-                                raw.getString(Location.ALIAS.CITY.getLabel())
+                                raw.getString(LOCATION_ID),
+                                raw.getString(LOCATION_NAME),
+                                raw.getString(LOCATION_REGION),
+                                raw.getString(LOCATION_CITY)
                         );
-
                         locations.add(location);
                     }
                     return locations;
@@ -433,7 +513,6 @@ public class OracleModule implements DAO {
             });
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -445,10 +524,10 @@ public class OracleModule implements DAO {
                     Location location = null;
                     if (raw.next()) {
                         location = new Location(
-                                raw.getString(Location.ALIAS.ID.getLabel()),
-                                raw.getString(Location.ALIAS.NAME.getLabel()),
-                                raw.getString(Location.ALIAS.REGION.getLabel()),
-                                raw.getString(Location.ALIAS.CITY.getLabel())
+                                raw.getString(LOCATION_ID),
+                                raw.getString(LOCATION_NAME),
+                                raw.getString(LOCATION_REGION),
+                                raw.getString(LOCATION_CITY)
                         );
                     }
                     return location;
@@ -457,7 +536,6 @@ public class OracleModule implements DAO {
                     locationIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -468,12 +546,13 @@ public class OracleModule implements DAO {
                 public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
                     List<Unit> units = new ArrayList<Unit>();
                     while (raw.next()) {
-                        Unit unit = new Unit(raw.getString(Unit.ALIAS.ID.getLabel()),
-                                raw.getString(Unit.ALIAS.HEAD_NAME.getLabel()),
-                                raw.getString(Unit.ALIAS.LOCATION.getLabel()),
-                                raw.getString(Unit.ALIAS.NAME.getLabel()),
-                                raw.getString(Unit.ALIAS.HEAD_ID.getLabel()));
-
+                        Unit unit = new Unit(
+                                raw.getString(UNIT_ID),
+                                raw.getString(UNIT_HEAD_NAME),
+                                raw.getString(UNIT_LOCATION),
+                                raw.getString(UNIT_NAME),
+                                raw.getString(UNIT_HEAD_ID)
+                        );
                         units.add(unit);
                     }
                     return units;
@@ -482,7 +561,6 @@ public class OracleModule implements DAO {
                     locationIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -509,26 +587,21 @@ public class OracleModule implements DAO {
             StringBuilder searchQuery = new StringBuilder("select * from ( " + SQL_GET_ALL_SOLDIERS_FULL_INFO + " ) inner_table ");
             searchQuery.append(" where ");
             boolean first = true;
-
             for (Filter f : filters) {
                 if (!first) {
                     searchQuery.append(" and ");
                 } else
                     first = false;
-
                 try {
                     searchQuery.append(
                             searchStatementsAppender(
-                                    f.getAttribute(),
+                                    getColumnNameForAlias(f.getAttribute()),
                                     f.getTypeOfComparison(),
                                     f.getValue())
                     );
-
                     soldiers = getSoldiersListCustomQuery(searchQuery.toString());
-
                 } catch (IllegalArgumentException ex) {
-                    log.error("Wrong attribute name");
-
+                    log.error("Wrong constant name given from filter.", ex);
                 }
             }
         }
@@ -543,33 +616,32 @@ public class OracleModule implements DAO {
                     if (raw.next()) {
                         for (EntityValue value : values) {
                             try {
-                                String alias = value.getKey();
-                                if (alias.equals(Soldier.ALIAS.NAME.getLabel())
-                                        || alias.equals(Soldier.ALIAS.RANK.getLabel()))
-                                    raw.updateString(value.getKey(), value.getValue());
-
-                                if (alias.equals(Soldier.ALIAS.ID.getLabel())
-                                        || alias.equals(Soldier.ALIAS.UNIT.getLabel())
-                                        || alias.equals(Soldier.ALIAS.COMMANDER.getLabel()))
-                                    raw.updateInt(value.getKey(), Integer.parseInt(value.getValue()));
-
-                                if (alias.equals(Soldier.ALIAS.BIRTHDATE.getLabel())) {
-                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                                    java.util.Date date = sdf.parse(value.getValue());
-                                    raw.updateDate(value.getKey(), new java.sql.Date(date.getTime()));
+                                switch (value.getKey()) {
+                                    case SOLDIER_NAME:
+                                    case SOLDIER_RANK: {
+                                        raw.updateString(getColumnNameForAlias(value.getKey()), value.getValue());
+                                    }
+                                    break;
+                                    case SOLDIER_UNIT:
+                                    case SOLDIER_COMMANDER: {
+                                        raw.updateInt(getColumnNameForAlias(value.getKey()), Integer.parseInt(value.getValue()));
+                                    }
+                                    break;
+                                    case SOLDIER_BIRTHDATE: {
+                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                        java.util.Date date = sdf.parse(value.getValue());
+                                        raw.updateDate(getColumnNameForAlias(value.getKey()), new java.sql.Date(date.getTime()));
+                                    }
                                 }
-
                             } catch (NumberFormatException e) {
                                 log.error("Parsing data from given value error", e);
-                                e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
                                 log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
-                                e.printStackTrace();
+
                                 throw e;
                             } catch (ParseException e) {
                                 log.error("Parsing data from given value error", e);
-                                e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             }
                         }
@@ -582,7 +654,6 @@ public class OracleModule implements DAO {
             }, soldierIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -596,10 +667,9 @@ public class OracleModule implements DAO {
                     if (raw.next()) {
                         for (EntityValue value : values) {
                             try {
-                                raw.updateString(value.getKey(), value.getValue());
+                                raw.updateString(getColumnNameForAlias(value.getKey()), value.getValue());
                             } catch (SQLException e) {
                                 log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
-                                e.printStackTrace();
                                 throw e;
                             }
                         }
@@ -613,7 +683,6 @@ public class OracleModule implements DAO {
                     locationIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -626,22 +695,24 @@ public class OracleModule implements DAO {
                     if (raw.next()) {
                         for (EntityValue value : values) {
                             try {
-                                String alias = value.getKey();
-                                if (alias.equals(Unit.ALIAS.NAME.getLabel()))
-                                    raw.updateString(value.getKey(), value.getValue());
-
-                                if (alias.equals(Unit.ALIAS.LOCATION.getLabel()) ||
-                                        alias.equals(Unit.ALIAS.HEAD_ID.getLabel()))
-                                    raw.updateInt(value.getKey(), Integer.parseInt(value.getValue()));
-
+                                switch (value.getKey()) {
+                                    case UNIT_NAME:
+                                        raw.updateString(getColumnNameForAlias(value.getKey()), value.getValue());
+                                        break;
+                                    case UNIT_LOCATION:
+                                    case UNIT_HEAD_ID:
+                                        raw.updateInt(getColumnNameForAlias(value.getKey()), Integer.parseInt(value.getValue()));
+                                        break;
+                                }
                             } catch (NumberFormatException e) {
                                 log.error("Parsing data from given value error", e);
-                                e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
                                 log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
-                                e.printStackTrace();
                                 throw e;
+                            } catch (IllegalArgumentException e) {
+                                log.error(e.getMessage(), e);
+                                throw new DataAccessException(e.getMessage(), e);
                             }
                         }
                         raw.updateRow();
@@ -654,7 +725,6 @@ public class OracleModule implements DAO {
                     unitIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -668,35 +738,35 @@ public class OracleModule implements DAO {
                         raw.moveToInsertRow();
                         for (EntityValue value : values) {
                             try {
-                                String alias = value.getKey();
-                                if (alias.equals(Soldier.ALIAS.NAME.getLabel()))
-                                    raw.updateString("name", value.getValue());
-                                if (alias.equals(Soldier.ALIAS.RANK.getLabel()))
-                                    raw.updateString("rank", value.getValue());
-
-                                if (alias.equals(Soldier.ALIAS.UNIT.getLabel()))
-                                    raw.updateInt("unit", Integer.parseInt(value.getValue()));
-                                if (alias.equals(Soldier.ALIAS.COMMANDER.getLabel()))
-                                    raw.updateInt("commander", Integer.parseInt(value.getValue()));
-
-                                if (alias.equals(Soldier.ALIAS.BIRTHDATE.getLabel())) {
-                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                                    java.util.Date date = sdf.parse(value.getValue());
-                                    raw.updateDate("birthdate", new java.sql.Date(date.getTime()));
+                                switch (value.getKey()) {
+                                    case SOLDIER_NAME:
+                                    case SOLDIER_RANK: {
+                                        raw.updateString(getColumnNameForAlias(value.getKey()), value.getValue());
+                                    }
+                                    break;
+                                    case SOLDIER_UNIT:
+                                    case SOLDIER_COMMANDER: {
+                                        raw.updateInt(getColumnNameForAlias(value.getKey()), Integer.parseInt(value.getValue()));
+                                    }
+                                    break;
+                                    case SOLDIER_BIRTHDATE: {
+                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                        java.util.Date date = sdf.parse(value.getValue());
+                                        raw.updateDate(getColumnNameForAlias(value.getKey()), new java.sql.Date(date.getTime()));
+                                    }
                                 }
-
                             } catch (NumberFormatException e) {
                                 log.error("Parsing data from given value error", e);
-                                e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
                             } catch (SQLException e) {
                                 log.error("Didn\'t updated column :" + value.getKey() + " with value : " + value.getValue(), e);
-                                e.printStackTrace();
                                 throw e;
                             } catch (ParseException e) {
                                 log.error("Parsing data from given value error", e);
-                                e.printStackTrace();
                                 throw new DataAccessException("Parsing data from given value error", e);
+                            } catch (IllegalArgumentException e) {
+                                log.error(e.getMessage(), e);
+                                throw new DataAccessException(e.getMessage(), e);
                             }
                         }
                         raw.insertRow();
@@ -710,7 +780,6 @@ public class OracleModule implements DAO {
             });
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -733,7 +802,6 @@ public class OracleModule implements DAO {
                             updated = true;
                         } catch (SQLException e) {
                             log.error("Didn\'t deleted row for soldier with id :" + soldierIdMatch, e);
-                            e.printStackTrace();
                             throw e;
                         }
                     }
@@ -743,7 +811,6 @@ public class OracleModule implements DAO {
             }, soldierIdMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -755,12 +822,12 @@ public class OracleModule implements DAO {
                     Soldier soldier = null;
                     if (raw.next())
                         soldier = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                     return soldier;
                 }
@@ -768,7 +835,6 @@ public class OracleModule implements DAO {
                     idMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }
@@ -780,12 +846,12 @@ public class OracleModule implements DAO {
                     List<Soldier> soldiers = new ArrayList<Soldier>();
                     while (raw.next()) {
                         Soldier sd = new Soldier(
-                                raw.getString(Soldier.ALIAS.ID.getLabel()),
-                                raw.getString(Soldier.ALIAS.NAME.getLabel()),
-                                raw.getString(Soldier.ALIAS.RANK.getLabel()),
-                                raw.getString(Soldier.ALIAS.UNIT.getLabel()),
-                                raw.getString(Soldier.ALIAS.COMMANDER.getLabel()),
-                                raw.getDate(Soldier.ALIAS.BIRTHDATE.getLabel())
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
                         );
                         soldiers.add(sd);
                     }
@@ -795,7 +861,32 @@ public class OracleModule implements DAO {
                     idMatch);
         } catch (SQLException e) {
             log.error("Parsing result set error.", e);
-            e.printStackTrace();
+            throw new DataAccessException("Performing data operations failed.", e);
+        }
+    }
+
+    public List<Soldier> getSubsOfParentOfThisSoldier(String idMatch) throws DataAccessException {
+        try {
+            return (List<Soldier>) performQuery(SQL_GET_SUBS_OF_PARENT_OF_SOLDIER_BY_ID, new SetParser() {
+                public Object parse(ResultSet raw, PreparedStatement prst, Connection conn) throws SQLException {
+                    List<Soldier> soldiers = new ArrayList<Soldier>();
+                    while (raw.next()) {
+                        Soldier sd = new Soldier(
+                                raw.getString(SOLDIER_ID),
+                                raw.getString(SOLDIER_NAME),
+                                raw.getString(SOLDIER_RANK),
+                                raw.getString(SOLDIER_UNIT),
+                                raw.getString(SOLDIER_COMMANDER),
+                                raw.getDate(SOLDIER_BIRTHDATE)
+                        );
+                        soldiers.add(sd);
+                    }
+                    return soldiers;
+                }
+            },
+                    idMatch);
+        } catch (SQLException e) {
+            log.error("Parsing result set error.", e);
             throw new DataAccessException("Performing data operations failed.", e);
         }
     }

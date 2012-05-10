@@ -7,19 +7,19 @@ package ncl.military.dao.tools;
  *          Time: 16:28
  */
 public class EntityValue {
-    private String key;
+    private Alias key;
     private String value;
 
-    public EntityValue(String key, String value) {
+    public EntityValue(Alias key, String value) {
         this.key = key;
         this.value = value;
     }
 
-    public String getKey() {
+    public Alias getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(Alias key) {
         this.key = key;
     }
 

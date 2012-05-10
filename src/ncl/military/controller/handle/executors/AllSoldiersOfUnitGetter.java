@@ -14,6 +14,7 @@ import java.util.Map;
  *          Time: 13:13
  */
 public class AllSoldiersOfUnitGetter extends Executor {
+
     public AllSoldiersOfUnitGetter(DAO dao) {
         super(dao);
     }
