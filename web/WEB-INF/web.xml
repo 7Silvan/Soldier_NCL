@@ -43,7 +43,7 @@
             <param-value>ncl.military.controller.handle.executors.SoldierChanger</param-value>
         </init-param>
         <init-param>
-            <param-name>/viewSoldiers:edit</param-name>
+            <param-name>/viewSoldiers:editSoldier</param-name>
             <param-value>ncl.military.controller.handle.executors.SoldierChanger</param-value>
         </init-param>
         <init-param>
@@ -59,7 +59,7 @@
             <param-value>ncl.military.controller.handle.executors.AllUnitsOfLocationGetter</param-value>
         </init-param>
         <init-param>
-            <param-name>/viewUnits:edit</param-name>
+            <param-name>/viewUnits:editUnit</param-name>
             <param-value>ncl.military.controller.handle.executors.UnitChanger</param-value>
         </init-param>
         <init-param>
@@ -67,8 +67,76 @@
             <param-value>ncl.military.controller.handle.executors.AllLocationsGetter</param-value>
         </init-param>
         <init-param>
-            <param-name>/viewLocations:edit</param-name>
+            <param-name>/viewLocations:editLocation</param-name>
             <param-value>ncl.military.controller.handle.executors.LocationChanger</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewLocations</param-name>
+            <param-value>/viewLocations.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewUnits</param-name>
+            <param-value>/viewUnits.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers</param-name>
+            <param-value>/viewSoldiers.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:editSoldier</param-name>
+            <param-value>/editorSoldier.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:editUnit</param-name>
+            <param-value>/editorUnit.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:editLocation</param-name>
+            <param-value>/editorLocation.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:addSoldier</param-name>
+            <param-value>/editorSoldier.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:getSubsOfSoldier</param-name>
+            <param-value>/viewSoldiers.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:getTop</param-name>
+            <param-value>/viewSoldiers.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:getSearchResults</param-name>
+            <param-value>/viewSoldiers.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:moveUnderThisSoldier</param-name>
+            <param-value>/editorSoldier.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:deleteSoldier</param-name>
+            <param-value>/viewSoldiers.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:getSoldiersOfUnit</param-name>
+            <param-value>/viewSoldiers.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>:getUnitsOfLocations</param-name>
+            <param-value>/viewUnits.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewLocations:</param-name>
+            <param-value>getAll</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewUnits:</param-name>
+            <param-value>getAll</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/viewSoldiers:</param-name>
+            <param-value>getTop</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

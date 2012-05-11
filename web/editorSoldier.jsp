@@ -21,9 +21,9 @@
             <script type="text/javascript">
                 setTimeout('location.replace("${redirectUrl}")', 1000);
             </script>
-            <h1>Added!</h1>
+            <h1>Added! forwarding to Commander.</h1>
         </c:when>
-        <c:when test="${fn:contains(requestScope.viewType, '/viewSoldiers') and fn:contains(requestScope.action, 'edit')}">
+        <c:when test="${fn:contains(requestScope.action, 'editSoldier')}">
             <c:url var="redirectUrl" value="/viewSoldiers">
                 <c:param name="action" value="getSubsOfSoldier"/>
                 <c:param name="queriedSoldierId" value="${requestScope.queriedSoldier.id}"/>
@@ -31,19 +31,30 @@
             <script type="text/javascript">
                 setTimeout('location.replace("${redirectUrl}")', 1000);
             </script>
-            <h1>Saved!</h1>
+            <h1>Saved! forwarding to Commander.</h1>
+        </c:when>
+        <c:when test="${fn:contains(requestScope.action, 'getSubsOfSoldier')}">
+            <c:url var="redirectUrl" value="/viewSoldiers">
+                <c:param name="action" value="getSubsOfSoldier"/>
+                <c:param name="queriedSoldierId" value="${requestScope.queriedSoldier.commander}"/>
+            </c:url>
+            <script type="text/javascript">
+                setTimeout('location.replace("${redirectUrl}")', 1000);
+            </script>
+            <h1>Saved! forwarding to Commander.</h1>
         </c:when>
         <c:otherwise>
             <script type="text/javascript">
                 setTimeout('location.replace("/viewSoldiers?action=getTop")', 1000);
             </script>
+            <h1>Saved! forwarding go Top of Soldiers.</h1>
         </c:otherwise>
     </c:choose>
 </c:if>
-<c:if test="${fn:contains(requestScope.userPath, '/viewSoldiers') and (fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope.action, FormConst.EDIT))}">
+<c:if test="${fn:contains(requestScope.userPath, '/viewSoldiers') and (fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope.action, FormConst.EDIT_SOLDIER))}">
     <%--<jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>--%>
     <c:choose>
-        <c:when test="${requestScope.action eq FormConst.EDIT}">
+        <c:when test="${requestScope.action eq FormConst.EDIT_SOLDIER}">
             <form id="checkoutForm" class="cmxform" action="/viewSoldiers" method="post">
         </c:when>
         <c:otherwise>
@@ -56,8 +67,8 @@
         <% log.debug("Checking parameter soldierIdMatch : " + pageContext.getRequest().getParameter("soldierIdMatch")); %>
 
         <c:choose>
-            <c:when test="${requestScope.action eq FormConst.EDIT}">
-                <input name="action" value="${FormConst.EDIT}" type="hidden"/>
+            <c:when test="${requestScope.action eq FormConst.EDIT_SOLDIER}">
+                <input name="action" value="${FormConst.EDIT_SOLDIER}" type="hidden"/>
             </c:when>
             <c:otherwise>
                 <input name="action" value="${FormConst.ADD_SOLDIER}" type="hidden"/>
@@ -93,7 +104,9 @@
             <td><label for="queried_soldier_commander">Commander name: </label></td>
             <td><label>
                 <select id="queried_soldier_commander" name="queried_soldier_commander" class="required">
-                    <option value="">--Top of commanding--</option>
+                    <c:if test="${!fn:contains(requestScope.action, 'editSoldier')}">
+                        <option value="">--Top of commanding--</option>
+                    </c:if>
                     <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                         <c:choose>
                             <c:when test="${requestScope.queriedSoldier.commander eq soldier.id or
@@ -127,7 +140,7 @@
         <tr>
             <td colspan="2">
                 <c:choose>
-                    <c:when test="${requestScope.action eq FormConst.EDIT}">
+                    <c:when test="${requestScope.action eq FormConst.EDIT_SOLDIER}">
                         <input type="submit" class="btn primary pull-right" value="Edit"/>
                     </c:when>
                     <c:otherwise>

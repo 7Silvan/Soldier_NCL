@@ -34,7 +34,7 @@ public class UnitChanger extends Executor {
         result.put("listOfLocations", locationList);
         result.put("unitIdMatch", unitIdMatch);
 
-        if ((HandlerFactory.EDIT).equals(action) && unitIdMatch != null) {
+        if ((HandlerFactory.EDIT_UNIT).equals(action) && unitIdMatch != null) {
             List<EntityValue> values = getValuesOfUnit(params);
 
             if (values.size() != 0)

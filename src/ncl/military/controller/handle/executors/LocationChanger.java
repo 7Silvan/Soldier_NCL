@@ -32,7 +32,7 @@ public class LocationChanger extends Executor {
         result.put("listOfLocations", locationList);
         result.put("locationIdMatch", locationIdMatch);
 
-        if ((HandlerFactory.EDIT).equals(action) && locationIdMatch != null) {
+        if ((HandlerFactory.EDIT_LOCATION).equals(action) && locationIdMatch != null) {
             List<EntityValue> values = getValuesOfLocation(params);
 
             if (values.size() != 0) {

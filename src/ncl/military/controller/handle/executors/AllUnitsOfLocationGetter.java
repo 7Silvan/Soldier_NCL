@@ -1,5 +1,6 @@
 package ncl.military.controller.handle.executors;
 
+import ncl.military.controller.handle.HandlerFactory;
 import ncl.military.dao.DAO;
 import ncl.military.entity.Unit;
 
@@ -24,6 +25,8 @@ public class AllUnitsOfLocationGetter extends Executor {
         String locationIdMatch = (String) params.get("locationIdMatch");
         List<Unit> unitList = getDao().getUnitsOfLocation(locationIdMatch);
         result.put("listOfUnits", unitList);
+
+        result.put("action", HandlerFactory.GET_ALL);
 
         return result;
     }

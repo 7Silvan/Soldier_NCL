@@ -29,11 +29,12 @@ public class SoldierChanger extends Executor {
         String action = (String) params.get("action");
         String subAction = (String) params.get("subAction");
         String soldierIdMatch = (String) params.get("soldierIdMatch");
+        Boolean setTop = false;
 
         List<Soldier> soldierList = getDao().getNotSubsSoldiers(soldierIdMatch);
         List<Unit> unitList = getDao().getAllUnits();
 
-        if (((HandlerFactory.EDIT).equals(action) || (HandlerFactory.MOVE_UNDER_THIS_SOLDIER).equals(action)) && soldierIdMatch != null) {
+        if (((HandlerFactory.EDIT_SOLDIER).equals(action) || (HandlerFactory.MOVE_UNDER_THIS_SOLDIER).equals(action)) && soldierIdMatch != null) {
 
             List<EntityValue> values = getValuesOfSolider(params);
 

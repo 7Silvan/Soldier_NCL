@@ -38,6 +38,8 @@
                         <c:set var="commanderId"
                                value="${requestScope.hierarchyList[fn:length(requestScope.hierarchyList)-1].id}"/>
                         <c:url var="commanderUrl" value="/viewSoldiers">
+                            <c:param name="subAction" value="${requestScope.subAction}"/>
+                            <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
                             <c:param name="action" value="getTop"/>
                         </c:url>
                         <td>${queriedSoldier.commander}</td>
@@ -119,7 +121,7 @@
             <a class="btn primary" href="${commanderUrl}">Level up!</a>
             <c:url var="editUrl" value="/viewSoldiers">
                 <c:param name="soldierIdMatch" value="${commanderId}"/>
-                <c:param name="action" value="${FormConst.EDIT}"/>
+                <c:param name="action" value="${FormConst.EDIT_SOLDIER}"/>
             </c:url>
             <a class="btn primary" href="${editUrl}">Edit</a>
             <c:url var="addUrl" value="/viewSoldiers">
@@ -149,13 +151,20 @@
             <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                 <tr>
                     <td>
-                        <c:url var="url" value="/viewSoldiers">
-                            <c:param name="action" value="getSubsOfSoldier"/>
-                            <c:param name="subAction" value="${requestScope.subAction}"/>
-                            <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
-                            <c:param name="queriedSoldierId" value="${soldier.id}"/>
-                        </c:url>
-                        <a href="${url}">${soldier.name}</a>
+                        <c:choose>
+                            <c:when test="${fn:contains(requestScope.subAction, 'moveSoldier') and requestScope.soldierIdMatch eq soldier.id}">
+                                ${soldier.name}
+                            </c:when>
+                            <c:otherwise>
+                                <c:url var="url" value="/viewSoldiers">
+                                    <c:param name="action" value="getSubsOfSoldier"/>
+                                    <c:param name="subAction" value="${requestScope.subAction}"/>
+                                    <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
+                                    <c:param name="queriedSoldierId" value="${soldier.id}"/>
+                                </c:url>
+                                <a href="${url}">${soldier.name}</a>
+                            </c:otherwise>
+                        </c:choose>
                     </td>
                     <td>
                         <c:url var="url" value="/viewSoldiers">
@@ -189,7 +198,7 @@
                             <c:otherwise>
                                 <c:url var="editUrl" value="/viewSoldiers">
                                     <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                    <c:param name="action" value="${FormConst.EDIT}"/>
+                                    <c:param name="action" value="${FormConst.EDIT_SOLDIER}"/>
                                 </c:url>
                                 <a class="btn primary" href="${editUrl}">Edit</a>
                                 <c:url var="deleteUrl" value="/viewSoldiers">

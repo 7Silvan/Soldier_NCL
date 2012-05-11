@@ -624,7 +624,7 @@ public class OracleModule implements DAO {
                                     break;
                                     case SOLDIER_UNIT:
                                     case SOLDIER_COMMANDER: {
-                                        raw.updateInt(getColumnNameForAlias(value.getKey()), Integer.parseInt(value.getValue()));
+                                        raw.updateInt(getColumnNameForAlias(value.getKey()), Integer.parseInt((value.getValue() == null) ? "" : value.getValue()));
                                     }
                                     break;
                                     case SOLDIER_BIRTHDATE: {

@@ -30,7 +30,9 @@ public class HandlerFactory {
     // common actions
     public static final String GET_ALL = "getAll";
     public static final String GET_TOP = "getTop";
-    public static final String EDIT = "edit";
+    public static final String EDIT_SOLDIER = "editSoldier";
+    public static final String EDIT_UNIT = "editUnit";
+    public static final String EDIT_LOCATION = "editLocation";
     public static final String GET_SEARCH_RESULTS = "getSearchResults";
 
     // actions for soldiers
@@ -50,48 +52,40 @@ public class HandlerFactory {
     public static final String VIEW_SOLDIER_MAIN = "/viewSoldiers.jsp";
     public static final String VIEW_UNIT_MAIN = "/viewUnits.jsp";
     public static final String VIEW_LOCATION_MAIN = "/viewLocations.jsp";
-    public static final String VIEW_SOLDIER_EDIT = "/editor.jsp";
-    public static final String VIEW_UNIT_EDIT = "/editor.jsp";
-    public static final String VIEW_LOCATION_EDIT = "/editor.jsp";
+    public static final String VIEW_SOLDIER_EDIT = "/editorSoldier.jsp";
+    public static final String VIEW_UNIT_EDIT = "/editorUnit.jsp";
+    public static final String VIEW_LOCATION_EDIT = "/editorLocation.jsp";
     public static final String VIEW_HOME = "/index.jsp";
     public static final String VIEW_ERROR = "/error.jsp";
 
     public static Handlable getHandler(DAO dao, ServletConfig config, Map<String, Object> params) throws HandlerException {
 
+        // <userPath>:<action> - get class name
+        // <userPath>: - get action name
+        // <userPath> - get view name
+        // :<action> - get view name
+
         Executable executable = null;
         String view = null;
-
-        if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
-            view = VIEW_SOLDIER_MAIN;
-            if (params.get("action") == null) params.put("action", GET_TOP);
-            if ((ADD_SOLDIER).equals((String) params.get("action"))) {
-                view = VIEW_SOLDIER_EDIT;
-            }
-            if ((EDIT).equals((String) params.get("action")) ||
-                    (MOVE_UNDER_THIS_SOLDIER).equals((String) params.get("action"))) {
-                view = ((EDIT).equals((String) params.get("action"))) ? VIEW_SOLDIER_EDIT : VIEW_SOLDIER_MAIN;
-            }
+        log.debug("onGetHandler");
+        log.debug("userPath => " + params.get("userPath"));
+        log.debug("action => " + params.get("action"));
+        if (params.get("action") != null) {
+            view = config.getInitParameter(":" + (String) params.get("action"));
+        } else {
+            params.put("action", config.getInitParameter((String) params.get("userPath") + ":"));
+            log.debug("action got => " + params.get("action"));
+            view = config.getInitParameter((String) params.get("userPath"));
         }
-        if ((PATH_UNIT).equals((String) params.get("userPath"))) {
-            view = VIEW_UNIT_MAIN;
-            if (params.get("action") == null) params.put("action", GET_ALL);
-            if ((EDIT).equals((String) params.get("action"))) {
-                view = VIEW_UNIT_EDIT;
-            }
-        }
-        if ((PATH_LOCATION).equals((String) params.get("userPath"))) {
-            view = VIEW_LOCATION_MAIN;
-            if (params.get("action") == null) params.put("action", GET_ALL);
-            if ((EDIT).equals((String) params.get("action"))) {
-                view = VIEW_LOCATION_EDIT;
-            }
-        }
+        log.debug("view got => " + view);
 
         String executorSpec = params.get("userPath") + ":" + params.get("action");
+        log.debug("executorSpec => " + executorSpec);
         try {
             String executorClass = config.getInitParameter(executorSpec);
             if (executorClass == null)
                 throw new IllegalStateException("Descriptor have no match for given param: " + executorSpec);
+            log.debug("executorClass => " + executorClass);
             if (executors.containsKey(executorClass)) {
                 executable = executors.get(executorClass);
             } else {
