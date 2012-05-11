@@ -77,7 +77,7 @@ public class HandlerFactory {
             log.debug("action got => " + params.get("action"));
             view = config.getInitParameter((String) params.get("userPath"));
         }
-        log.debug("view got => " + view);
+        log.debug("PATIENT!!!!!!!!!!!!!!!!!!!!!!view got => " + view);
 
         String executorSpec = params.get("userPath") + ":" + params.get("action");
         log.debug("executorSpec => " + executorSpec);

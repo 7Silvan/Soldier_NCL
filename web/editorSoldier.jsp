@@ -31,7 +31,7 @@
             <script type="text/javascript">
                 setTimeout('location.replace("${redirectUrl}")', 1000);
             </script>
-            <h1>Saved! forwarding to Commander.</h1>
+            <h1>Saved!</h1>
         </c:when>
         <c:when test="${fn:contains(requestScope.action, 'getSubsOfSoldier')}">
             <c:url var="redirectUrl" value="/viewSoldiers">
@@ -104,7 +104,7 @@
             <td><label for="queried_soldier_commander">Commander name: </label></td>
             <td><label>
                 <select id="queried_soldier_commander" name="queried_soldier_commander" class="required">
-                    <option value="">--Top of commanding--</option>
+                    <option value="TOP">--Top of commanding--</option>
                     <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                         <c:choose>
                             <c:when test="${requestScope.queriedSoldier.commander eq soldier.id or
