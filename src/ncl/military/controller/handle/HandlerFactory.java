@@ -47,8 +47,12 @@ public class HandlerFactory {
     public static final String GET_UNITS_OF_LOCATION = "getUnitsOfLocations";
 
     //view
-    public static final String VIEW_MAIN = "/view.jsp";
-    public static final String VIEW_EDIT = "/editor.jsp";
+    public static final String VIEW_SOLDIER_MAIN = "/viewSoldiers.jsp";
+    public static final String VIEW_UNIT_MAIN = "/viewUnits.jsp";
+    public static final String VIEW_LOCATION_MAIN = "/viewLocations.jsp";
+    public static final String VIEW_SOLDIER_EDIT = "/editor.jsp";
+    public static final String VIEW_UNIT_EDIT = "/editor.jsp";
+    public static final String VIEW_LOCATION_EDIT = "/editor.jsp";
     public static final String VIEW_HOME = "/index.jsp";
     public static final String VIEW_ERROR = "/error.jsp";
 
@@ -58,34 +62,28 @@ public class HandlerFactory {
         String view = null;
 
         if ((PATH_SOLDIER).equals((String) params.get("userPath"))) {
-            view = VIEW_MAIN;
+            view = VIEW_SOLDIER_MAIN;
             if (params.get("action") == null) params.put("action", GET_TOP);
             if ((ADD_SOLDIER).equals((String) params.get("action"))) {
-                view = VIEW_EDIT;
+                view = VIEW_SOLDIER_EDIT;
             }
             if ((EDIT).equals((String) params.get("action")) ||
                     (MOVE_UNDER_THIS_SOLDIER).equals((String) params.get("action"))) {
-                view = ((EDIT).equals((String) params.get("action"))) ? VIEW_EDIT : VIEW_MAIN;
-            }
-            if ((MOVE_SOLDIER).equals((String) params.get("action"))) {
-                view = VIEW_MAIN;
-            }
-            if ((DELETE_SOLDIER).equals((String) params.get("action"))) {
-                view = VIEW_MAIN;
+                view = ((EDIT).equals((String) params.get("action"))) ? VIEW_SOLDIER_EDIT : VIEW_SOLDIER_MAIN;
             }
         }
         if ((PATH_UNIT).equals((String) params.get("userPath"))) {
-            view = VIEW_MAIN;
+            view = VIEW_UNIT_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
             if ((EDIT).equals((String) params.get("action"))) {
-                view = VIEW_EDIT;
+                view = VIEW_UNIT_EDIT;
             }
         }
         if ((PATH_LOCATION).equals((String) params.get("userPath"))) {
-            view = VIEW_MAIN;
+            view = VIEW_LOCATION_MAIN;
             if (params.get("action") == null) params.put("action", GET_ALL);
             if ((EDIT).equals((String) params.get("action"))) {
-                view = VIEW_EDIT;
+                view = VIEW_LOCATION_EDIT;
             }
         }
 
@@ -93,7 +91,7 @@ public class HandlerFactory {
         try {
             String executorClass = config.getInitParameter(executorSpec);
             if (executorClass == null)
-                throw new IllegalStateException("Descriptor have no match for given param.");
+                throw new IllegalStateException("Descriptor have no match for given param: " + executorSpec);
             if (executors.containsKey(executorClass)) {
                 executable = executors.get(executorClass);
             } else {

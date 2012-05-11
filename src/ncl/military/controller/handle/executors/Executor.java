@@ -32,7 +32,6 @@ public abstract class Executor implements Executable {
 
     protected List<Filter> getFiltersOfSearch(List<Alias> aliases, Map<String, Object> params) {
         List<Filter> filters = new ArrayList<Filter>();
-        // TODO do we have to put prefix in signature or map?
         for (Alias alias : aliases) {
             String param = (String) params.get(alias.getLabelAsQueried());
             if (StringUtils.isNotEmpty(param)) {
@@ -52,7 +51,6 @@ public abstract class Executor implements Executable {
     protected List<EntityValue> getValues(List<Alias> aliases, Map<String, Object> params) {
         List<EntityValue> values = new ArrayList<EntityValue>();
         for (Alias alias : aliases) {
-            // TODO do we have to put prefix in signature or map?
             String param = (String) params.get(alias.getLabelAsQueried());
             if (StringUtils.isNotEmpty(param)) {
                 values.add(new EntityValue(alias, param));
@@ -81,7 +79,8 @@ public abstract class Executor implements Executable {
                     add(Alias.UNIT_HEAD_ID);
                 }}
                 , params);
-        values.add(new EntityValue(Alias.UNIT_HEAD_NAME, getDao().getSoldierById((String) params.get(Alias.UNIT_HEAD_ID.getLabelAsQueried())).getName()));
+        if (params.get(Alias.UNIT_HEAD_ID.getLabelAsQueried()) != null)
+            values.add(new EntityValue(Alias.UNIT_HEAD_NAME, getDao().getSoldierById((String) params.get(Alias.UNIT_HEAD_ID.getLabelAsQueried())).getName()));
         return values;
     }
 

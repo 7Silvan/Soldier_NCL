@@ -8,7 +8,6 @@
     <display-name>soldier</display-name>
 
     <welcome-file-list>
-        <welcome-file>/viewSoldiers.jsp</welcome-file>
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
 
@@ -20,7 +19,7 @@
             <param-value>ncl.military.controller.handle.executors.TopOfSoldiersGetter</param-value>
         </init-param>
         <init-param>
-            <param-name>/viewSoldiers:getSubsOfSoldiers</param-name>
+            <param-name>/viewSoldiers:getSubsOfSoldier</param-name>
             <param-value>ncl.military.controller.handle.executors.SubsOfSoldierGetter</param-value>
         </init-param>
         <init-param>
@@ -56,7 +55,7 @@
             <param-value>ncl.military.controller.handle.executors.AllUnitsGetter</param-value>
         </init-param>
         <init-param>
-            <param-name>/viewUnits:getUnitsOfLocation</param-name>
+            <param-name>/viewUnits:getUnitsOfLocations</param-name>
             <param-value>ncl.military.controller.handle.executors.AllUnitsOfLocationGetter</param-value>
         </init-param>
         <init-param>
