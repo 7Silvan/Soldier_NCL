@@ -104,9 +104,7 @@
             <td><label for="queried_soldier_commander">Commander name: </label></td>
             <td><label>
                 <select id="queried_soldier_commander" name="queried_soldier_commander" class="required">
-                    <c:if test="${!fn:contains(requestScope.action, 'editSoldier')}">
-                        <option value="">--Top of commanding--</option>
-                    </c:if>
+                    <option value="">--Top of commanding--</option>
                     <c:forEach var="soldier" items="${requestScope.listOfSoldiers}">
                         <c:choose>
                             <c:when test="${requestScope.queriedSoldier.commander eq soldier.id or
