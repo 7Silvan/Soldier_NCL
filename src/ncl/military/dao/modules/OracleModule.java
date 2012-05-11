@@ -756,9 +756,19 @@ public class OracleModule implements DAO {
                                     }
                                     break;
                                     case SOLDIER_UNIT:
-                                    case SOLDIER_COMMANDER: {
-                                        // here we don't need using updateNull 
                                         raw.updateInt(getColumnNameForAlias(value.getKey()), Integer.parseInt(value.getValue()));
+                                        break;
+                                    case SOLDIER_COMMANDER: {
+                                        Integer intValue = null;
+                                        try {
+                                            intValue = Integer.parseInt(value.getValue());
+                                        } catch (NumberFormatException e) {
+                                            log.debug("The value commander column had not contained any digit.");
+                                        }
+                                        if (intValue == null)
+                                            raw.updateNull(getColumnNameForAlias(value.getKey()));
+                                        else
+                                            raw.updateInt(getColumnNameForAlias(value.getKey()), intValue);
                                     }
                                     break;
                                     case SOLDIER_BIRTHDATE: {

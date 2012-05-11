@@ -41,7 +41,8 @@ public class SoldierAdder extends Executor {
 
             if (values.size() != 0) {
                 result.put("success", getDao().addSoldier(values));
-                result.put("commanderIdMatch", (String) params.get(Alias.SOLDIER_COMMANDER.getLabelAsQueried()));
+                String commanderIdMatch = (String) params.get(Alias.SOLDIER_COMMANDER.getLabelAsQueried());
+                result.put("commanderIdMatch", ("TOP".equals(commanderIdMatch)) ? null : commanderIdMatch);
             }
         }
 
