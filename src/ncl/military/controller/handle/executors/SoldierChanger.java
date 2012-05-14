@@ -1,6 +1,7 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.dao.DAO;
+import ncl.military.dao.tools.Alias;
 import ncl.military.dao.tools.EntityValue;
 import ncl.military.entity.Soldier;
 import ncl.military.entity.Unit;
@@ -45,6 +46,7 @@ public class SoldierChanger extends Executor {
         result.put("listOfUnits", unitList);
         result.put("subAction", subAction);
         result.put("soldierIdMatch", soldierIdMatch);
+        result.put("commanderId", params.get(Alias.SOLDIER_COMMANDER.getLabelAsQueried()));
 
         return result;
     }

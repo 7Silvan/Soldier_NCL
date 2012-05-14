@@ -1,7 +1,6 @@
 package ncl.military.controller.handle.executors;
 
 import ncl.military.controller.handle.HandlerFactory;
-import ncl.military.dao.tools.Alias;
 
 import java.util.Map;
 
@@ -26,11 +25,14 @@ public class SoldierOnMoveChanger extends Executor {
             result.put("soldierIdMatch", null);
         }
 
-        String commanderId = (String) params.get(Alias.SOLDIER_COMMANDER.getLabelAsQueried());
+        String commanderId = (String) result.get("commanderId");
         result.put("action", HandlerFactory.GET_SUBS_OF_SOLDIER);
         result.put("listOfSoldiers", getDao().getSubSoldiersOfByID(commanderId));
+        log.debug("listOfSoldiers puted into result => " + result.get("listOfSoldiers"));
         result.put("hierarchyList", getDao().getHierarchy(commanderId));
+        log.debug("hierarchyList puted into result => " + result.get("hierarchyList"));
         result.put("queriedSoldier", getDao().getSoldierById(commanderId));
+        log.debug("queriedSoldier puted into result => " + result.get("queriedSoldier"));
 
         return result;
     }

@@ -7,6 +7,7 @@ import ncl.military.dao.tools.EntityValue;
 import ncl.military.dao.tools.Filter;
 import ncl.military.dao.tools.FilterType;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.Map;
  *          Time: 11:37
  */
 public abstract class Executor implements Executable {
+
+    protected static final Logger log = Logger.getLogger("controller");
 
     private DAO dao;
     protected Executor executor;
