@@ -31,8 +31,12 @@ public class SoldierOnMoveChanger extends Executor {
         log.debug("listOfSoldiers puted into result => " + result.get("listOfSoldiers"));
         result.put("hierarchyList", getDao().getHierarchy(commanderId));
         log.debug("hierarchyList puted into result => " + result.get("hierarchyList"));
-        result.put("queriedSoldier", getDao().getSoldierById(commanderId));
-        log.debug("queriedSoldier puted into result => " + result.get("queriedSoldier"));
+//        result.put("queriedSoldier", getDao().getSoldierById(commanderId));
+//        log.debug("queriedSoldier puted into result => " + result.get("queriedSoldier"));
+
+        // TODO resolve commanderIdMatch
+        result.put("commanderIdMatch", commanderId);
+        log.debug("commanderIdMatch puted into result => " + result.get("commanderIdMatch"));
 
         return result;
     }

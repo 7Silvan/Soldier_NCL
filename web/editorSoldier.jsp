@@ -36,6 +36,7 @@
         <c:when test="${fn:contains(requestScope.action, 'getSubsOfSoldier')}">
             <c:url var="redirectUrl" value="/viewSoldiers">
                 <c:param name="action" value="getSubsOfSoldier"/>
+                <%--TODO WTF queried soldier commander or not--%>
                 <c:param name="queriedSoldierId" value="${requestScope.queriedSoldier.commander}"/>
             </c:url>
             <script type="text/javascript">
