@@ -1,13 +1,16 @@
 package ncl.military.controller.handle;
 
 import ncl.military.controller.exceptions.HandlerException;
+import ncl.military.controller.handle.executors.Executor;
 import ncl.military.dao.DAO;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,9 +70,7 @@ public class HandlerFactory {
 
         Executable executable = null;
         String view = null;
-        log.debug("onGetHandler");
-        log.debug("userPath => " + params.get("userPath"));
-        log.debug("action => " + params.get("action"));
+        log.debug("onGetHandler \nuserPath => " + params.get("userPath") + "\naction => " + params.get("action"));
         if (params.get("action") != null) {
             view = config.getInitParameter(":" + (String) params.get("action"));
         } else {
@@ -81,18 +82,48 @@ public class HandlerFactory {
 
         String executorSpec = params.get("userPath") + ":" + params.get("action");
         log.debug("executorSpec => " + executorSpec);
+        List<String> executorClassHierarchy = new ArrayList<String>();
         try {
-            String executorClass = config.getInitParameter(executorSpec);
-            if (executorClass == null)
+            String executorClass = null;
+
+            // 0_o
+            do {
+                if (executorClass != null)
+                    executorSpec = "up." + executorSpec;
+                executorClass = config.getInitParameter(executorSpec);
+                if (executorClass != null)
+                    executorClassHierarchy.add(executorClass);
+                else
+                    break;
+            } while (executorClass != null);
+
+            if (executorClassHierarchy.size() == 0)
                 throw new IllegalStateException("Descriptor have no match for given param: " + executorSpec);
             log.debug("executorClass => " + executorClass);
-            if (executors.containsKey(executorClass)) {
-                executable = executors.get(executorClass);
-            } else {
-                Class executor = Class.forName(executorClass);
-                Constructor executorConstructor = executor.getConstructor(DAO.class);
-                executable = (Executable) executorConstructor.newInstance(dao);
+
+            //cyclic creating
+            for (String executorClassName : executorClassHierarchy) {
+                log.debug("Finding class for: " + executorClassName);
+                if (executable == null) {
+                    if (executors.containsKey(executorClassName)) {
+                        executable = executors.get(executorClassName);
+                    } else {
+                        Class executor = Class.forName(executorClassName);
+                        Constructor executorConstructor = executor.getConstructor(DAO.class);
+                        executable = (Executable) executorConstructor.newInstance(dao);
+                    }
+                } else {
+                    if (executors.containsKey(executorClassName)) {
+                        // hmm
+                        executable = ((Executor) executors.get(executorClassName)).setExecutor((Executor) executable);
+                    } else {
+                        Class executor = Class.forName(executorClassName);
+                        Constructor executorConstructor = executor.getConstructor(Executor.class);
+                        executable = (Executable) executorConstructor.newInstance(executable);
+                    }
+                }
             }
+
         } catch (IllegalStateException e) {
             log.error(e.getMessage(), e);
             throw new HandlerException(e.getMessage(), e);

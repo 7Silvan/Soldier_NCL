@@ -43,6 +43,10 @@
             <param-value>ncl.military.controller.handle.executors.SoldierChanger</param-value>
         </init-param>
         <init-param>
+            <param-name>up./viewSoldiers:moveUnderThisSoldier</param-name>
+            <param-value>ncl.military.controller.handle.executors.SoldierOnMoveChanger</param-value>
+        </init-param>
+        <init-param>
             <param-name>/viewSoldiers:editSoldier</param-name>
             <param-value>ncl.military.controller.handle.executors.SoldierChanger</param-value>
         </init-param>

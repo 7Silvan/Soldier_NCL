@@ -21,13 +21,30 @@ import java.util.Map;
 public abstract class Executor implements Executable {
 
     private DAO dao;
+    protected Executor executor;
 
     public Executor(DAO dao) {
         this.dao = dao;
     }
 
+    public Executor(Executor executor) {
+        this.executor = executor;
+    }
+
     protected DAO getDao() {
-        return dao;
+        if (dao == null)
+            return executor.getDao();
+        else
+            return dao;
+    }
+
+    private Executor getExecutor() {
+        return executor;
+    }
+
+    public Executor setExecutor(Executor executor) {
+        this.executor = executor;
+        return this.executor;
     }
 
     protected List<Filter> getFiltersOfSearch(List<Alias> aliases, Map<String, Object> params) {
