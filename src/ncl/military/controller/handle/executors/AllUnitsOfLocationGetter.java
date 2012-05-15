@@ -26,7 +26,7 @@ public class AllUnitsOfLocationGetter extends Executor {
         List<Unit> unitList = getDao().getUnitsOfLocation(locationIdMatch);
         result.put("listOfUnits", unitList);
 
-        result.put("action", HandlerFactory.GET_ALL);
+        result.put("action", HandlerFactory.getContext().getInitParameter("action_GET_ALL"));
 
         return result;
     }

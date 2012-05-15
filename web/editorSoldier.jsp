@@ -52,10 +52,10 @@
         </c:otherwise>
     </c:choose>
 </c:if>
-<c:if test="${fn:contains(requestScope.userPath, '/viewSoldiers') and (fn:contains(requestScope.action, FormConst.ADD_SOLDIER) or fn:contains(requestScope.action, FormConst.EDIT_SOLDIER))}">
+<c:if test="${fn:contains(requestScope.userPath, '/viewSoldiers') and (fn:contains(requestScope.action, initParam.action_ADD_SOLDIER) or fn:contains(requestScope.action, initParam.action_EDIT_SOLDIER))}">
     <%--<jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>--%>
     <c:choose>
-        <c:when test="${requestScope.action eq FormConst.EDIT_SOLDIER}">
+        <c:when test="${requestScope.action eq initParam.action_EDIT_SOLDIER}">
             <form id="checkoutForm" class="cmxform" action="/viewSoldiers" method="post">
         </c:when>
         <c:otherwise>
@@ -68,11 +68,11 @@
         <% log.debug("Checking parameter soldierIdMatch : " + pageContext.getRequest().getParameter("soldierIdMatch")); %>
 
         <c:choose>
-            <c:when test="${requestScope.action eq FormConst.EDIT_SOLDIER}">
-                <input name="action" value="${FormConst.EDIT_SOLDIER}" type="hidden"/>
+            <c:when test="${requestScope.action eq initParam.action_EDIT_SOLDIER}">
+                <input name="action" value="${initParam.action_EDIT_SOLDIER}" type="hidden"/>
             </c:when>
             <c:otherwise>
-                <input name="action" value="${FormConst.ADD_SOLDIER}" type="hidden"/>
+                <input name="action" value="${initParam.action_ADD_SOLDIER}" type="hidden"/>
             </c:otherwise>
         </c:choose>
 
@@ -139,7 +139,7 @@
         <tr>
             <td colspan="2">
                 <c:choose>
-                    <c:when test="${requestScope.action eq FormConst.EDIT_SOLDIER}">
+                    <c:when test="${requestScope.action eq initParam.action_EDIT_SOLDIER}">
                         <input type="submit" class="btn primary pull-right" value="Edit"/>
                     </c:when>
                     <c:otherwise>

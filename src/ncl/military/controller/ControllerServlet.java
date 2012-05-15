@@ -30,6 +30,7 @@ public class ControllerServlet extends HttpServlet {
 
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
+        HandlerFactory.init(getServletConfig(), getServletContext());
         Map<String, String> initParams = new HashMap<String, String>();
         Enumeration names = servletConfig.getServletContext().getInitParameterNames();
         while (names.hasMoreElements()) {
@@ -50,7 +51,6 @@ public class ControllerServlet extends HttpServlet {
     public void perfromAction(HttpServletRequest req, HttpServletResponse res) {
         String userPath = req.getServletPath();
         req.setAttribute("userPath", userPath);
-//        HttpSession session = req.getSession();
 
         // Copying parameters from request scope to params-Map which will be feeded
         Map<String, Object> params = new HashMap<String, Object>();
@@ -77,23 +77,18 @@ public class ControllerServlet extends HttpServlet {
         params.put("userPath", userPath);
         log.debug(" Puted into result Map: userPath => " + userPath);
 
-        ServletConfig config = getServletConfig();
-
-        Handlable handle = HandlerFactory.getHandler(dao, config, params);
+        Handlable handle = HandlerFactory.getHandler(dao, params);
         Map<String, ? extends Object> result = handle.execute(params);
 
         for (String key : result.keySet()) {
             req.setAttribute(key, result.get(key));
         }
-        /*if (session.getAttribute("subAction") != null) {
-            req.setAttribute("subAction", session.getAttribute("subAction"));
-        }*/
 
         try {
             if (result.get("success") != null && !(Boolean) result.get("success")) {
                 //req.setAttribute("errorCause", "Some actions caused error, check your input data.");
                 log.debug("forwarding to error page");
-                req.getRequestDispatcher(HandlerFactory.VIEW_ERROR).forward(req, res);
+                req.getRequestDispatcher(getServletContext().getInitParameter("view=error")).forward(req, res);
             } else {
                 log.debug("forwarding to " + handle.getView());
                 req.getRequestDispatcher(handle.getView()).forward(req, res);

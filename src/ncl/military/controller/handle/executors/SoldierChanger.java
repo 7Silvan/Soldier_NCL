@@ -25,7 +25,6 @@ public class SoldierChanger extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        String action = (String) params.get("action");
         String subAction = (String) params.get("subAction");
         String soldierIdMatch = (String) params.get("soldierIdMatch");
 

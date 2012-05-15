@@ -6,6 +6,7 @@ import ncl.military.dao.DAO;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -24,8 +25,10 @@ public class HandlerFactory {
     private static final Logger log = Logger.getLogger("controller");
 
     private static Map<String, Executable> executors = new HashMap<String, Executable>();
+    private static ServletContext context = null;
+    private static ServletConfig config = null;
 
-    // path
+/*    // path
     public static final String PATH_SOLDIER = "/viewSoldiers";
     public static final String PATH_UNIT = "/viewUnits";
     public static final String PATH_LOCATION = "/viewLocations";
@@ -59,9 +62,22 @@ public class HandlerFactory {
     public static final String VIEW_UNIT_EDIT = "/editorUnit.jsp";
     public static final String VIEW_LOCATION_EDIT = "/editorLocation.jsp";
     public static final String VIEW_HOME = "/index.jsp";
-    public static final String VIEW_ERROR = "/error.jsp";
+    public static final String VIEW_ERROR = "/error.jsp";*/
 
-    public static Handlable getHandler(DAO dao, ServletConfig config, Map<String, Object> params) throws HandlerException {
+    public static void init(ServletConfig configInit, ServletContext contextInit) {
+        config = configInit;
+        context = contextInit;
+    }
+
+    public static ServletContext getContext() {
+        return context;
+    }
+
+    public static ServletConfig getConfig() {
+        return config;
+    }
+
+    public static Handlable getHandler(DAO dao, Map<String, Object> params) throws HandlerException {
 
         // <userPath>:<action> - get class name
         // <userPath>: - get action name

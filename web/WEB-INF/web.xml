@@ -13,6 +13,7 @@
 
     <servlet>
         <servlet-name>ControllerServlet</servlet-name>
+        <!-- list of classes accessing by pair of class and action, if has (up.)* - decorating class for (up.)*-1 -->
         <servlet-class>ncl.military.controller.ControllerServlet</servlet-class>
         <init-param>
             <param-name>/viewSoldiers:getTop</param-name>
@@ -86,6 +87,7 @@
             <param-name>/viewSoldiers</param-name>
             <param-value>/viewSoldiers.jsp</param-value>
         </init-param>
+        <!-- list of jsp-views for every action -->
         <init-param>
             <param-name>:editSoldier</param-name>
             <param-value>/editorSoldier.jsp</param-value>
@@ -130,6 +132,7 @@
             <param-name>:getUnitsOfLocations</param-name>
             <param-value>/viewUnits.jsp</param-value>
         </init-param>
+        <!-- list of actions by default of path -->
         <init-param>
             <param-name>/viewLocations:</param-name>
             <param-value>getAll</param-value>
@@ -142,6 +145,12 @@
             <param-name>/viewSoldiers:</param-name>
             <param-value>getTop</param-value>
         </init-param>
+        <!-- list of special views -->
+        <init-param>
+            <param-name>view=error</param-name>
+            <param-value>/error.jsp</param-value>
+        </init-param>
+
     </servlet>
     <servlet-mapping>
         <servlet-name>ControllerServlet</servlet-name>
@@ -184,4 +193,62 @@
             <include-coda>/jspf/footer.jspf</include-coda>
         </jsp-property-group>
     </jsp-config>
+
+    <!-- list of all actions -->
+    <!-- common actions -->
+    <context-param>
+        <param-name>action_GET_ALL</param-name>
+        <param-value>getAll</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_GET_TOP</param-name>
+        <param-value>getTop</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_EDIT_SOLDIER</param-name>
+        <param-value>editSoldier</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_EDIT_UNIT</param-name>
+        <param-value>editUnit</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_EDIT_LOCATION</param-name>
+        <param-value>editLocation</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_GET_SEARCH_RESULTS</param-name>
+        <param-value>getSearchResults</param-value>
+    </context-param>
+    <!-- list of soldier actions -->
+    <context-param>
+        <param-name>action_GET_SUBS_OF_SOLDIER</param-name>
+        <param-value>getSubsOfSoldier</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_ADD_SOLDIER</param-name>
+        <param-value>addSoldier</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_DELETE_SOLDIER</param-name>
+        <param-value>deleteSoldier</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_MOVE_SOLDIER</param-name>
+        <param-value>moveSoldier</param-value>
+    </context-param>
+    <context-param>
+        <param-name>action_MOVE_UNDER_THIS_SOLDIER</param-name>
+        <param-value>moveUnderThisSoldier</param-value>
+    </context-param>
+    <!-- action for units -->
+    <context-param>
+        <param-name>action_GET_SOLDIERS_OF_UNIT</param-name>
+        <param-value>getSoldiersOfUnit</param-value>
+    </context-param>
+    <!-- action for locations -->
+    <context-param>
+        <param-name>action_GET_UNITS_OF_LOCATIONS</param-name>
+        <param-value>getUnitsOfLocations</param-value>
+    </context-param>
 </web-app>

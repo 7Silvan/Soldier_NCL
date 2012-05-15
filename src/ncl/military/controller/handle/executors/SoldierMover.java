@@ -19,7 +19,7 @@ public class SoldierMover extends Executor {
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        result.put("subAction", HandlerFactory.MOVE_SOLDIER);
+        result.put("subAction", HandlerFactory.getContext().getInitParameter("action_MOVE_SOLDIER"));
 
         String soldierIdMatch = (String) params.get("soldierIdMatch");
 

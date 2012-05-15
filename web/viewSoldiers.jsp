@@ -121,12 +121,12 @@
             <a class="btn primary" href="${commanderUrl}">Level up!</a>
             <c:url var="editUrl" value="/viewSoldiers">
                 <c:param name="soldierIdMatch" value="${commanderId}"/>
-                <c:param name="action" value="${FormConst.EDIT_SOLDIER}"/>
+                <c:param name="action" value="${initParam.action_EDIT_SOLDIER}"/>
             </c:url>
             <a class="btn primary" href="${editUrl}">Edit</a>
             <c:url var="addUrl" value="/viewSoldiers">
                 <c:param name="queriedCommanderId" value="${commanderId}"/>
-                <c:param name="action" value="${FormConst.ADD_SOLDIER}"/>
+                <c:param name="action" value="${initParam.action_ADD_SOLDIER}"/>
             </c:url>
             <a class="btn primary" href="${addUrl}">Add New Soldier</a>
         </div>
@@ -135,7 +135,7 @@
         <h3> View
             <c:if test="${fn:contains(requestScope.action, 'getTop')}"> Top </c:if>
             of Soldiers
-            <c:if test="${fn:contains(requestScope.subAction, '${FormConst.MOVE_SOLDIER}')}"> (Select soldier to command the selected one) </c:if>
+            <c:if test="${fn:contains(requestScope.subAction, '${initParam.action_MOVE_SOLDIER}')}"> (Select soldier to command the selected one) </c:if>
         </h3>
         <table id="resultTable" class="condensed-table bordered-table zebra-striped">
             <thead>
@@ -190,7 +190,7 @@
                                     <c:url var="moveUnderThisUrl" value="/viewSoldiers">
                                         <c:param name="soldierIdMatch" value="${requestScope.soldierIdMatch}"/>
                                         <c:param name="queried_soldier_commander" value="${soldier.id}"/>
-                                        <c:param name="action" value="${FormConst.MOVE_UNDER_THIS_SOLDIER}"/>
+                                        <c:param name="action" value="${initParam.action_MOVE_UNDER_THIS_SOLDIER}"/>
                                     </c:url>
                                     <a class="btn primary" href="${moveUnderThisUrl}">Select</a>
                                 </c:if>
@@ -198,18 +198,18 @@
                             <c:otherwise>
                                 <c:url var="editUrl" value="/viewSoldiers">
                                     <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                    <c:param name="action" value="${FormConst.EDIT_SOLDIER}"/>
+                                    <c:param name="action" value="${initParam.action_EDIT_SOLDIER}"/>
                                 </c:url>
                                 <a class="btn primary" href="${editUrl}">Edit</a>
                                 <c:url var="deleteUrl" value="/viewSoldiers">
                                     <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                    <c:param name="action" value="${FormConst.DELETE_SOLDIER}"/>
+                                    <c:param name="action" value="${initParam.action_DELETE_SOLDIER}"/>
                                 </c:url>
                                 <a class="btn primary" href="${deleteUrl}">Delete</a>
                                 <c:url var="moveUrl" value="/viewSoldiers">
                                     <c:param name="soldierIdMatch" value="${soldier.id}"/>
-                                    <c:param name="action" value="${FormConst.GET_TOP}"/>
-                                    <c:param name="subAction" value="${FormConst.MOVE_SOLDIER}"/>
+                                    <c:param name="action" value="${initParam.action_GET_TOP}"/>
+                                    <c:param name="subAction" value="${initParam.action_MOVE_SOLDIER}"/>
                                 </c:url>
                                 <a class="btn primary" href="${moveUrl}">Move</a>
                             </c:otherwise>

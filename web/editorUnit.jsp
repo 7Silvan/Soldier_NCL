@@ -10,13 +10,13 @@
     </script>
     <h1>Saved!</h1>
 </c:if>
-<c:if test="${fn:contains(requestScope.userPath, '/viewUnits') and fn:contains(requestScope.action, FormConst.EDIT_UNIT)}">
+<c:if test="${fn:contains(requestScope.userPath, '/viewUnits') and fn:contains(requestScope.action, initParam.action_EDIT_UNIT)}">
     <%--<jsp:useBean id="queriedUnit" scope="request" class="ncl.military.entity.Unit"/>--%>
     <form action="/viewUnits" method="post">
 
     <input name="unitIdMatch" value="${requestScope.unitIdMatch}" type="hidden"/>
 
-    <input name="action" value="${FormConst.EDIT_UNIT}" type="hidden"/>
+    <input name="action" value="${initParam.action_EDIT_UNIT}" type="hidden"/>
     <table>
         <tr>
             <td><%--@declare id="queried_unit_name"--%><label for="queried_unit_name">Unit: </label></td>

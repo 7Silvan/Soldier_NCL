@@ -30,7 +30,7 @@
                 <td>
                     <c:url var="editUrl" value="/viewLocations">
                         <c:param name="locationIdMatch" value="${location.id}"/>
-                        <c:param name="action" value="${FormConst.EDIT_LOCATION}"/>
+                        <c:param name="action" value="${initParam.action_EDIT_LOCATION}"/>
                     </c:url>
                     <a class="btn primary" href="${editUrl}">Edit</a>
                 </td>

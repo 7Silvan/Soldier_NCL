@@ -44,7 +44,7 @@
                 <td>
                     <c:url var="editUrl" value="/viewUnits">
                         <c:param name="unitIdMatch" value="${unit.id}"/>
-                        <c:param name="action" value="${FormConst.EDIT_UNIT}"/>
+                        <c:param name="action" value="${initParam.action_EDIT_UNIT}"/>
                     </c:url>
                     <a class="btn primary" href="${editUrl}">Edit</a>
                 </td>

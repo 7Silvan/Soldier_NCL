@@ -18,21 +18,17 @@ public class SoldierOnMoveChanger extends Executor {
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = executor.execute(params);
-
         // action for mover (EditOnMoveDecorator)
         if ((Boolean) result.get("success")) {
             result.put("subAction", null);
             result.put("soldierIdMatch", null);
         }
-
         String commanderId = (String) result.get("commanderId");
-        result.put("action", HandlerFactory.GET_SUBS_OF_SOLDIER);
+        result.put("action", HandlerFactory.getContext().getInitParameter("action_GET_SUBS_OF_SOLDIER"));
         result.put("listOfSoldiers", getDao().getSubSoldiersOfByID(commanderId));
         log.debug("listOfSoldiers puted into result => " + result.get("listOfSoldiers"));
         result.put("hierarchyList", getDao().getHierarchy(commanderId));
         log.debug("hierarchyList puted into result => " + result.get("hierarchyList"));
-//        result.put("queriedSoldier", getDao().getSoldierById(commanderId));
-//        log.debug("queriedSoldier puted into result => " + result.get("queriedSoldier"));
 
         // TODO resolve commanderIdMatch
         result.put("commanderIdMatch", commanderId);

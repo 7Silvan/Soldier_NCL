@@ -10,13 +10,13 @@
     </script>
     <h1>Saved!</h1>
 </c:if>
-<c:if test="${fn:contains(requestScope.userPath, '/viewLocations') and fn:contains(requestScope.action, FormConst.EDIT_LOCATION)}">
+<c:if test="${fn:contains(requestScope.userPath, '/viewLocations') and fn:contains(requestScope.action, initParam.action_EDIT_LOCATION)}">
     <%--<jsp:useBean id="queriedLocation" scope="request" class="ncl.military.entity.Location"/>--%>
     <form action="/viewLocations" method="post">
 
     <input name="locationIdMatch" value="${requestScope.locationIdMatch}" type="hidden"/>
 
-    <input name="action" value="${FormConst.EDIT_LOCATION}" type="hidden"/>
+    <input name="action" value="${initParam.action_EDIT_LOCATION}" type="hidden"/>
     <table>
         <tr>
             <td name="queried_location_name">Location</td>

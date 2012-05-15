@@ -36,7 +36,7 @@ public class SoldierAdder extends Executor {
         result.put("listOfUnits", unitList);
         Logger.getLogger("controller").info("listOfUnits added to context");
 
-        if ((HandlerFactory.ADD_SOLDIER).equals(action)) {
+        if (HandlerFactory.getContext().getInitParameter("action_ADD_SOLDIER").equals(action)) {
             List<EntityValue> values = getValuesOfSolider(params);
 
             if (values.size() != 0) {

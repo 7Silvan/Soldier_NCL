@@ -31,10 +31,10 @@ public class SoldierDeletter extends Executor {
 
         if (commander == null) {
             result.put("listOfSoldiers", getDao().getTopOfSoldiers());
-            result.put("action", HandlerFactory.GET_TOP);
+            result.put("action", HandlerFactory.getContext().getInitParameter("action_GET_TOP"));
         } else {
             result.put("listOfSoldiers", getDao().getSubSoldiersOfByID(commander.getId()));
-            result.put("action", HandlerFactory.GET_SUBS_OF_SOLDIER);
+            result.put("action", HandlerFactory.getContext().getInitParameter("action_GET_SUBS_OF_SOLDIER"));
 
             List<Soldier> hierarchyList = getDao().getHierarchy(commander.getId());
             result.put("hierarchyList", hierarchyList);
