@@ -67,44 +67,39 @@ public class HandlerFactory {
         try {
             String executorClass = null;
 
-            // 0_o
-            do {
-                if (executorClass != null)
-                    executorSpec = "up." + executorSpec;
-                executorClass = config.getInitParameter(executorSpec);
-                if (executorClass != null)
-                    executorClassHierarchy.add(executorClass);
-                else
-                    break;
-            } while (executorClass != null);
-
-            if (executorClassHierarchy.size() == 0)
+            executorClass = config.getInitParameter(executorSpec);
+            if (executorClass == null)
                 throw new IllegalStateException("Descriptor have no match for given param: " + executorSpec);
-            log.debug("executorClass => " + executorClass);
-
-            //cyclic creating
-            for (String executorClassName : executorClassHierarchy) {
-                log.debug("Finding class for: " + executorClassName);
-                if (executable == null) {
-                    if (executors.containsKey(executorClassName)) {
-                        executable = executors.get(executorClassName);
+            while (executorClass != null) {
+                log.debug("executorClass => " + executorClass);
+                if (executable == null) { // The core or the decorator depends on it (e.q. if the first)
+                    // this case is on purpose to create or get already created executor as a core
+                    if (executors.containsKey(executorClass)) {
+                        // just getting existing as a core for structure of executors
+                        executable = executors.get(executorClass);
                     } else {
-                        Class executor = Class.forName(executorClassName);
+                        Class executor = Class.forName(executorClass);
+                        // creating as a core executor in this structure of executors with setting dao
                         Constructor executorConstructor = executor.getConstructor(DAO.class);
                         executable = (Executable) executorConstructor.newInstance(dao);
                     }
                 } else {
-                    if (executors.containsKey(executorClassName)) {
-                        // hmm
-                        executable = ((Executor) executors.get(executorClassName)).setExecutor((Executor) executable);
+                    // this case is for decorating core or last executor decorated the core
+                    if (executors.containsKey(executorClass)) {
+                        // just getting existing and setting object to decorate
+                        executable = ((Executor) executors.get(executorClass)).setExecutor((Executor) executable);
                     } else {
-                        Class executor = Class.forName(executorClassName);
+                        Class executor = Class.forName(executorClass);
+                        // creating with setting object to decorate
                         Constructor executorConstructor = executor.getConstructor(Executor.class);
                         executable = (Executable) executorConstructor.newInstance(executable);
                     }
                 }
-            }
 
+                // for next loop
+                executorSpec = "up." + executorSpec;
+                executorClass = config.getInitParameter(executorSpec);
+            }
         } catch (IllegalStateException e) {
             log.error(e.getMessage(), e);
             throw new HandlerException(e.getMessage(), e);
