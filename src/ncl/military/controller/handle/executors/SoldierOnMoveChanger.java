@@ -30,7 +30,6 @@ public class SoldierOnMoveChanger extends Executor {
         result.put("hierarchyList", getDao().getHierarchy(commanderId));
         log.debug("hierarchyList puted into result => " + result.get("hierarchyList"));
 
-        // TODO resolve commanderIdMatch
         result.put("commanderIdMatch", commanderId);
         log.debug("commanderIdMatch puted into result => " + result.get("commanderIdMatch"));
 

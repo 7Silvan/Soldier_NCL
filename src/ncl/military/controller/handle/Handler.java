@@ -29,9 +29,7 @@ public class Handler implements Handlable {
 
     public Map<String, Object> execute(Map<String, Object> params) {
         Map<String, Object> result = executor.execute(params);
-        //result.put("viewType", params.get("userPath"));
 
-        //Logger.getLogger("controller").debug("[Handler Executed]Puted into result Map: viewType => " + params.get("userPath"));
         Logger.getLogger("controller").debug("[Handler Executed]registered view => " + view);
 
         if (result.get("action") == null) {
