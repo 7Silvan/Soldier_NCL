@@ -28,42 +28,6 @@ public class HandlerFactory {
     private static ServletContext context = null;
     private static ServletConfig config = null;
 
-/*    // path
-    public static final String PATH_SOLDIER = "/viewSoldiers";
-    public static final String PATH_UNIT = "/viewUnits";
-    public static final String PATH_LOCATION = "/viewLocations";
-
-    // common actions
-    public static final String GET_ALL = "getAll";
-    public static final String GET_TOP = "getTop";
-    public static final String EDIT_SOLDIER = "editSoldier";
-    public static final String EDIT_UNIT = "editUnit";
-    public static final String EDIT_LOCATION = "editLocation";
-    public static final String GET_SEARCH_RESULTS = "getSearchResults";
-
-    // actions for soldiers
-    public static final String GET_SUBS_OF_SOLDIER = "getSubsOfSoldier";
-    public static final String ADD_SOLDIER = "addSoldier";
-    public static final String DELETE_SOLDIER = "deleteSoldier";
-    public static final String MOVE_SOLDIER = "moveSoldier";
-    public static final String MOVE_UNDER_THIS_SOLDIER = "moveUnderThisSoldier";
-
-    // actions for units
-    public static final String GET_SOLDIERS_OF_UNIT = "getSoldiersOfUnit";
-
-    // actions for locations
-    public static final String GET_UNITS_OF_LOCATION = "getUnitsOfLocations";
-
-    //view
-    public static final String VIEW_SOLDIER_MAIN = "/viewSoldiers.jsp";
-    public static final String VIEW_UNIT_MAIN = "/viewUnits.jsp";
-    public static final String VIEW_LOCATION_MAIN = "/viewLocations.jsp";
-    public static final String VIEW_SOLDIER_EDIT = "/editorSoldier.jsp";
-    public static final String VIEW_UNIT_EDIT = "/editorUnit.jsp";
-    public static final String VIEW_LOCATION_EDIT = "/editorLocation.jsp";
-    public static final String VIEW_HOME = "/index.jsp";
-    public static final String VIEW_ERROR = "/error.jsp";*/
-
     public static void init(ServletConfig configInit, ServletContext contextInit) {
         config = configInit;
         context = contextInit;
@@ -83,6 +47,7 @@ public class HandlerFactory {
         // <userPath>: - get action name
         // <userPath> - get view name
         // :<action> - get view name
+        // action:<action> - get value of action name
 
         Executable executable = null;
         String view = null;
