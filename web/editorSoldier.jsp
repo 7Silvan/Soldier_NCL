@@ -46,7 +46,10 @@
         </c:when>
         <c:otherwise>
             <script type="text/javascript">
-                setTimeout('location.replace("/viewSoldiers?action=getTop")', 1000);
+                <c:url var="redirectUrl" value="/viewSoldiers">
+                <c:param name="action" value="getTop" />
+                </c:url>
+                setTimeout('location.replace("${redirectUrl}")', 1000);
             </script>
             <h1>Saved! forwarding go Top of Soldiers.</h1>
         </c:otherwise>
@@ -56,10 +59,12 @@
     <%--<jsp:useBean id="queriedSoldier" scope="request" class="ncl.military.entity.Soldier"/>--%>
     <c:choose>
         <c:when test="${requestScope.action eq initParam.action_EDIT_SOLDIER}">
-            <form id="checkoutForm" class="cmxform" action="/viewSoldiers" method="post">
+            <c:url var="postUrl" value="/viewSoldiers"/>
+            <form id="checkoutForm" class="cmxform" action="${postUrl}" method="post">
         </c:when>
         <c:otherwise>
-            <form id="checkoutForm" name="addSoldierForm" onsubmit="return validateForm();" class="cmxform" action="/viewSoldiers" method="post">
+            <c:url var="postUrl" value="/viewSoldiers"/>
+            <form id="checkoutForm" name="addSoldierForm" onsubmit="return validateForm();" class="cmxform" action="${postUrl}" method="post">
         </c:otherwise>
     </c:choose>
     <table>

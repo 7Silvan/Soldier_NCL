@@ -12,7 +12,8 @@
 </c:if>
 <c:if test="${fn:contains(requestScope.userPath, '/viewUnits') and fn:contains(requestScope.action, initParam.action_EDIT_UNIT)}">
     <%--<jsp:useBean id="queriedUnit" scope="request" class="ncl.military.entity.Unit"/>--%>
-    <form action="/viewUnits" method="post">
+    <c:url var="postUrl" value="/viewUnits"/>
+    <form action="${postUrl}" method="post">
 
     <input name="unitIdMatch" value="${requestScope.unitIdMatch}" type="hidden"/>
 

@@ -1,10 +1,10 @@
 package ncl.military.controller;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * @author gural
